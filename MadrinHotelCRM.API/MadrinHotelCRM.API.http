@@ -1,0 +1,6 @@
+@MadrinHotelCRM.API_HostAddress = http://localhost:5062
+
+GET {{MadrinHotelCRM.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
