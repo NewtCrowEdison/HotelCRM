@@ -4,9 +4,10 @@ namespace MadrinHotelCRM.MVC
     {
         public static void Main(string[] args)
         {
+            Console.WriteLine("3fsan3 Bitch.");
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            // Add services to the containerr.
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
