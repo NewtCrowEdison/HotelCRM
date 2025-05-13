@@ -8,10 +8,10 @@ namespace MadrinHotelCRM.Entities.Enums
 {
     internal enum LogSeviyesi
     {
-        Info = 0,
-        Warning = 1,
-        Error = 2,
-        Debug = 3,
-        Fatal = 4,
+        Bilgi = 1,
+        Uyari = 2,
+        Hata = 3,
+        Kontrol = 4,
+        KritikHata= 5
     }
 }

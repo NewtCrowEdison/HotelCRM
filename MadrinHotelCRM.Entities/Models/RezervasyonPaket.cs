@@ -9,7 +9,6 @@ namespace MadrinHotelCRM.Entities.Models
 {
     internal class RezervasyonPaket
     {
-        public int Id { get; set; }
         public int RezervasyonId { get; set; }
         public Rezervasyon Rezervasyon { get; set; }
         public int PaketId { get; set; }

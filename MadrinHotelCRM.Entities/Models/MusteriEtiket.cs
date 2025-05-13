@@ -10,7 +10,7 @@ namespace MadrinHotelCRM.Entities.Models
     {
         public int MusteriID { get; set; }
         public int EtiketID { get; set; }
-        //public Musteri Musteri { get; set; }
+        public Musteri Musteri { get; set; }
         public Etiket Etiket { get; set; }
     }
 }
