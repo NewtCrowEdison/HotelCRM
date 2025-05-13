@@ -29,10 +29,10 @@ namespace MadrinHotelCRM.Entities.Models
         public Cinsiyet cinsiyet { get; set; }
         public string Adres { get; set; }
 
-        //public ICollection MusteriEtiketleri { get; set; }
-        //public ICollection Etkilesimler { get; set; }
-        //public ICollection<Rezervasyon> Rezervasyonlar { get; set; }
-        // public ICollection<GeriBildirim> GeriBildirimler { get; set; }
+        public ICollection <MusteriEtiket> MusteriEtiketleri { get; set; }
+        public ICollection <MusteriEtkilesim> MusteriEtkilesim { get; set; }
+        public ICollection<Rezervasyon> Rezervasyonlar { get; set; }
+        public ICollection<GeriBildirim> GeriBildirimler { get; set; }
 
     }
 }

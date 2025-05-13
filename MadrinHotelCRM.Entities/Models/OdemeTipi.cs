@@ -1,17 +1,14 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MadrinHotelCRM.Entities.Enums;
 
 namespace MadrinHotelCRM.Entities.Models
 {
-    internal class OdemetTipi
+    public class OdemetTipi
     {
         public int OdemeTipiId { get; set; }
         public string OdemeTipiAd { get; set; }
     }
-    
 }
