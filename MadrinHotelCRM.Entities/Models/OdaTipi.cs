@@ -13,7 +13,6 @@ namespace MadrinHotelCRM.Entities.Models
         public int Kapasite { get; set; }
         public decimal Fiyat { get; set; }
         public string OdaAciklama { get; set; }
-
-        public ICollection<Oda> Odalar { get; set; } //oda ile bire çok ilişki collection.
+        public ICollection<Oda> Odalar { get; set; }
     }
 }

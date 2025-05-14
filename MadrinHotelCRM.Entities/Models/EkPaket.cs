@@ -16,6 +16,6 @@ namespace MadrinHotelCRM.Entities.Models
         public string PaketAciklama { get; set; }
         public decimal Fiyat { get; set; }
         public DateTime? OlusturmaTarihi { get; set; }
-        //public ICollection<RezervasyonPaket> RezervasyonPaketler { get; set; }
+        public ICollection<RezervasyonPaket> RezervasyonPaketler { get; set; }
     }
 }

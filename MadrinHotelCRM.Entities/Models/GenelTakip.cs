@@ -18,6 +18,6 @@ namespace MadrinHotelCRM.Entities.Models
         public int PersonelId { get; set; }
         public string EskiVeriJson { get; set; }
         public string YeniVeriJson { get; set; }
-        //public Personel Personeller { get; set; }
+        public Personel Personeller { get; set; }
     }
 }

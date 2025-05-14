@@ -17,6 +17,6 @@ namespace MadrinHotelCRM.Entities.Models
         public FaturaDurum Durum{ get; set; }
         public DateTime FaturaOlusturmaTarihi { get; set; }
 
-        // public ICollection<Odeme> Odemeler { get; set; }
+        public ICollection<Odeme> Odemeler { get; set; }
     }
 }

@@ -26,11 +26,11 @@ namespace MadrinHotelCRM.Entities.Models
         public string TelNo { get; set; }
         public DateTime DogumTarihi { get; set; }
         public string Email { get; set; }
-        public Cinsiyet cinsiyet { get; set; }
+        public Cinsiyet Cinsiyet { get; set; }
         public string Adres { get; set; }
 
-        public ICollection <MusteriEtiket> MusteriEtiketleri { get; set; }
-        public ICollection <MusteriEtkilesim> MusteriEtkilesim { get; set; }
+        public ICollection<MusteriEtiket> MusteriEtiketleri { get; set; }
+        public ICollection<MusteriEtkilesim> MusteriEtkilesim { get; set; }
         public ICollection<Rezervasyon> Rezervasyonlar { get; set; }
         public ICollection<GeriBildirim> GeriBildirimler { get; set; }
 

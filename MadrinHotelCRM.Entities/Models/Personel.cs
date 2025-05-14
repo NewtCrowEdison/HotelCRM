@@ -18,8 +18,5 @@ namespace MadrinHotelCRM.Entities.Models
         public int TcKimlik{ get; set; }
         public ICollection<MusteriEtkilesim> Etkilesimler { get; set; }
         public ICollection<GenelTakip> GenelTakipler { get; set; }
-
     }
-    
-   
 }

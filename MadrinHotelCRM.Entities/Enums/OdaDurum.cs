@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MadrinHotelCRM.Entities.Enums
 {
-    internal enum OdaDurum
+    public enum OdaDurum
     {
         Bos=1,
         Dolu=2,

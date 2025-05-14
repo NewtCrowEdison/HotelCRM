@@ -14,6 +14,6 @@ namespace MadrinHotelCRM.Entities.Models
         public DateTime BaslangicTarihi { get; set; }
         public DateTime BitisTarihi { get; set; }
         public int IndirimOrani { get; set; }
-        public ICollection<OdaTarife> OdaTarifeleri { get; set; }// OdaTarife ile bire çok ilişki
+        public ICollection<OdaTarife> OdaTarifeleri { get; set; }
     }
 }
