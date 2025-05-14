@@ -7,7 +7,7 @@ using MadrinHotelCRM.DataAccess.Context;
 using MadrinHotelCRM.Entities.Models;
 using MadrinHotelCRM.Repositories.Repositories.Interfaces;
 
-namespace MadrinHotelCRM.Repositories.Repositories.Concrate
+namespace MadrinHotelCRM.Repositories.Repositories.Concrete
 {
     public class UnitOfWork : IUnitOfWork
     {

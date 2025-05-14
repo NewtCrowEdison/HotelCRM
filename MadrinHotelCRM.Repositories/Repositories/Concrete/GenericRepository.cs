@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using MadrinHotelCRM.Repositories.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace MadrinHotelCRM.Repositories.Repositories.Concrate
+namespace MadrinHotelCRM.Repositories.Repositories.Concrete
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {

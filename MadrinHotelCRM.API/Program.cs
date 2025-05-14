@@ -1,5 +1,5 @@
 using MadrinHotelCRM.DataAccess.Context;
-using MadrinHotelCRM.Repositories.Repositories.Concrate;
+using MadrinHotelCRM.Repositories.Repositories.Concrete;
 using MadrinHotelCRM.Repositories.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 

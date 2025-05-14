@@ -12,7 +12,6 @@ namespace MadrinHotelCRM.DataAccess.Context
     public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-
         public DbSet<EkPaket> EkPaketler { get; set; }
         public DbSet<Etiket> Etiketler { get; set; }
         public DbSet<Fatura> Faturalar { get; set; }
