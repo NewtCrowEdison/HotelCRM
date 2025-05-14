@@ -5,13 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MadrinHotelCRM.Entities.Models
+namespace MadrinHotelCRM.DTO.DTOModels
 {
-    public class Etiket
+    internal class EtiketDTO
     {
-        [Key]
         public int EtiketId { get; set; }
+        [Required]
         public string EtiketAdi { get; set; }
-        public ICollection<MusteriEtiket> MusteriEtiketleri { get; set; }
     }
 }

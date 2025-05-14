@@ -1,23 +1,20 @@
-﻿using MadrinHotelCRM.Entities.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MadrinHotelCRM.Entities.Enums;
 
-namespace MadrinHotelCRM.Entities.Models
+namespace MadrinHotelCRM.DTO.DTOModels
 {
-    public class MusteriEtkilesim
+    internal class MusteriEtkilesimDTO
     {
-        [Key]
         public int MusteriEtkilesimId { get; set; }
         public DateTime EtkilesimTarihi { get; set; }
         public KanalTipi Kanal { get; set; }
         public string Notlar { get; set; }
         public int MusteriID { get; set; }
-        public ICollection<Musteri> Musteriler { get; set; }
         public int PersonelId { get; set; }
-        public Personel Personeller { get; set; }
+
     }
 }
