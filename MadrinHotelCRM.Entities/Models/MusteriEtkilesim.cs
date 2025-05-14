@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MadrinHotelCRM.Entities.Models
 {
-    internal class MusteriEtkilesim
+    public class MusteriEtkilesim
     {
         public int Id { get; set; }
         public DateTime EtkilesimTarihi { get; set; }

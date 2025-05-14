@@ -1,3 +1,7 @@
+using MadrinHotelCRM.DataAccess.Context;
+using MadrinHotelCRM.Repositories.Repositories.Concrate;
+using MadrinHotelCRM.Repositories.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace MadrinHotelCRM.API
 {
@@ -9,14 +13,28 @@ namespace MadrinHotelCRM.API
 
             // Add services to the container.
 
+            //  DbContext Ayarý - appsettings.json'dan al
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            //  UnitOfWork ve Repository'leri ekle
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // Service Katmaný Ekle(service katmaný eklendiðinde aktiflenecek)
+           // builder.Services.AddScoped<MusteriService>();
+           // builder.Services.AddScoped<RezervasyonService>(); 
+          
+
+            //  Controller'larý ekle
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+            // Swagger/OpenAPI ekle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            //  Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -26,7 +44,6 @@ namespace MadrinHotelCRM.API
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

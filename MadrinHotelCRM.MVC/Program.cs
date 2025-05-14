@@ -1,22 +1,38 @@
+﻿using MadrinHotelCRM.DataAccess;
+using MadrinHotelCRM.DataAccess.Context;
+using MadrinHotelCRM.Repositories.Repositories.Concrate;
+using MadrinHotelCRM.Repositories.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
+
 namespace MadrinHotelCRM.MVC
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine("3fsan3 Bitch.");
+            Console.WriteLine("Madrin Hotel CRM MVC Başlatılıyor...");
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the containerr.
+            //  DbContext 
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            //  UnitOfWork ve Repositoryleri 
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            //  Service Katmanı  (service eklenince açılacak)
+            // builder.Services.AddScoped<MusteriService>();
+            // builder.Services.AddScoped<RezervasyonService>();
+
+            // MVC Controllerları 
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            //  Exception Handling
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -24,9 +40,9 @@ namespace MadrinHotelCRM.MVC
             app.UseStaticFiles();
 
             app.UseRouting();
-
             app.UseAuthorization();
 
+            //  MVC Routing
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MadrinHotelCRM.Entities.Enums
 {
-    internal enum FaturaDurum
+    public enum FaturaDurum
     {
         Odendi=1,
         Odenmedi=2

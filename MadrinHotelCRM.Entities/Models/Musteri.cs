@@ -9,7 +9,7 @@ using MadrinHotelCRM.Entities.Enums;
 
 namespace MadrinHotelCRM.Entities.Models
 {
-    internal class Musteri
+    public class Musteri
     {
         public int MusteriId { get; set; }
 

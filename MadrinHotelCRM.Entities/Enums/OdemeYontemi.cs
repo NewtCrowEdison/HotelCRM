@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MadrinHotelCRM.Entities.Enums
 {
-    internal enum OdemeYontemi
+    public enum OdemeYontemi
     {
         Nakit=1,
         KrediKarti=2,

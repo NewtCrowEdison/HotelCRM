@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MadrinHotelCRM.Entities.Models
 {
-    internal class GenelTakip
+    public class GenelTakip
     {
         public int Id { get; set; }
         public DateTime YaratilmaTarihi { get; set; }

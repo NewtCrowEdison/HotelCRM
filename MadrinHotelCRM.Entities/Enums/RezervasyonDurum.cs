@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MadrinHotelCRM.Entities.Enums
 {
-    internal enum RezervasyonDurum
+    public enum RezervasyonDurum
     {
         Onaylandı=1,
         Beklemede=2,

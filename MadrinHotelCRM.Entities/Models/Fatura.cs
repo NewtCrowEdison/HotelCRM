@@ -8,7 +8,7 @@ using MadrinHotelCRM.Entities.Enums;
 
 namespace MadrinHotelCRM.Entities.Models
 {
-    internal class Fatura
+    public class Fatura
     {
         public int FaturaId { get; set; }
         public int RezervasyonId { get; set; }

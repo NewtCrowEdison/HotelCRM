@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MadrinHotelCRM.Entities.Models
 {
-    internal class SistemLog
+    public class SistemLog
     {
         public int Id { get; set; }
         public DateTime ZamanDamgasi { get; set; }

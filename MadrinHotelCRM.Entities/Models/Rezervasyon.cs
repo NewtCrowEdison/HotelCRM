@@ -7,7 +7,7 @@ using MadrinHotelCRM.Entities.Enums;
 
 namespace MadrinHotelCRM.Entities.Models
 {
-    internal class Rezervasyon
+    public class Rezervasyon
     {
         public int RezervasyonId { get; set; }
         public DateTime BaslangicTarihi { get; set; }

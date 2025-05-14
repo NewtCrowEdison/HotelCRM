@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MadrinHotelCRM.Entities.Models
 {
-    internal class EkPaket
+    public class EkPaket
     {
         public int PaketId { get; set; }
 

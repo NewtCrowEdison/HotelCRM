@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MadrinHotelCRM.Entities.Models
 {
-    internal class RezervasyonPaket
+    public class RezervasyonPaket
     {
         public int RezervasyonId { get; set; }
         public Rezervasyon Rezervasyon { get; set; }

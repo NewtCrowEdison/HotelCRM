@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MadrinHotelCRM.Entities.Models
 {
-    internal class MusteriEtiket
+    public class MusteriEtiket
     {
         public int MusteriID { get; set; }
         public int EtiketID { get; set; }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MadrinHotelCRM.Entities.Enums
 {
-    internal enum Cinsiyet
+    public enum Cinsiyet
     {
         Kadın=1,
         Erkek=2,

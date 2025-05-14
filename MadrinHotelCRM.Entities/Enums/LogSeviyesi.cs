@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MadrinHotelCRM.Entities.Enums
 {
-    internal enum LogSeviyesi
+    public enum LogSeviyesi
     {
         Bilgi = 1,
         Uyari = 2,

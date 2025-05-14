@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MadrinHotelCRM.Entities.Enums
 {
-    internal enum KanalTipi
+    public enum KanalTipi
     {
         Telefon = 1,
         EPosta = 2,

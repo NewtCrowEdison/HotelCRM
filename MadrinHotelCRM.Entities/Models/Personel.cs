@@ -8,7 +8,7 @@ using MadrinHotelCRM.Entities.Enums;
 
 namespace MadrinHotelCRM.Entities.Models
 {
-    internal class Personel
+    public class Personel
     {
         public int PersonelId { get; set; }
         public string Ad { get; set; }
