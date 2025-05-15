@@ -5,17 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MadrinHotelCRM.Entities.Models
+namespace MadrinHotelCRM.DTO.DTOModels
 {
-    public class EkPaket
+    internal class EkPaketDTO
     {
-        [Key]
         public int EkPaketId { get; set; }
+
         [Required, MaxLength(100)]
         public string PaketAdi { get; set; }
         public string PaketAciklama { get; set; }
         public decimal Fiyat { get; set; }
         public DateTime? OlusturmaTarihi { get; set; }
-        public ICollection<RezervasyonPaket> RezervasyonPaketler { get; set; }
     }
 }

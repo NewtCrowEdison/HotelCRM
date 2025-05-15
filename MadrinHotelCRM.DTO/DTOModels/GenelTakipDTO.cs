@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MadrinHotelCRM.Entities.Models
+namespace MadrinHotelCRM.DTO.DTOModels
 {
-    public class GenelTakip
+    internal class GenelTakipDTO
     {
-        [Key]
         public int GenelTakipId { get; set; }
         public DateTime YaratilmaTarihi { get; set; }
         public DateTime DegistirilmeTarihi { get; set; }
@@ -20,6 +18,6 @@ namespace MadrinHotelCRM.Entities.Models
         public int PersonelId { get; set; }
         public string EskiVeriJson { get; set; }
         public string YeniVeriJson { get; set; }
-        public Personel Personeller { get; set; }
+
     }
 }

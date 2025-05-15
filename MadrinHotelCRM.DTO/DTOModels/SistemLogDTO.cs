@@ -1,16 +1,14 @@
-﻿using MadrinHotelCRM.Entities.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MadrinHotelCRM.Entities.Enums;
 
-namespace MadrinHotelCRM.Entities.Models
+namespace MadrinHotelCRM.DTO.DTOModels
 {
-    public class SistemLog
+    internal class SistemLogDTO
     {
-        [Key]
         public int SistemLogId { get; set; }
         public DateTime ZamanDamgasi { get; set; }
         public LogSeviyesi LogSeviyesi { get; set; }
@@ -20,5 +18,6 @@ namespace MadrinHotelCRM.Entities.Models
         public string HttpYontemi { get; set; }
         public string Url { get; set; }
         public string LogJsonVerisi { get; set; }
+
     }
 }
