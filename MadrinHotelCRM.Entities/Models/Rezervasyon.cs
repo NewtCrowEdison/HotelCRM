@@ -18,8 +18,8 @@ namespace MadrinHotelCRM.Entities.Models
         public Musteri Musteri { get; set; }
 
         
-        public int OdaId { get; set; }
-        public Oda Oda { get; set; }
+        public int OdaTipiId { get; set; }
+        public OdaTipi OdaTipi { get; set; }
         public int TarifeId { get; set; }
         public Tarife Tarife { get; set; }
         public DateTime OlusturmaTarihi { get; set; }
