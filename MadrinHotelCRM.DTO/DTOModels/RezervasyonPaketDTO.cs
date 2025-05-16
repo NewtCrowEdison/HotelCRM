@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MadrinHotelCRM.DTO.DTOModels
 {
-    internal class RezervasyonPaketDTO
+    public class RezervasyonPaketDTO
     {
         public int RezervasyonId { get; set; }
         public int PaketId { get; set; }

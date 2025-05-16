@@ -7,7 +7,7 @@ using MadrinHotelCRM.Entities.Enums;
 
 namespace MadrinHotelCRM.DTO.DTOModels
 {
-    internal class FaturaDTO
+    public class FaturaDTO
     {
         public int FaturaId { get; set; }
         public int RezervasyonId { get; set; }

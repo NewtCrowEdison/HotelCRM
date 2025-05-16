@@ -17,4 +17,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MadrinHotelCRM.Entities\MadrinHotelCRM.Entities.csproj" />
+    <ProjectReference Include="..\MadrinHotelCRM.DTO\MadrinHotelCRM.DTO.csproj" />
+  </ItemGroup>
+
 </Project>

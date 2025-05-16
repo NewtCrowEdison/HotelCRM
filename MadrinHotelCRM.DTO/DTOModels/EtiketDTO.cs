@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MadrinHotelCRM.DTO.DTOModels
 {
-    internal class EtiketDTO
+    public class EtiketDTO
     {
         public int EtiketId { get; set; }
         [Required]

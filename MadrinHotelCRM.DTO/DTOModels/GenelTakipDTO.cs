@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MadrinHotelCRM.DTO.DTOModels
 {
-    internal class GenelTakipDTO
+    public class GenelTakipDTO
     {
         public int GenelTakipId { get; set; }
         public DateTime YaratilmaTarihi { get; set; }

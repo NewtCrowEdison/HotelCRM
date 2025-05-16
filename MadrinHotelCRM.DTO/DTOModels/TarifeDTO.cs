@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MadrinHotelCRM.DTO.DTOModels
 {
-    internal class TarifeDTO
+    public class TarifeDTO
     {
         public int TarifeId { get; set; }
         public string TarifeAdi { get; set; }

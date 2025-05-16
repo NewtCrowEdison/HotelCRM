@@ -8,7 +8,7 @@ using MadrinHotelCRM.Entities.Enums;
 
 namespace MadrinHotelCRM.DTO.DTOModels
 {
-    internal class MusteriDTO
+    public class MusteriDTO
     {
         public int MusteriId { get; set; }
         [MaxLength(11)]
