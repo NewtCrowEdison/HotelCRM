@@ -234,9 +234,9 @@ namespace MadrinHotelCRM.DataAccess.Context
                  .OnDelete(DeleteBehavior.Restrict);
 
    
-                entity.HasOne(r => r.OdaTipi)
+                entity.HasOne(r => r.Oda)
                  .WithMany() 
-                 .HasForeignKey(r => r.OdaTipiId)
+                 .HasForeignKey(r => r.OdaId)
                  .OnDelete(DeleteBehavior.Restrict);
 
    
