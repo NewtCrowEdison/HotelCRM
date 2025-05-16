@@ -101,29 +101,32 @@ namespace MadrinHotelCRM.DataAccess.Context
             });
 
             modelBuilder.Entity<Musteri>(entity =>
-{
-    entity.HasKey(m => m.MusteriId);
+            {
+                 entity.HasKey(m => m.MusteriId);
 
-    entity.HasMany(m => m.MusteriEtiketleri)
-          .WithOne(me => me.Musteri)
-          .HasForeignKey(me => me.MusteriID)
-          .OnDelete(DeleteBehavior.Cascade);
+                  entity.HasMany(m => m.MusteriEtiketleri)
+                   .WithOne(me => me.Musteri)
+                   .HasForeignKey(me => me.MusteriID)
+                   .OnDelete(DeleteBehavior.Cascade);
 
-   // entity.HasMany(m => m.MusteriEtkilesim)
-       //   .WithMany(me => me.Musteriler)
-        //  .HasForeignKey(me => me.MusteriID)
-         // .OnDelete(DeleteBehavior.NoAction);
+                 entity.HasMany(m => m.MusteriEtkilesim)
+                  .WithOne(me => me.Musteriler)
+                  .HasForeignKey(me => me.MusteriEtkilesimId)
+                  .OnDelete(DeleteBehavior.NoAction);
+                 
 
-    entity.HasMany(m => m.Rezervasyonlar)
-          .WithOne(r => r.Musteri)
-          .HasForeignKey(r => r.MusteriId)
-          .OnDelete(DeleteBehavior.Cascade);
 
-    entity.HasMany(m => m.GeriBildirimler)
-          .WithOne(gb => gb.Musteri)
-          .HasForeignKey(gb => gb.MusteriId)
-          .OnDelete(DeleteBehavior.Cascade);
-});
+
+                 entity.HasMany(m => m.Rezervasyonlar)
+                  .WithOne(r => r.Musteri)
+                  .HasForeignKey(r => r.MusteriId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+                  entity.HasMany(m => m.GeriBildirimler)
+                   .WithOne(gb => gb.Musteri)
+                   .HasForeignKey(gb => gb.MusteriId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
 
 
             modelBuilder.Entity<MusteriEtiket>(entity =>
@@ -149,8 +152,10 @@ namespace MadrinHotelCRM.DataAccess.Context
                     .OnDelete(DeleteBehavior.Restrict);
 
 
-                    entity.HasMany(me => me.Musteriler)
-                   .WithMany(m => m.MusteriEtkilesim);
+                    entity.HasOne(me => me.Musteriler)
+                      .WithMany(m => m.MusteriEtkilesim)
+                      .HasForeignKey(me => me.MusteriEtkilesimId)
+                      .OnDelete(DeleteBehavior.NoAction);
 
                 });
 
