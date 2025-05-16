@@ -46,7 +46,7 @@ namespace MadrinHotelCRM.DataAccess.Context
 
             modelBuilder.Entity<EkPaket>(entity =>
            {
-               entity.HasKey(e => e.PaketId);
+               entity.HasKey(e => e.EkPaketId);
 
                entity.HasMany(e => e.RezervasyonPaketler)
                 .WithOne(rp => rp.Paket)
@@ -56,7 +56,7 @@ namespace MadrinHotelCRM.DataAccess.Context
 
             modelBuilder.Entity<Etiket>(entity =>
             {
-                entity.HasKey(e => e.Id);
+                entity.HasKey(e => e.EtiketId);
 
                 entity.HasMany(e => e.MusteriEtiketleri)
                 .WithOne(me => me.Etiket)
@@ -82,7 +82,7 @@ namespace MadrinHotelCRM.DataAccess.Context
 
             modelBuilder.Entity<GenelTakip>(entity =>
             {
-                entity.HasKey(g => g.Id);
+                entity.HasKey(g => g.GenelTakipId);
 
                 entity.HasOne(g => g.Personel)
                 .WithMany(p => p.GenelTakipler)
@@ -186,7 +186,7 @@ namespace MadrinHotelCRM.DataAccess.Context
 
             modelBuilder.Entity<OdaTipi>(entity =>
             {
-                entity.HasKey(ot => ot.Id);
+                entity.HasKey(ot => ot.OdaTipiId);
 
                 entity.HasMany(ot => ot.Odalar)
                     .WithOne(o => o.OdaTipi)
@@ -278,7 +278,7 @@ namespace MadrinHotelCRM.DataAccess.Context
 
             modelBuilder.Entity<Tarife>(entity =>
             {
-                 entity.HasKey(t => t.Id);
+                 entity.HasKey(t => t.TarifeId);
 
                  entity.HasMany(t => t.OdaTarifeleri)
                    .WithOne(ot => ot.Tarife)
