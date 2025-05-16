@@ -17,9 +17,9 @@ namespace MadrinHotelCRM.Entities.Models
         public int MusteriId { get; set; }
         public Musteri Musteri { get; set; }
 
-        // MÜŞTERİ ODA  SEÇMEZ ODA TİPİ SEÇER ODA TİPİ SEÇİLDİKÇE ODALARDAN SEÇİLEN TİPTEKİ ODA SAYISI EKSİLTİLİR
-        public int OdaTipiId { get; set; }
-        public OdaTipi OdaTipi { get; set; }
+        
+        public int OdaId { get; set; }
+        public Oda Oda { get; set; }
         public int TarifeId { get; set; }
         public Tarife Tarife { get; set; }
         public DateTime OlusturmaTarihi { get; set; }
