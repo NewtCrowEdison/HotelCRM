@@ -10,10 +10,20 @@ namespace MadrinHotelCRM.DTO.DTOModels
     internal class PersonelDTO
     {
         public int PersonelId { get; set; }
+
+        [Required, MaxLength(50)]
         public string Ad { get; set; }
+
+        [Required, MaxLength(50)]
         public string Soyad { get; set; }
+
+        [Required, EmailAddress]
         public string Email { get; set; }
+
+        [Required, MaxLength(20), Phone]
         public string Telefon { get; set; }
+
+        [Required, MaxLength(11)]
         public string TcKimlik { get; set; }
     }
 }
