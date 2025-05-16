@@ -16,7 +16,7 @@ namespace MadrinHotelCRM.Entities.Models
         public KanalTipi Kanal { get; set; }
         public string Notlar { get; set; }
         public int MusteriID { get; set; }
-        public ICollection<Musteri> Musteriler { get; set; }
+        public Musteri Musteriler { get; set; }
         public int PersonelId { get; set; }
         public Personel Personeller { get; set; }
     }
