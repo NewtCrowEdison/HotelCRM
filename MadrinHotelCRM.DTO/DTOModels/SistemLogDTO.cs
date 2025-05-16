@@ -14,7 +14,7 @@ namespace MadrinHotelCRM.DTO.DTOModels
         public LogSeviyesi LogSeviyesi { get; set; }
         public string Kaynak { get; set; }
         public string Mesaj { get; set; }
-        public string Istisna { get; set; }
+        public string? Istisna { get; set; }
         public string HttpYontemi { get; set; }
         public string Url { get; set; }
         public string LogJsonVerisi { get; set; }

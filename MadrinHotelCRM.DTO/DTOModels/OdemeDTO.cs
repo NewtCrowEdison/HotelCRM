@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MadrinHotelCRM.Entities.Enums;
 
 namespace MadrinHotelCRM.DTO.DTOModels
 {
@@ -12,7 +13,7 @@ namespace MadrinHotelCRM.DTO.DTOModels
         public int FaturaId { get; set; }
         public DateTime OdemeTarihi { get; set; }
         public decimal ToplamTutar { get; set; }
-        public string OdemeYontemi { get; set; }
-        public int IslemId { get; set; }
+        public OdemeYontemi OdemeYontemi { get; set; }  // Enum olarak
+        public int? IslemId { get; set; }  // Islem referansı nullable yapılabilir
     }
 }

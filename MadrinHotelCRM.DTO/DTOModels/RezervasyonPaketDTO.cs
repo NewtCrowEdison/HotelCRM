@@ -10,6 +10,6 @@ namespace MadrinHotelCRM.DTO.DTOModels
     {
         public int RezervasyonId { get; set; }
         public int PaketId { get; set; }
-        public int Adet { get; set; }
+        public int? Adet { get; set; }
     }
 }
