@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MadrinHotelCRM.DTO.DTOModels
 {
-    internal class PersonelDTO
+    public class PersonelDTO
     {
         public int PersonelId { get; set; }
 
