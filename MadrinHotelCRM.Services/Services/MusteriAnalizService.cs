@@ -7,7 +7,7 @@ using MadrinHotelCRM.Services.Interfaces;
 
 namespace MadrinHotelCRM.Services.Services
 {
-    public class MusteriAnalizServis : IMusteriAnalizServis
+    public class MusteriAnalizService : IMusteriAnalizService
     {
 
     }

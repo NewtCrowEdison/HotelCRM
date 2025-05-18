@@ -4,6 +4,8 @@ using MadrinHotelCRM.Repositories.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using MadrinHotelCRM.API.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity;
+using MadrinHotelCRM.Services.Interfaces;
+using MadrinHotelCRM.Services.Services;
 
 namespace MadrinHotelCRM.API
 {
@@ -15,7 +17,7 @@ namespace MadrinHotelCRM.API
 
             // Add services to the container.
 
-            //  DbContext Ayar� - appsettings.json'dan al
+            //  DbContext Ayarı - appsettings.json'dan al
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -24,10 +26,26 @@ namespace MadrinHotelCRM.API
             //  UnitOfWork ve Repository'leri ekle
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            // Service Katman� Ekle(service katman� eklendi�inde aktiflenecek)
-           // builder.Services.AddScoped<MusteriService>();
-           // builder.Services.AddScoped<RezervasyonService>(); 
-          
+            // Service Katmanı Ekle(service katmanı eklendiğinde aktiflenecek)
+            builder.Services.AddScoped<IEtiketService, EtiketService>();
+            builder.Services.AddScoped<IEtkilesimService, EtkilesimService>();
+            builder.Services.AddScoped<IFaturaService, FaturaService>();
+            builder.Services.AddScoped<IGenelTakipService, GenelTakipService>();
+            builder.Services.AddScoped<IGeriBildirimService, GeriBildirimService>();
+            builder.Services.AddScoped<ILogService, LogService>();
+            builder.Services.AddScoped<IMusteriAnalizService, MusteriAnalizService>();
+            builder.Services.AddScoped<IMusteriService, MusteriService>();
+            builder.Services.AddScoped<IOdaDurumService, OdaDurumService>();
+            builder.Services.AddScoped<IOdaService, OdaService>();
+            builder.Services.AddScoped<IOdaTipiService, OdaTipiService>();
+            builder.Services.AddScoped<IOdemeService, OdemeService>();
+            builder.Services.AddScoped<IPaketService, PaketService>();
+            builder.Services.AddScoped<IPersonelService, PersonelService>();
+            builder.Services.AddScoped<IRaporlamaService, RaporlamaService>();
+            builder.Services.AddScoped<IRezervasyonService, RezervasyonService>();
+            builder.Services.AddScoped<IRezervasyonYonetimService, RezervasyonYonetimService>();
+            builder.Services.AddScoped<ITarifeService, TarifeService>();
+
 
             //  Controller'lar� ekle
             builder.Services.AddControllers();
