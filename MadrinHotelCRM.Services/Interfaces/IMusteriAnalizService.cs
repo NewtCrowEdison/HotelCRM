@@ -9,7 +9,7 @@ namespace MadrinHotelCRM.Services.Interfaces
     /// <summary>
     /// Etiket, etkileşim, geri bildirim verilerinden analiz çıkarmak için kullanılacak servis
     /// </summary>
-    public interface IMusteriAnalizServis
+    public interface IMusteriAnalizService
     {
 
     }
