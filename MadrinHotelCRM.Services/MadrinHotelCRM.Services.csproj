@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MadrinHotelCRM.DTO\MadrinHotelCRM.DTO.csproj" />
+    <ProjectReference Include="..\MadrinHotelCRM.Repositories\MadrinHotelCRM.Repositories.csproj" />
   </ItemGroup>  
 
 </Project>
