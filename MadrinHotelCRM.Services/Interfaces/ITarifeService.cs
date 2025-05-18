@@ -24,6 +24,9 @@ namespace MadrinHotelCRM.Services.Interfaces
         Task<TarifeDTO> ApplyDiscountAsync(int tarifeId, decimal discountRate);
         Task<IEnumerable<TarifeDTO>> GetDiscountedTariffsAsync();
         Task<IEnumerable<TarifeDTO>> GetRoomTariffsAsync(int odaId);
+        
+
+        
     }
 
 }

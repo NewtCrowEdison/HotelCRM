@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using MadrinHotelCRM.Repositories.Repositories.Interfaces;
@@ -24,6 +25,9 @@ namespace MadrinHotelCRM.Repositories.Repositories.Concrete
         {
             return await _dbSet.FindAsync(id);
         }
+
+      
+       
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
