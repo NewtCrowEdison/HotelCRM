@@ -1,7 +1,8 @@
-using MadrinHotelCRM.Business.Services;
+
 using MadrinHotelCRM.DTO.DTOModels;
 using MadrinHotelCRM.Entities.Models;
-using MadrinHotelCRM.Services.Interfaces;
+
+using MadrinHotelCRM.Services.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MadrinHotelCRM.API.Controllers
