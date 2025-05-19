@@ -21,10 +21,20 @@ namespace MadrinHotelCRM.API
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            // Identity
             builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppDbContext>();
+
+            // AutoMapper
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            // DbContext olarak AppDbContext
+            builder.Services.AddScoped<DbContext, AppDbContext>();
 
             //  UnitOfWork ve Repository'leri ekle
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // Generic repository DI kaydı
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             // Service Katmanı Ekle(service katmanı eklendiğinde aktiflenecek)
             builder.Services.AddScoped<IEtiketService, EtiketService>();
