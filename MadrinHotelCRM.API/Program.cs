@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using MadrinHotelCRM.Services.Interfaces;
 using MadrinHotelCRM.Services.Services;
 
+
 namespace MadrinHotelCRM.API
 {
     public class Program
@@ -55,6 +56,9 @@ namespace MadrinHotelCRM.API
             builder.Services.AddScoped<IRezervasyonService, RezervasyonService>();
             builder.Services.AddScoped<IRezervasyonYonetimService, RezervasyonYonetimService>();
             builder.Services.AddScoped<ITarifeService, TarifeService>();
+            builder.Services.AddScoped<IOdaTarifeService, OdaTarifeService>();
+            
+           
 
 
             //  Controller'ları ekle
