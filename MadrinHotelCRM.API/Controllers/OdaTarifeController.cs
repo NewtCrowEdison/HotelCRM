@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MadrinHotelCRM.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class OdaTarifeController : ControllerBase
     {
         private readonly IOdaTarifeService _odaTarifeService;
@@ -26,8 +26,8 @@ namespace MadrinHotelCRM.API.Controllers
             return Ok(odaTarifeleri);
         }
 
-        // GET: api/OdaTarife/details/odaId/tarifeId
-        [HttpGet("details/{odaId}/{tarifeId}")]
+        // GET: api/OdaTarife/Details/5/3
+        [HttpGet("Details/{odaId}/{tarifeId}")]
         public async Task<IActionResult> GetById(int odaId, int tarifeId)
         {
             var odaTarife = await _odaTarifeService.GetDetailsAsync(odaId, tarifeId);
@@ -48,7 +48,7 @@ namespace MadrinHotelCRM.API.Controllers
             return CreatedAtAction(nameof(GetById), new { odaId = odaTarifeDTO.OdaId, tarifeId = odaTarifeDTO.TarifeId }, odaTarifeDTO);
         }
 
-        // DELETE: api/OdaTarife/odaId/tarifeId
+        // DELETE: api/OdaTarife/5/3
         [HttpDelete("{odaId}/{tarifeId}")]
         public async Task<IActionResult> Delete(int odaId, int tarifeId)
         {
@@ -59,8 +59,8 @@ namespace MadrinHotelCRM.API.Controllers
             return NoContent();
         }
 
-        // GET: api/OdaTarife/by-oda/5
-        [HttpGet("by-oda/{odaId}")]
+        // GET: api/OdaTarife/ByOdaId/5
+        [HttpGet("ByOdaId/{odaId}")]
         public async Task<IActionResult> GetByOdaId(int odaId)
         {
             var odaTarifeleri = await _odaTarifeService.GetByOdaIdAsync(odaId);
@@ -70,8 +70,8 @@ namespace MadrinHotelCRM.API.Controllers
             return Ok(odaTarifeleri);
         }
 
-        // GET: api/OdaTarife/by-tarife/5
-        [HttpGet("by-tarife/{tarifeId}")]
+        // GET: api/OdaTarife/ByTarifeId/3
+        [HttpGet("ByTarifeId/{tarifeId}")]
         public async Task<IActionResult> GetByTarifeId(int tarifeId)
         {
             var odaTarifeleri = await _odaTarifeService.GetByTarifeIdAsync(tarifeId);
@@ -80,5 +80,17 @@ namespace MadrinHotelCRM.API.Controllers
 
             return Ok(odaTarifeleri);
         }
+
+        // GET: api/OdaTarife/ByOdaAndTarife/5/3
+        [HttpGet("ByOdaAndTarife/{odaId}/{tarifeId}")]
+        public async Task<IActionResult> GetByOdaIdAndTarifeId(int odaId, int tarifeId)
+        {
+            var odaTarifeleri = await _odaTarifeService.GetDetailsAsync(odaId, tarifeId);
+            if (odaTarifeleri == null)
+                return NotFound();
+
+            return Ok(odaTarifeleri);
+        }
     }
+
 }
