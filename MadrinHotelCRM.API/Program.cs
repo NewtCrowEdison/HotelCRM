@@ -58,10 +58,7 @@ namespace MadrinHotelCRM.API
             builder.Services.AddScoped<ITarifeService, TarifeService>();
             builder.Services.AddScoped<IOdaTarifeService, OdaTarifeService>();
             
-           
-
-
-            //  Controller'ları ekle
+            //  Controller'lari ekle
             builder.Services.AddControllers();
 
             // Swagger/OpenAPI ekle
