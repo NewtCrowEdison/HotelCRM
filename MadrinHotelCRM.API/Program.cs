@@ -6,6 +6,8 @@ using MadrinHotelCRM.API.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity;
 using MadrinHotelCRM.Services.Interfaces;
 using MadrinHotelCRM.Services.Services;
+//using AutoMapper;                             // ← AutoMapper
+using MadrinHotelCRM.Business.Mapp;          // ← MapProfiles’in namespace’i
 
 
 namespace MadrinHotelCRM.API
@@ -25,8 +27,8 @@ namespace MadrinHotelCRM.API
             // Identity
             builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppDbContext>();
 
-            // AutoMapper
-            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            // 3) AutoMapper: MapProfiles sınıfını kullanacak
+            builder.Services.AddAutoMapper(typeof(MapProfiles));
 
             // DbContext olarak AppDbContext
             builder.Services.AddScoped<DbContext, AppDbContext>();

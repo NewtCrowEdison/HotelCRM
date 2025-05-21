@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MadrinHotelCRM.Business\MadrinHotelCRM.Business.csproj" />
     <ProjectReference Include="..\MadrinHotelCRM.DataAccess\MadrinHotelCRM.DataAccess.csproj" />
     <ProjectReference Include="..\MadrinHotelCRM.Entities\MadrinHotelCRM.Entities.csproj" />
     <ProjectReference Include="..\MadrinHotelCRM.Repositories\MadrinHotelCRM.Repositories.csproj" />
