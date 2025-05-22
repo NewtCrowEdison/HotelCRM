@@ -27,11 +27,8 @@ namespace MadrinHotelCRM.API
             // Identity
             builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppDbContext>();
 
-            // 3) AutoMapper: MapProfiles sınıfını kullanacak
+            // AutoMapper: MapProfiles sınıfını kullanacak
             builder.Services.AddAutoMapper(typeof(MapProfiles));
-
-            // DbContext olarak AppDbContext
-            builder.Services.AddScoped<DbContext, AppDbContext>();
 
             //  UnitOfWork ve Repository'leri ekle
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
