@@ -6,10 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MadrinHotelCRM.Entities.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace MadrinHotelCRM.DataAccess.Context
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<AppUser,IdentityRole<string>,string>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         public DbSet<EkPaket> EkPaketler { get; set; }
@@ -34,6 +36,26 @@ namespace MadrinHotelCRM.DataAccess.Context
         {
             base.OnModelCreating(modelBuilder);
 
+            var adminRole = new IdentityRole<string>
+            {
+                Id = "1",
+                Name="Admin",
+                NormalizedName="ADMIN"
+            };
+            var personelRole = new IdentityRole<string>
+            {
+                Id = "2",
+                Name = "Personel",
+                NormalizedName = "PERSONEL"
+            };
+
+            var musteriRole = new IdentityRole<string>
+            {
+                Id = "3",
+                Name = "Musteri",
+                NormalizedName = "MUSTERI"
+            };
+            modelBuilder.Entity<IdentityRole<string>>().HasData(adminRole, personelRole, musteriRole);
             // Composite Key Tanımlamaları
             modelBuilder.Entity<MusteriEtiket>()
                 .HasKey(me => new { me.MusteriID, me.EtiketID });

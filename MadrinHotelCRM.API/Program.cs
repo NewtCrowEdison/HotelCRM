@@ -2,8 +2,6 @@ using MadrinHotelCRM.DataAccess.Context;
 using MadrinHotelCRM.Repositories.Repositories.Concrete;
 using MadrinHotelCRM.Repositories.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using MadrinHotelCRM.API.Areas.Identity.Data;
-using Microsoft.AspNetCore.Identity;
 using MadrinHotelCRM.Services.Interfaces;
 using MadrinHotelCRM.Services.Services;
 //using AutoMapper;                             // ← AutoMapper
@@ -23,9 +21,6 @@ namespace MadrinHotelCRM.API
             //  DbContext Ayarı - appsettings.json'dan al
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-            // Identity
-            builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppDbContext>();
 
             // 3) AutoMapper: MapProfiles sınıfını kullanacak
             builder.Services.AddAutoMapper(typeof(MapProfiles));

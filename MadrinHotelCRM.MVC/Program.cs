@@ -1,8 +1,10 @@
-﻿using MadrinHotelCRM.DataAccess;
+using MadrinHotelCRM.DataAccess;
 using MadrinHotelCRM.DataAccess.Context;
 using MadrinHotelCRM.Repositories.Repositories.Concrete;
 using MadrinHotelCRM.Repositories.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using MadrinHotelCRM.Entities.Models;
 
 namespace MadrinHotelCRM.MVC
 {
@@ -16,6 +18,19 @@ namespace MadrinHotelCRM.MVC
             //  DbContext 
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            //builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<MadrinHotelCRMMVCContext>();
+
+            // Identity
+            builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddRoles<IdentityRole<string>>().AddEntityFrameworkStores<AppDbContext>();
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("Personel", policy => policy.RequireRole("Personel"));
+                options.AddPolicy("Musteri", policy => policy.RequireRole("Musteri"));
+            });
+
 
             //  UnitOfWork ve Repositoryleri 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -40,9 +55,16 @@ namespace MadrinHotelCRM.MVC
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.MapRazorPages();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             //  MVC Routing
+            app.MapControllerRoute(
+            name: "areas",
+            pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
