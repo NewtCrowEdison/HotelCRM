@@ -15,11 +15,11 @@ namespace MadrinHotelCRM.Services.Interfaces
     /// </summary>
     public interface IGeriBildirimService
     {
-        Task<GeriBildirimDTO> GetByIdAsync(int id);
-        Task<IEnumerable<GeriBildirimDTO>> GetAllAsync();
-        Task<IEnumerable<GeriBildirimDTO>> FindAsync(Expression<Func<GeriBildirim, bool>> predicate);
-        Task<GeriBildirimDTO> CreateAsync(GeriBildirimDTO dto);
-        Task<GeriBildirimDTO> UpdateAsync(GeriBildirimDTO dto);
-        Task<bool> DeleteAsync(int id);
+        Task<GeriBildirimDTO> GetByIdAsync(int id); // eşleşen Id deki geri bildirimi getirir
+        Task<IEnumerable<GeriBildirimDTO>> GetAllAsync(); // bütün geri bildirimleri listeler
+        Task<IEnumerable<GeriBildirimDTO>> FindAsync(Expression<Func<GeriBildirim, bool>> filtre); // filtre koşuluna uyan tüm geri bildirimleri listeler
+        Task<GeriBildirimDTO> CreateAsync(GeriBildirimDTO dto); // yeni bir geri bilriim oluşturmayı sağlar
+        Task<GeriBildirimDTO> UpdateAsync(GeriBildirimDTO dto); // mevcut bir ger bildirimi güncellemeyi sağlar
+        Task<bool> DeleteAsync(int id); // seçilen Id li geri bildirim kaydını silmemizi sağlar
     }
 }

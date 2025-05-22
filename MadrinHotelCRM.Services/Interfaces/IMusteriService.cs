@@ -16,12 +16,12 @@ namespace MadrinHotelCRM.Services.Interfaces
     public interface IMusteriService
     {
         // Temel CRUD operasyonları
-        Task<MusteriDTO> GetByIdAsync(int id);
-        Task<IEnumerable<MusteriDTO>> GetAllAsync();
-        Task<IEnumerable<MusteriDTO>> FindAsync(Expression<Func<Musteri, bool>> predicate);
-        Task<MusteriDTO> CreateAsync(MusteriDTO dto);
-        Task<MusteriDTO> UpdateAsync(MusteriDTO dto);
-        Task<bool> DeleteAsync(int id);
+        Task<MusteriDTO> GetByIdAsync(int id); // Id ile eşleşen müşteriyi getirir
+        Task<IEnumerable<MusteriDTO>> GetAllAsync(); // bütün müşterileri listeler 
+        Task<IEnumerable<MusteriDTO>> FindAsync(Expression<Func<Musteri, bool>> predicate); // koşula uyan müşteriyi gettirir
+        Task<MusteriDTO> CreateAsync(MusteriDTO dto); // yeni müşteri oluşturmak için
+        Task<MusteriDTO> UpdateAsync(MusteriDTO dto); // Müşteriyi güncellemek için
+        Task<bool> DeleteAsync(int id); // seçilen müşteriyi silmek için 
 
 
         // Müşteri–Etiket ilişkisi:

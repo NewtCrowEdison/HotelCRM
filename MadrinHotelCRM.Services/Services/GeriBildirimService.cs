@@ -15,8 +15,8 @@ namespace MadrinHotelCRM.Services.Services
     public class GeriBildirimService : IGeriBildirimService
     {
         private readonly IGenericRepository<GeriBildirim> _geriBildirimRepo;
-        private readonly IMapper _mapper;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper; // Dto - Entity eşlemelerini gerçekleştirmek için
+        private readonly IUnitOfWork _unitOfWork; // Değişiklikleri toplu kaydetmekiçin
 
         public GeriBildirimService(IGenericRepository<GeriBildirim> geriBildirimRepo,IMapper mapper,IUnitOfWork unitOfWork)
         {
@@ -25,48 +25,56 @@ namespace MadrinHotelCRM.Services.Services
             _unitOfWork = unitOfWork;
         }
 
+        // geri bildirim oluşturmak için 
         public async Task<GeriBildirimDTO> CreateAsync(GeriBildirimDTO dto)
         {
-            var entity = _mapper.Map<GeriBildirim>(dto);
-            await _geriBildirimRepo.AddAsync(entity);
-            await _unitOfWork.CommitAsync();
-            return _mapper.Map<GeriBildirimDTO>(entity);
+            var entity = _mapper.Map<GeriBildirim>(dto); // Dto yu entity e çeviririz
+            await _geriBildirimRepo.AddAsync(entity); // Yeni kaydı ekleriz
+            await _unitOfWork.CommitAsync(); // veritabanına kaydederiz
+            return _mapper.Map<GeriBildirimDTO>(entity); // oluşturulan entitiy i tekrar dto ya döndürürüz
         }
 
+        // Silme işlemi için :
         public async Task<bool> DeleteAsync(int id)
         {
-            var entity = await _geriBildirimRepo.GetByIdAsync(id);
-            if (entity == null) return false;
-
-            _geriBildirimRepo.Delete(entity);
-            await _unitOfWork.CommitAsync();
+            var entity = await _geriBildirimRepo.GetByIdAsync(id); // eşleşen ID deki kaydı çekeriz
+            if (entity == null)
+            {
+                return false;
+            } // o Id de kayıt yok ise false döner 
+            _geriBildirimRepo.Delete(entity); // eşleşme var ise sileriz
+            await _unitOfWork.CommitAsync(); // veritabanının son halini kaydederiz
             return true;
         }
 
-        public async Task<IEnumerable<GeriBildirimDTO>> FindAsync(Expression<Func<GeriBildirim, bool>> predicate)
+        // koşula uyan geribiidirm kayıtlarını listelemek için 
+        public async Task<IEnumerable<GeriBildirimDTO>> FindAsync(Expression<Func<GeriBildirim, bool>> filtre)
         {
-            var entities = await _geriBildirimRepo.FindAsync(predicate);
-            return _mapper.Map<IEnumerable<GeriBildirimDTO>>(entities);
+            var entities = await _geriBildirimRepo.FindAsync(filtre); // koşula uyan kayıtları buluruz
+            return _mapper.Map<IEnumerable<GeriBildirimDTO>>(entities); // DTO listesi olarak döneriz
         }
-
+        
+        // geri bildirim kayıtlarını lstelemek için 
         public async Task<IEnumerable<GeriBildirimDTO>> GetAllAsync()
         {
             var entities = await _geriBildirimRepo.GetAllAsync();
             return _mapper.Map<IEnumerable<GeriBildirimDTO>>(entities);
         }
 
+        // id ile eşleşen kayıtları listelemek için
         public async Task<GeriBildirimDTO> GetByIdAsync(int id)
         {
             var entity = await _geriBildirimRepo.GetByIdAsync(id);
             return _mapper.Map<GeriBildirimDTO>(entity);
         }
 
+        // güncelleme yapabilmek iiçin ;
         public async Task<GeriBildirimDTO> UpdateAsync(GeriBildirimDTO dto)
-        {
-            var entity = _mapper.Map<GeriBildirim>(dto);
-            _geriBildirimRepo.Update(entity);
-            await _unitOfWork.CommitAsync();
-            return _mapper.Map<GeriBildirimDTO>(entity);
+        { 
+            var entity = _mapper.Map<GeriBildirim>(dto); // DTO yu Entity e çevirmek için
+            _geriBildirimRepo.Update(entity); // Repoda güncelleme işlemini gerçekleştirirz
+            await _unitOfWork.CommitAsync(); // veritabanına kaydederiz
+            return _mapper.Map<GeriBildirimDTO>(entity); // entity i tekrar dto ya çevirir döneriz
         }
     }
 }

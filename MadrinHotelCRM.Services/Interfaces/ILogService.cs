@@ -15,11 +15,11 @@ namespace MadrinHotelCRM.Services.Interfaces
     /// </summary>
     public interface ILogService
     {
-        Task<SistemLogDTO> GetByIdAsync(int id);
-        Task<IEnumerable<SistemLogDTO>> GetAllAsync();
-        Task<IEnumerable<SistemLogDTO>> FindAsync(Expression<Func<SistemLog, bool>> predicate);
-        Task<SistemLogDTO> CreateAsync(SistemLogDTO dto);
-        Task<SistemLogDTO> UpdateAsync(SistemLogDTO dto);
-        Task<bool> DeleteAsync(int id);
+        Task<SistemLogDTO> GetByIdAsync(int id); // belirtilen id deki logu getirir
+        Task<IEnumerable<SistemLogDTO>> GetAllAsync(); // tüm logları getirir
+        Task<IEnumerable<SistemLogDTO>> FindAsync(Expression<Func<SistemLog, bool>> filtre); // filtreye uyan logları çekmemizi sağlar
+        Task<SistemLogDTO> CreateAsync(SistemLogDTO dto); //yeni log kaydı oluşturmayı sağlar
+        Task<SistemLogDTO> UpdateAsync(SistemLogDTO dto); // kayıtlı log da güncelleme yapmayı sağlar
+        Task<bool> DeleteAsync(int id); // eşleşen Id deki log kaydını silmemizi sağlar 
     }
 }
