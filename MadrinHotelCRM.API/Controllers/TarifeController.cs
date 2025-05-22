@@ -14,9 +14,9 @@ namespace MadrinHotelCRM.API.Controllers
         public TarifeController(ITarifeService tarifeService)
         {
             _tarifeService = tarifeService;
-        }
+        } // DI ile ITarifeSeervice alıyoruz ve servis metotlarına erişebiliyoruz
 
-        [HttpGet]
+        [HttpGet] // Tüm tarifeleri listelememizi sağlar 
         public async Task<IActionResult> GetAll()
         {
             var result = await _tarifeService.GetAllAsync();
@@ -28,7 +28,10 @@ namespace MadrinHotelCRM.API.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             var dto = await _tarifeService.GetByIdAsync(id);
-            if (dto == null) return NotFound();
+            if (dto == null)
+            {
+                return NotFound();
+            }
             return Ok(dto);
         }
 
@@ -36,8 +39,12 @@ namespace MadrinHotelCRM.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] TarifeDTO dto)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) // eksik veya yanlış veri varsa 400 bad request döner
+            {
+                return BadRequest(ModelState);
+            }
             var created = await _tarifeService.CreateAsync(dto);
+
             return CreatedAtAction(nameof(GetById),
                                    new { id = created.TarifeId },
                                    created);
@@ -45,6 +52,7 @@ namespace MadrinHotelCRM.API.Controllers
 
      
         [HttpPut("{id}")]
+        // Güncelleme
         public async Task<IActionResult> Update(int id, [FromBody] TarifeDTO dto)
         {
             if (id != dto.TarifeId) return BadRequest("ID uyuşmuyor!");

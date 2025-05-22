@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -26,7 +27,8 @@ namespace MadrinHotelCRM.Services.Services
         private readonly IGenericRepository<MusteriEtkilesim> _interactionRepo;
 
         private readonly IMapper _mapper;
-            private readonly IUnitOfWork _unitOfWork;
+        
+        private readonly IUnitOfWork _unitOfWork;
 
             public MusteriService(IGenericRepository<Musteri> musteriRepo,IGenericRepository<MusteriEtiket> musteriEtiketRepo,IGenericRepository<GeriBildirim> geriBildirimRepo,IGenericRepository<MusteriEtkilesim> interactionRepo,IMapper mapper,IUnitOfWork unitOfWork)
             {
@@ -74,12 +76,13 @@ namespace MadrinHotelCRM.Services.Services
                 return _mapper.Map<IEnumerable<MusteriDTO>>(entities);
             }
 
-            /// Id bazlı müşteri getirmek için;
+            // Id bazlı müşteri getirmek için;
             public async Task<MusteriDTO> GetByIdAsync(int id)
             {
                 var entity = await _musteriRepo.GetByIdAsync(id);
                 return _mapper.Map<MusteriDTO>(entity);
             }
+
             // Mevcut bir müşteriyi günceller.
             public async Task<MusteriDTO> UpdateAsync(MusteriDTO dto)
             {
@@ -101,7 +104,10 @@ namespace MadrinHotelCRM.Services.Services
             public async Task<bool> RemoveTagAsync(int musteriId, int etiketId)
             {
                 var links = await _musteriEtiketRepo.FindAsync(x => x.MusteriID == musteriId && x.EtiketID == etiketId);
+
+                //Bulunanlar arasından ilkini al(aynı kayıttan birden fazlası olmamalı)
                 var link = links.FirstOrDefault();
+
                 if (link == null)
                     return false; // Kaldırılacak etiket yoksa false döner
 
@@ -109,18 +115,19 @@ namespace MadrinHotelCRM.Services.Services
                 await _unitOfWork.CommitAsync();
                 return true;
             }
+
             // Belirtilen müşterinin geribildirimlerini döndürmek için:
             public async Task<IEnumerable<GeriBildirimDTO>> GetFeedbacksAsync(int musteriId)
             {
-                var feedbacks = await _geriBildirimRepo.FindAsync(x => x.MusteriId == musteriId);
-                return _mapper.Map<IEnumerable<GeriBildirimDTO>>(feedbacks);
+                var geriBildirimler = await _geriBildirimRepo.FindAsync(x => x.MusteriId == musteriId);
+                return _mapper.Map<IEnumerable<GeriBildirimDTO>>(geriBildirimler);
             }
 
             // Belirtilen müşterinin etkileşim kayıtlarını döndürmek için: 
             public async Task<IEnumerable<MusteriEtkilesimDTO>> GetInteractionsAsync(int musteriId)
             {
-                var interactions = await _interactionRepo.FindAsync(x => x.MusteriID == musteriId);
-                return _mapper.Map<IEnumerable<MusteriEtkilesimDTO>>(interactions);
+                var etkilesimler = await _interactionRepo.FindAsync(x => x.MusteriID == musteriId);
+                return _mapper.Map<IEnumerable<MusteriEtkilesimDTO>>(etkilesimler); // DTO listesinde çevirip döndürürüz
             }
         }
     }
