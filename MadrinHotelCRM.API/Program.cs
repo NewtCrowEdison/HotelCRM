@@ -2,12 +2,9 @@ using MadrinHotelCRM.DataAccess.Context;
 using MadrinHotelCRM.Repositories.Repositories.Concrete;
 using MadrinHotelCRM.Repositories.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using MadrinHotelCRM.API.Areas.Identity.Data;
-using Microsoft.AspNetCore.Identity;
 using MadrinHotelCRM.Services.Interfaces;
 using MadrinHotelCRM.Services.Services;
-//using AutoMapper;                             // ← AutoMapper
-using MadrinHotelCRM.Business.Mapp;          // ← MapProfiles’in namespace’i
+using MadrinHotelCRM.Business.Mapp;
 
 
 namespace MadrinHotelCRM.API
