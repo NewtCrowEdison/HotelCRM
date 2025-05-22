@@ -13,8 +13,8 @@ using MadrinHotelCRM.Services.Interfaces;
 
 namespace MadrinHotelCRM.Services.Services
 {
-        public class MusteriService : IMusteriService
-        {
+    public class MusteriService : IMusteriService
+    {
         // Repository tanımlamaları yapılıyor:
 
         // Müşteri verilerini yöneten repository
@@ -27,107 +27,107 @@ namespace MadrinHotelCRM.Services.Services
         private readonly IGenericRepository<MusteriEtkilesim> _interactionRepo;
 
         private readonly IMapper _mapper;
-        
+
         private readonly IUnitOfWork _unitOfWork;
 
-            public MusteriService(IGenericRepository<Musteri> musteriRepo,IGenericRepository<MusteriEtiket> musteriEtiketRepo,IGenericRepository<GeriBildirim> geriBildirimRepo,IGenericRepository<MusteriEtkilesim> interactionRepo,IMapper mapper,IUnitOfWork unitOfWork)
-            {
-                _musteriRepo = musteriRepo;
-                _musteriEtiketRepo = musteriEtiketRepo;
-                _geriBildirimRepo = geriBildirimRepo;
-                _interactionRepo = interactionRepo;
-                _mapper = mapper;
-                _unitOfWork = unitOfWork;
-            }
-
-            
-            // Yeni bir müşteri oluşturur.
-            public async Task<MusteriDTO> CreateAsync(MusteriDTO dto)
-            {
-                var entity = _mapper.Map<Musteri>(dto);//Gelen DTO'yu entity'e çevirmek için 
-                await _musteriRepo.AddAsync(entity);   //Repository'e eklemek için
-                await _unitOfWork.CommitAsync();       //UnitOfWork ile değişiklikleri kaydetme işlemi
-                return _mapper.Map<MusteriDTO>(entity); // Oluşturulan entity'i tekrar DTO'ya map'leyip döner.
+        public MusteriService(IGenericRepository<Musteri> musteriRepo, IGenericRepository<MusteriEtiket> musteriEtiketRepo, IGenericRepository<GeriBildirim> geriBildirimRepo, IGenericRepository<MusteriEtkilesim> interactionRepo, IMapper mapper, IUnitOfWork unitOfWork)
+        {
+            _musteriRepo = musteriRepo;
+            _musteriEtiketRepo = musteriEtiketRepo;
+            _geriBildirimRepo = geriBildirimRepo;
+            _interactionRepo = interactionRepo;
+            _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
-            // Belirtilen id'ye sahip müşteriyi siler.
-            public async Task<bool> DeleteAsync(int id)
-            {
-                var entity = await _musteriRepo.GetByIdAsync(id);
-                if (entity == null)
-                    return false; 
 
-                _musteriRepo.Delete(entity);
-                await _unitOfWork.CommitAsync();
-                return true;
-            }
 
-            
-            // Koşula uyan müşterileri bularak onları DTO listesi olarak dönme;
-            public async Task<IEnumerable<MusteriDTO>> FindAsync(Expression<Func<Musteri, bool>> predicate)
-            {
-                var entities = await _musteriRepo.FindAsync(predicate);
-                return _mapper.Map<IEnumerable<MusteriDTO>>(entities);
-            }
+        // Yeni bir müşteri oluşturur.
+        public async Task<MusteriDTO> CreateAsync(MusteriDTO dto)
+        {
+            var entity = _mapper.Map<Musteri>(dto);//Gelen DTO'yu entity'e çevirmek için 
+            await _musteriRepo.AddAsync(entity);   //Repository'e eklemek için
+            await _unitOfWork.CommitAsync();       //UnitOfWork ile değişiklikleri kaydetme işlemi
+            return _mapper.Map<MusteriDTO>(entity); // Oluşturulan entity'i tekrar DTO'ya map'leyip döner.
+        }
+        // Belirtilen id'ye sahip müşteriyi siler.
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var entity = await _musteriRepo.GetByIdAsync(id);
+            if (entity == null)
+                return false;
 
-            // Tüm müşterileri liste olarak alırız:
-            public async Task<IEnumerable<MusteriDTO>> GetAllAsync()
-            {
-                var entities = await _musteriRepo.GetAllAsync();
-                return _mapper.Map<IEnumerable<MusteriDTO>>(entities);
-            }
+            _musteriRepo.Delete(entity);
+            await _unitOfWork.CommitAsync();
+            return true;
+        }
 
-            // Id bazlı müşteri getirmek için;
-            public async Task<MusteriDTO> GetByIdAsync(int id)
-            {
-                var entity = await _musteriRepo.GetByIdAsync(id);
-                return _mapper.Map<MusteriDTO>(entity);
-            }
 
-            // Mevcut bir müşteriyi günceller.
-            public async Task<MusteriDTO> UpdateAsync(MusteriDTO dto)
-            {
-                var entity = _mapper.Map<Musteri>(dto); // DTO'dan entity'ye dönüştürme işlemi.
-                _musteriRepo.Update(entity);  //Repository üzerinden güncelleme işlemi.
-                await _unitOfWork.CommitAsync();  // Değişiklikleri kaydeder ve güncel DTO'yu döner.
-                return _mapper.Map<MusteriDTO>(entity);
-            }
+        // Koşula uyan müşterileri bularak onları DTO listesi olarak dönme;
+        public async Task<IEnumerable<MusteriDTO>> FindAsync(Expression<Func<Musteri, bool>> predicate)
+        {
+            var entities = await _musteriRepo.FindAsync(predicate);
+            return _mapper.Map<IEnumerable<MusteriDTO>>(entities);
+        }
 
-            // Müşteriye yeni bir etiket atamak için yapılır:
-            public async Task<bool> AssignTagAsync(int musteriId, int etiketId)
-            {
-                var link = new MusteriEtiket { MusteriID = musteriId, EtiketID = etiketId };
-                await _musteriEtiketRepo.AddAsync(link);
-                await _unitOfWork.CommitAsync();
-                return true;
-            }
-            // Müşteriden belirtilen etiketi kaldırmak için:
-            public async Task<bool> RemoveTagAsync(int musteriId, int etiketId)
-            {
-                var links = await _musteriEtiketRepo.FindAsync(x => x.MusteriID == musteriId && x.EtiketID == etiketId);
+        // Tüm müşterileri liste olarak alırız:
+        public async Task<IEnumerable<MusteriDTO>> GetAllAsync()
+        {
+            var entities = await _musteriRepo.GetAllAsync();
+            return _mapper.Map<IEnumerable<MusteriDTO>>(entities);
+        }
 
-                //Bulunanlar arasından ilkini al(aynı kayıttan birden fazlası olmamalı)
-                var link = links.FirstOrDefault();
+        // Id bazlı müşteri getirmek için;
+        public async Task<MusteriDTO> GetByIdAsync(int id)
+        {
+            var entity = await _musteriRepo.GetByIdAsync(id);
+            return _mapper.Map<MusteriDTO>(entity);
+        }
 
-                if (link == null)
-                    return false; // Kaldırılacak etiket yoksa false döner
+        // Mevcut bir müşteriyi günceller.
+        public async Task<MusteriDTO> UpdateAsync(MusteriDTO dto)
+        {
+            var entity = _mapper.Map<Musteri>(dto); // DTO'dan entity'ye dönüştürme işlemi.
+            _musteriRepo.Update(entity);  //Repository üzerinden güncelleme işlemi.
+            await _unitOfWork.CommitAsync();  // Değişiklikleri kaydeder ve güncel DTO'yu döner.
+            return _mapper.Map<MusteriDTO>(entity);
+        }
 
-                _musteriEtiketRepo.Delete(link);
-                await _unitOfWork.CommitAsync();
-                return true;
-            }
+        // Müşteriye yeni bir etiket atamak için yapılır:
+        public async Task<bool> AssignTagAsync(int musteriId, int etiketId)
+        {
+            var link = new MusteriEtiket { MusteriID = musteriId, EtiketID = etiketId };
+            await _musteriEtiketRepo.AddAsync(link);
+            await _unitOfWork.CommitAsync();
+            return true;
+        }
+        // Müşteriden belirtilen etiketi kaldırmak için:
+        public async Task<bool> RemoveTagAsync(int musteriId, int etiketId)
+        {
+            var links = await _musteriEtiketRepo.FindAsync(x => x.MusteriID == musteriId && x.EtiketID == etiketId);
 
-            // Belirtilen müşterinin geribildirimlerini döndürmek için:
-            public async Task<IEnumerable<GeriBildirimDTO>> GetFeedbacksAsync(int musteriId)
-            {
-                var geriBildirimler = await _geriBildirimRepo.FindAsync(x => x.MusteriId == musteriId);
-                return _mapper.Map<IEnumerable<GeriBildirimDTO>>(geriBildirimler);
-            }
+            //Bulunanlar arasından ilkini al(aynı kayıttan birden fazlası olmamalı)
+            var link = links.FirstOrDefault();
 
-            // Belirtilen müşterinin etkileşim kayıtlarını döndürmek için: 
-            public async Task<IEnumerable<MusteriEtkilesimDTO>> GetInteractionsAsync(int musteriId)
-            {
-                var etkilesimler = await _interactionRepo.FindAsync(x => x.MusteriID == musteriId);
-                return _mapper.Map<IEnumerable<MusteriEtkilesimDTO>>(etkilesimler); // DTO listesinde çevirip döndürürüz
-            }
+            if (link == null)
+                return false; // Kaldırılacak etiket yoksa false döner
+
+            _musteriEtiketRepo.Delete(link);
+            await _unitOfWork.CommitAsync();
+            return true;
+        }
+
+        // Belirtilen müşterinin geribildirimlerini döndürmek için:
+        public async Task<IEnumerable<GeriBildirimDTO>> GetFeedbacksAsync(int musteriId)
+        {
+            var geriBildirimler = await _geriBildirimRepo.FindAsync(x => x.MusteriId == musteriId);
+            return _mapper.Map<IEnumerable<GeriBildirimDTO>>(geriBildirimler);
+        }
+
+        // Belirtilen müşterinin etkileşim kayıtlarını döndürmek için: 
+        public async Task<IEnumerable<MusteriEtkilesimDTO>> GetInteractionsAsync(int musteriId)
+        {
+            var etkilesimler = await _interactionRepo.FindAsync(x => x.MusteriID == musteriId);
+            return _mapper.Map<IEnumerable<MusteriEtkilesimDTO>>(etkilesimler); // DTO listesinde çevirip döndürürüz
         }
     }
+}
