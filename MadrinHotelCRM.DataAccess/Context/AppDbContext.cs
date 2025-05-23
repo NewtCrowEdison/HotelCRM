@@ -4,14 +4,15 @@ using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MadrinHotelCRM.Entities.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
+
 
 namespace MadrinHotelCRM.DataAccess.Context
 {
-    public class AppDbContext : IdentityDbContext<AppUser,IdentityRole<string>,string>
+    public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<string>, string>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         public DbSet<EkPaket> EkPaketler { get; set; }
@@ -31,6 +32,7 @@ namespace MadrinHotelCRM.DataAccess.Context
         public DbSet<RezervasyonPaket> RezervasyonPaketler { get; set; }
         public DbSet<SistemLog> SistemLoglar { get; set; }
         public DbSet<Tarife> Tarifeler { get; set; }
+        public DbSet<PersonelRezervasyon> PersonelRezervasyon { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -39,8 +41,8 @@ namespace MadrinHotelCRM.DataAccess.Context
             var adminRole = new IdentityRole<string>
             {
                 Id = "1",
-                Name="Admin",
-                NormalizedName="ADMIN"
+                Name = "Admin",
+                NormalizedName = "ADMIN"
             };
             var personelRole = new IdentityRole<string>
             {
@@ -49,13 +51,8 @@ namespace MadrinHotelCRM.DataAccess.Context
                 NormalizedName = "PERSONEL"
             };
 
-            var musteriRole = new IdentityRole<string>
-            {
-                Id = "3",
-                Name = "Musteri",
-                NormalizedName = "MUSTERI"
-            };
-            modelBuilder.Entity<IdentityRole<string>>().HasData(adminRole, personelRole, musteriRole);
+            modelBuilder.Entity<IdentityRole<string>>().HasData(adminRole, personelRole);
+
             // Composite Key Tanımlamaları
             modelBuilder.Entity<MusteriEtiket>()
                 .HasKey(me => new { me.MusteriID, me.EtiketID });
@@ -124,30 +121,30 @@ namespace MadrinHotelCRM.DataAccess.Context
 
             modelBuilder.Entity<Musteri>(entity =>
             {
-                 entity.HasKey(m => m.MusteriId);
+                entity.HasKey(m => m.MusteriId);
 
-                  entity.HasMany(m => m.MusteriEtiketleri)
-                   .WithOne(me => me.Musteri)
-                   .HasForeignKey(me => me.MusteriID)
-                   .OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(m => m.MusteriEtiketleri)
+                 .WithOne(me => me.Musteri)
+                 .HasForeignKey(me => me.MusteriID)
+                 .OnDelete(DeleteBehavior.Cascade);
 
-                 entity.HasMany(m => m.MusteriEtkilesim)
-                  .WithOne(me => me.Musteriler)
-                  .HasForeignKey(me => me.MusteriEtkilesimId)
-                  .OnDelete(DeleteBehavior.NoAction);
-                 
-
+                entity.HasMany(m => m.MusteriEtkilesim)
+                 .WithOne(me => me.Musteriler)
+                 .HasForeignKey(me => me.MusteriEtkilesimId)
+                 .OnDelete(DeleteBehavior.NoAction);
 
 
-                 entity.HasMany(m => m.Rezervasyonlar)
-                  .WithOne(r => r.Musteri)
-                  .HasForeignKey(r => r.MusteriId)
+
+
+                entity.HasMany(m => m.Rezervasyonlar)
+                 .WithOne(r => r.Musteri)
+                 .HasForeignKey(r => r.MusteriId)
+                 .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasMany(m => m.GeriBildirimler)
+                 .WithOne(gb => gb.Musteri)
+                 .HasForeignKey(gb => gb.MusteriId)
                   .OnDelete(DeleteBehavior.Cascade);
-
-                  entity.HasMany(m => m.GeriBildirimler)
-                   .WithOne(gb => gb.Musteri)
-                   .HasForeignKey(gb => gb.MusteriId)
-                    .OnDelete(DeleteBehavior.Cascade);
             });
 
 
@@ -246,74 +243,89 @@ namespace MadrinHotelCRM.DataAccess.Context
                     .HasForeignKey(gt => gt.PersonelId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
-    
 
-    
+
+
 
             modelBuilder.Entity<Rezervasyon>(entity =>
             {
                 entity.HasKey(r => r.RezervasyonId);
 
-    
+
                 entity.HasOne(r => r.Musteri)
                  .WithMany(m => m.Rezervasyonlar)
                  .HasForeignKey(r => r.MusteriId)
                  .OnDelete(DeleteBehavior.Restrict);
 
-   
+
                 entity.HasOne(r => r.OdaTipi)
-                 .WithMany() 
+                 .WithMany()
                  .HasForeignKey(r => r.OdaTipiId)
                  .OnDelete(DeleteBehavior.Restrict);
 
-   
-               entity.HasOne(r => r.Tarife)
-               .WithMany() 
-               .HasForeignKey(r => r.TarifeId)
-               .OnDelete(DeleteBehavior.Restrict);
 
-   
-               entity.HasMany(r => r.RezervasyonPaketler)
-                .WithOne(rp => rp.Rezervasyon)
-                .HasForeignKey(rp => rp.RezervasyonId)
-                .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(r => r.Tarife)
+                .WithMany()
+                .HasForeignKey(r => r.TarifeId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-    
+
+                entity.HasMany(r => r.RezervasyonPaketler)
+                 .WithOne(rp => rp.Rezervasyon)
+                 .HasForeignKey(rp => rp.RezervasyonId)
+                 .OnDelete(DeleteBehavior.Cascade);
+
+
                 entity.HasMany(r => r.Faturalar)
                  .WithOne(f => f.Rezervasyon)
                  .HasForeignKey(f => f.RezervasyonId)
                  .OnDelete(DeleteBehavior.Restrict);
             });
 
-
             modelBuilder.Entity<RezervasyonPaket>(entity =>
             {
-               entity.HasKey(rp => new { rp.RezervasyonId, rp.PaketId });
+                entity.HasKey(rp => new { rp.RezervasyonId, rp.PaketId });
 
-   
-              entity.HasOne(rp => rp.Rezervasyon)
-               .WithMany(r => r.RezervasyonPaketler)
-               .HasForeignKey(rp => rp.RezervasyonId)
-               .OnDelete(DeleteBehavior.Cascade);
 
-    
-              entity.HasOne(rp => rp.Paket)
-              .WithMany(p => p.RezervasyonPaketler)
-              .HasForeignKey(rp => rp.PaketId)
-              .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(rp => rp.Rezervasyon)
+                 .WithMany(r => r.RezervasyonPaketler)
+                 .HasForeignKey(rp => rp.RezervasyonId)
+                 .OnDelete(DeleteBehavior.Cascade);
+
+
+                entity.HasOne(rp => rp.Paket)
+                .WithMany(p => p.RezervasyonPaketler)
+                .HasForeignKey(rp => rp.PaketId)
+                .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Tarife>(entity =>
             {
-                 entity.HasKey(t => t.TarifeId);
+                entity.HasKey(t => t.TarifeId);
 
-                 entity.HasMany(t => t.OdaTarifeleri)
-                   .WithOne(ot => ot.Tarife)
-                   .HasForeignKey(ot => ot.TarifeId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(t => t.OdaTarifeleri)
+                  .WithOne(ot => ot.Tarife)
+                  .HasForeignKey(ot => ot.TarifeId)
+                  .OnDelete(DeleteBehavior.Cascade);
             });
+            modelBuilder.Entity<PersonelRezervasyon>(entity =>
+            {
+                // Birincil anahtar
+                entity.HasKey(pr => pr.Id);
 
+                // Personel ↔ PersonelRezervasyon (1 – n)
+                entity.HasOne(pr => pr.Personel)
+                      .WithMany(p => p.PersonelRezervasyonlar)
+                      .HasForeignKey(pr => pr.PersonelId)
+                      .OnDelete(DeleteBehavior.Restrict);
 
+                // Rezervasyon ↔ PersonelRezervasyon (1 – n)
+                entity.HasOne(pr => pr.Rezervasyon)
+                      .WithMany(r => r.PersonelRezervasyonlar)
+                      .HasForeignKey(pr => pr.RezervasyonId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+            });
         }
     }
 }

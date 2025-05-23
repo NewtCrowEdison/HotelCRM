@@ -16,8 +16,13 @@ namespace MadrinHotelCRM.Entities.Models
         public string Soyad { get; set; }
         public string Email { get; set; }
         public string Telefon { get; set; }
-        public int TcKimlik{ get; set; }
+        public bool YabanciUyrukluMu { get; set; }
+        [MaxLength(20)]
+        public string? PasaportNo { get; set;}
+        [MaxLength(11)]
+        public string? TcKimlik{ get; set; }
         public ICollection<MusteriEtkilesim> Etkilesimler { get; set; }
         public ICollection<GenelTakip> GenelTakipler { get; set; }
+        public ICollection<PersonelRezervasyon> PersonelRezervasyonlar { get; set; }
     }
 }

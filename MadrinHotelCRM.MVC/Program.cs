@@ -28,7 +28,7 @@ namespace MadrinHotelCRM.MVC
             {
                 options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
                 options.AddPolicy("Personel", policy => policy.RequireRole("Personel"));
-                options.AddPolicy("Musteri", policy => policy.RequireRole("Musteri"));
+                
             });
 
 

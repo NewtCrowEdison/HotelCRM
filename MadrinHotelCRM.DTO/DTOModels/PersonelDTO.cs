@@ -22,8 +22,10 @@ namespace MadrinHotelCRM.DTO.DTOModels
 
         [Required, MaxLength(20), Phone]
         public string Telefon { get; set; }
-
-        [Required, MaxLength(11)]
-        public string TcKimlik { get; set; }
+        public bool YabanciUyrukluMu { get; set; }
+        [MaxLength(20)]
+        public string? PasaportNo { get; set; }
+        [MaxLength(11)]
+        public string? TcKimlik { get; set; }
     }
 }

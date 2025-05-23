@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using MadrinHotelCRM.Services.Interfaces;
 using MadrinHotelCRM.Services.Services;
 using MadrinHotelCRM.Business.Mapp;
+using MadrinHotelCRM.Entities.Models;
 
 
 namespace MadrinHotelCRM.API
