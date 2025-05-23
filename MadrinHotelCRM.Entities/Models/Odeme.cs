@@ -17,6 +17,8 @@ namespace MadrinHotelCRM.Entities.Models
         public DateTime OdemeTarihi { get; set; }
         public decimal ToplamTutar { get; set; }
         public OdemeYontemi OdemeYontemi { get; set; }
+        public int IslemId { get; set; }
+        
     }
 }
   

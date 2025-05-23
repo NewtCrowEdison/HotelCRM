@@ -34,23 +34,14 @@ namespace MadrinHotelCRM.API.Controllers
             return Ok(musteri);
         }
 
+        // POST: api/Musteri
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] MusteriDTO dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            MusteriDTO result;
-            try
-            {
-                result = await _musteriService.CreateAsync(dto);
-            }
-            catch (Exception ex)
-            {
-                // Log ex.Message ya da breakpoint koy
-                return StatusCode(500, "Bir hata oluştu: " + ex.Message);
-            }
-
+            var result = await _musteriService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = result.MusteriId }, result);
         }
 

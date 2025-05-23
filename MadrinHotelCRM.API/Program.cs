@@ -2,9 +2,12 @@ using MadrinHotelCRM.DataAccess.Context;
 using MadrinHotelCRM.Repositories.Repositories.Concrete;
 using MadrinHotelCRM.Repositories.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using MadrinHotelCRM.API.Areas.Identity.Data;
+using Microsoft.AspNetCore.Identity;
 using MadrinHotelCRM.Services.Interfaces;
 using MadrinHotelCRM.Services.Services;
-using MadrinHotelCRM.Business.Mapp;
+//using AutoMapper;                             // ← AutoMapper
+using MadrinHotelCRM.Business.Mapp;          // ← MapProfiles’in namespace’i
 
 
 namespace MadrinHotelCRM.API
@@ -21,8 +24,14 @@ namespace MadrinHotelCRM.API
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            // AutoMapper: MapProfiles sınıfını kullanacak
+            // Identity
+            builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppDbContext>();
+
+            // 3) AutoMapper: MapProfiles sınıfını kullanacak
             builder.Services.AddAutoMapper(typeof(MapProfiles));
+
+            // DbContext olarak AppDbContext
+            builder.Services.AddScoped<DbContext, AppDbContext>();
 
             //  UnitOfWork ve Repository'leri ekle
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -51,20 +60,8 @@ namespace MadrinHotelCRM.API
             builder.Services.AddScoped<ITarifeService, TarifeService>();
             builder.Services.AddScoped<IOdaTarifeService, OdaTarifeService>();
             
-            //  Controller'lari eklemesi
+            //  Controller'lari ekle
             builder.Services.AddControllers();
-
-            // CORS eklemesi
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAll", builder =>
-                {
-                    builder
-                        .AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
-                });
-            });
 
             // Swagger/OpenAPI ekle
             builder.Services.AddEndpointsApiExplorer();
@@ -78,9 +75,6 @@ namespace MadrinHotelCRM.API
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
-            // CORS middleware'inin kullanıldığı yer
-            app.UseCors("AllowAll");
 
             app.UseHttpsRedirection();
 

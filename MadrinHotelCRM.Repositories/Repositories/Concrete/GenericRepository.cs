@@ -13,10 +13,10 @@ namespace MadrinHotelCRM.Repositories.Repositories.Concrete
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        private readonly AppDbContext _context;
+        private readonly DbContext _context;
         private readonly DbSet<T> _dbSet;
 
-        public GenericRepository(AppDbContext context)
+        public GenericRepository(DbContext context)
         {
             _context = context;
             _dbSet = _context.Set<T>();

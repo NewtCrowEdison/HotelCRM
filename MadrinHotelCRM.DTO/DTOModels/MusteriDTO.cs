@@ -11,12 +11,8 @@ namespace MadrinHotelCRM.DTO.DTOModels
     public class MusteriDTO
     {
         public int MusteriId { get; set; }
-        public bool YabanciUyrukluMu { get; set; }
-
         [MaxLength(11)]
         public string TcNo { get; set; }
-        [MaxLength(20)]
-        public string? PasaportNo { get; set; } 
         [MaxLength(50)]
         public string Ad { get; set; }
         [MaxLength(50)]
