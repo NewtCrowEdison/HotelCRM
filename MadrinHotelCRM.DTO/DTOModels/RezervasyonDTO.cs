@@ -17,8 +17,8 @@ namespace MadrinHotelCRM.DTO.DTOModels
         public int TarifeId { get; set; }
         public DateTime OlusturmaTarihi { get; set; }
         public RezervasyonDurum Durum { get; set; }
-        public DateTime OtelGiris { get; set; }
-        public DateTime OtelCikis { get; set; }
+        //public DateTime OtelGiris { get; set; }
+        //public DateTime OtelCikis { get; set; }
         public DateTime? IptalTarihi { get; set; }
         public string IptalNedeni { get; set; }
         public MusteriDTO Musteri { get; set; }
