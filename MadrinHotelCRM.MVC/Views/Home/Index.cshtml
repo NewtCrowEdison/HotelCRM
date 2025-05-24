@@ -1,8 +1,292 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Madrin Hotel</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+	<style>
+		html, body {
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			height: 100%;
+			overflow-x: hidden;
+			font-family: 'Segoe UI', sans-serif;
+		}
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+		.navbar-custom {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100vw;
+			z-index: 20;
+			background: rgba(0, 0, 0, 0.3);
+			backdrop-filter: blur(6px);
+		}
+
+		.carousel-item video {
+			display: block;
+			width: 100vw;
+			height: 100vh;
+			object-fit: cover;
+		}
+
+		.video-overlay {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100vw;
+			height: 100vh;
+			background: linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5));
+			z-index: 1;
+		}
+
+		.carousel-caption {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			background: rgba(0, 0, 0, 0.4);
+			backdrop-filter: blur(6px);
+			padding: 2rem 3rem;
+			border-radius: 10px;
+			z-index: 2;
+		}
+
+			.carousel-caption h1 {
+				font-size: 3.5rem;
+				font-style: italic;
+				color: #fff;
+			}
+
+			.carousel-caption p {
+				font-size: 1.2rem;
+				color: #f0f0f0;
+			}
+
+
+		.scroll-btn {
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+			z-index: 10;
+			background-color: rgba(0, 0, 0, 0.4);
+			border: none;
+			color: white;
+			padding: 0.5rem 1rem;
+			font-size: 1.5rem;
+			border-radius: 50%;
+			cursor: pointer;
+		}
+
+			.scroll-btn.left {
+				left: 0;
+			}
+
+			.scroll-btn.right {
+				right: 0;
+			}
+
+			.scroll-btn:hover {
+				background-color: rgba(0, 0, 0, 0.6);
+			}
+
+		#galleryContainer img {
+			transition: transform 0.3s ease;
+		}
+
+			#galleryContainer img:hover {
+				transform: scale(1.05);
+			}
+	</style>
+</head>
+<body>
+
+	<!-- Navbar -->
+	<nav class="navbar navbar-expand-lg navbar-dark navbar-custom px-4">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="#">☰ MENÜ</a>
+			<div class="mx-auto text-white fw-bold fs-4">Madrin Hotel</div>
+			<div>
+				<button class="btn btn-outline-light me-2">BİZE ULAŞIN</button>
+				<button class="btn btn-light">REZERVASYON</button>
+			</div>
+		</div>
+	</nav>
+
+	<!-- Video Carousel -->
+	<div id="videoCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+		<div class="carousel-inner">
+			<div class="carousel-item active position-relative">
+				<video autoplay muted loop playsinline>
+					<source src="/Videos/indexVideo.mp4" type="video/mp4">
+				</video>
+				<div class="video-overlay"></div>
+				<div class="carousel-caption">
+					<h1>Misafirperverlik Sanatı</h1>
+					<p>Lüks ve konforun buluşma noktası</p>
+				</div>
+			</div>
+			<div class="carousel-item position-relative">
+				<video autoplay muted loop playsinline>
+					<source src="/Videos/indexVideo2.mp4" type="video/mp4">
+				</video>
+				<div class="video-overlay"></div>
+				<div class="carousel-caption">
+					<h1>Hayalinizdeki Tatil</h1>
+					<p>Her anınız unutulmaz olsun</p>
+				</div>
+			</div>
+			<div class="carousel-item position-relative">
+				<video autoplay muted loop playsinline>
+					<source src="/Videos/indexVideo3.mp4" type="video/mp4">
+				</video>
+				<div class="video-overlay"></div>
+				<div class="carousel-caption">
+					<h1>Konforun Yeni Adı</h1>
+					<p>Siz sadece keyfini çıkarın</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Hakkımızda Bölümü -->
+	<section class="py-5" style="background-color: #d6dbd0;">
+		<div class="container text-center">
+			<h2 class="display-5 fw-bold mb-3">Mükemmelliğin <em>Kalp</em> Notası</h2>
+			<p class="lead mx-auto" style="max-width: 800px;">
+				Madrin Hotel olarak 2025 yılında lüks tatilin sınır tanımayan özgünlüğünü sizlerle buluşturduk.
+				Tüm kalbimizle inandığımız ilkemiz: konaklama deneyiminin sadece bir hizmet değil, aynı zamanda bir ilham kaynağı olmasıdır.
+				Sizi yalnızca ağırlamıyor, unutulmaz anılar inşa ediyoruz.
+			</p>
+			<a href="/Home/Hakkimizda" class="btn btn-outline-dark mt-4 px-4 py-2">Madrin Hotel’i Keşfedin →</a>
+		</div>
+	</section>
+
+	<!-- Kart Blokları -->
+	<section class="info-section py-5" style="background-color: #e7e9e2;">
+		<div class="container">
+			<div class="row align-items-center mb-5">
+				<div class="col-md-6 mb-3 mb-md-0">
+					<img src="~/images/hotel.jpg" alt="Havuz ve şehir manzarası" class="img-fluid rounded shadow">
+				</div>
+				<div class="col-md-6 text-start">
+					<h2 class="fw-bold">Enerjik ve Renkli Anlar</h2>
+					<p>Rahatlayabileceğiniz havuz alanlarımızda, genç ve enerjik atmosferi doyasıya yaşayabilirsiniz.</p>
+				</div>
+			</div>
+			<div class="row align-items-center mb-5 flex-md-row-reverse">
+				<div class="col-md-6 mb-3 mb-md-0">
+					<img src="~/images/hotel2.jpg" alt="Havuzda eğlenceli vakit" class="img-fluid rounded shadow">
+				</div>
+				<div class="col-md-6 text-start">
+					<h2 class="fw-bold">Sakinlik ve Konfor</h2>
+					<p>Kitabınızı alıp havuz kenarında huzurla zaman geçirebileceğiniz konforlu alanlar da sizi bekliyor.</p>
+				</div>
+			</div>
+			<div class="row align-items-center">
+				<div class="col-md-6 mb-3 mb-md-0">
+					<img src="~/images/hotel3.jpg" alt="Havuz başında kitap okuma" class="img-fluid rounded shadow">
+				</div>
+				<div class="col-md-6 text-start">
+					<h2 class="fw-bold">Doğayla İç İçe</h2>
+					<p>Modern şehir yaşamından uzaklaşıp, doğanın kalbinde dinlenmeye hazır olun.</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Story Galerisi -->
+	<section class="py-5" style="background-color: #d6dbd0;">
+		<div class="container position-relative">
+			<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+				<div>
+					<h3 class="fw-bold mb-2">MADRIN ANILARINIZI PAYLAŞIN</h3>
+					<p class="mb-0">Kendi Madrin hikayeni simgeleyen anları yakala, Instagram’da <strong>#MyMadrinMoment</strong> hashtag’i ile mutluluğunu paylaş!</p>
+				</div>
+				<a href="https://www.instagram.com/" target="_blank" class="btn btn-outline-dark d-flex align-items-center gap-2">
+					<i class="bi bi-instagram"></i> Bizi Takip Edin
+				</a>
+			</div>
+
+			<!-- Kaydırmalı Galeri -->
+			<button class="scroll-btn left" onclick="scrollGallery(-1)">
+				<i class="bi bi-arrow-left"></i>
+			</button>
+			<div id="galleryContainer" class="d-flex overflow-auto gap-3 px-5 scroll-smooth" style="scroll-behavior: smooth;">
+				<img src="~/images/story.jpg" class="rounded shadow-sm" style="width:180px;height:240px;object-fit:cover;">
+				<img src="~/images/story2.jpg" class="rounded shadow-sm" style="width:180px;height:240px;object-fit:cover;">
+				<img src="~/images/story3.jpg" class="rounded shadow-sm" style="width:180px;height:240px;object-fit:cover;">
+				<img src="~/images/story4.jpg" class="rounded shadow-sm" style="width:180px;height:240px;object-fit:cover;">
+				<img src="~/images/story5.jpg" class="rounded shadow-sm" style="width:180px;height:240px;object-fit:cover;">
+				<img src="~/images/story6.jpg" class="rounded shadow-sm" style="width:180px;height:240px;object-fit:cover;">
+				<img src="~/images/story7.jpg" class="rounded shadow-sm" style="width:180px;height:240px;object-fit:cover;">
+				<img src="~/images/story8.jpg" class="rounded shadow-sm" style="width:180px;height:240px;object-fit:cover;">
+				<img src="~/images/story9.jpg" class="rounded shadow-sm" style="width:180px;height:240px;object-fit:cover;">
+				<img src="~/images/story10.jpg" class="rounded shadow-sm" style="width:180px;height:240px;object-fit:cover;">
+				<img src="~/images/story11.jpg" class="rounded shadow-sm" style="width:180px;height:240px;object-fit:cover;">
+				<img src="~/images/story12.jpg" class="rounded shadow-sm" style="width:180px;height:240px;object-fit:cover;">
+				<img src="~/images/story13.jpg" class="rounded shadow-sm" style="width:180px;height:240px;object-fit:cover;">
+				<img src="~/images/story14.jpg" class="rounded shadow-sm" style="width:180px;height:240px;object-fit:cover;">
+			</div>
+			<button class="scroll-btn right" onclick="scrollGallery(1)">
+				<i class="bi bi-arrow-right"></i>
+			</button>
+		</div>
+	</section>
+	<!-- FOOTER -->
+	<footer class="text-white pt-5 pb-3" style="background-color: #2c2c2c;">
+		<div class="container">
+			<div class="row">
+				<!-- Logo / Otel adı -->
+				<div class="col-md-4 mb-4">
+					<h4 class="fw-bold">Madrin Hotel</h4>
+					<p class="small">Lüksü, konforu ve huzuru bir araya getiriyoruz. Tatilinizi unutulmaz kılmak için buradayız.</p>
+				</div>
+
+				<!-- Menü -->
+				<div class="col-md-4 mb-4">
+					<h5 class="fw-semibold">Hızlı Erişim</h5>
+					<ul class="list-unstyled">
+						<li><a href="/Home/Hakkimizda" class="text-white text-decoration-none">Hakkımızda</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Odalar</a></li>
+						<li><a href="#" class="text-white text-decoration-none">Rezervasyon</a></li>
+						<li><a href="#" class="text-white text-decoration-none">İletişim</a></li>
+					</ul>
+				</div>
+
+				<!-- İletişim -->
+				<div class="col-md-4 mb-4">
+					<h5 class="fw-semibold">İletişim</h5>
+					<p class="mb-1"><i class="bi bi-telephone-fill me-2"></i> +90 212 000 00 00</p>
+					<p class="mb-1"><i class="bi bi-envelope-fill me-2"></i> info@madrinhotel.com</p>
+					<p><i class="bi bi-geo-alt-fill me-2"></i> Bodrum, Muğla / Türkiye</p>
+
+					<!-- Sosyal ikonlar -->
+					<div class="d-flex gap-3 mt-2">
+						<a href="#" class="text-white fs-5"><i class="bi bi-facebook"></i></a>
+						<a href="#" class="text-white fs-5"><i class="bi bi-instagram"></i></a>
+						<a href="#" class="text-white fs-5"><i class="bi bi-twitter-x"></i></a>
+					</div>
+				</div>
+			</div>
+
+			<hr class="border-light opacity-25">
+			<div class="text-center small">© 2025 Madrin Hotel. Tüm hakları saklıdır.</div>
+		</div>
+	</footer>
+
+
+	<script>
+		function scrollGallery(direction) {
+			const container = document.getElementById("galleryContainer");
+			const scrollAmount = 300;
+			container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+		}
+	</script>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
