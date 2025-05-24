@@ -5,6 +5,10 @@ using MadrinHotelCRM.Repositories.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using MadrinHotelCRM.Entities.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Drawing;
+using System.Text;
 
 namespace MadrinHotelCRM.MVC
 {
@@ -31,6 +35,23 @@ namespace MadrinHotelCRM.MVC
                 
             });
 
+           builder.Services.AddAuthentication(x =>
+            {
+                     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x=>{
+                x.RequireHttpsMetadata = false;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = "MadrinHotelCrm.com",
+                    ValidateAudience = false,
+                    ValidAudience = "",//kimler için 
+
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration.GetSection("AppSettings:Secret").Value ?? "")), 
+                    ValidateLifetime = true
+                };
+            });
 
             //  UnitOfWork ve Repositoryleri 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
