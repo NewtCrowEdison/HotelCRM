@@ -1,0 +1,448 @@
+﻿@{
+    ViewData["Title"] = "Hakkımızda";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Madrin Hotel - Hakkımızda</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .navbar-custom {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            z-index: 20;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(6px);
+        }
+
+        .carousel-item video {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5));
+            z-index: 1;
+        }
+
+        .carousel-caption {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(6px);
+            padding: 2rem 3rem;
+            border-radius: 10px;
+            z-index: 2;
+        }
+
+            .carousel-caption h1 {
+                font-size: 3.5rem;
+                font-style: italic;
+                color: #fff;
+            }
+
+            .carousel-caption p {
+                font-size: 1.2rem;
+                color: #f0f0f0;
+            }
+
+        .info-section img {
+            max-height: 450px;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        .misafirperverlik-row-full {
+            width: 100%;
+            margin: 0;
+            padding: 3rem 0;
+            background-color: #e7e9e2;
+        }
+
+        .misafirperververlik-img {
+            width: 100%;
+            height: auto;
+            max-height: 500px;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .info-highlight {
+            background-color: #e7e9e2;
+            color: #222;
+            padding-top: 4rem;
+            padding-bottom: 4rem;
+        }
+
+        .highlight-title {
+            font-family: 'Georgia', serif;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .highlight-text {
+            max-width: 750px;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .highlight-subtext {
+            max-width: 600px;
+            font-size: 0.9rem;
+            font-style: italic;
+            color: #555;
+        }
+
+
+
+        /* Aile fotoğrafları eşitliği */
+        .family-img {
+            width: 100%;
+            max-height: 380px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+
+        .award-section {
+            height: 75vh;
+            overflow: hidden;
+        }
+
+        .award-img {
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .award-overlay {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(3px);
+            z-index: 2;
+        }
+
+        .award-box {
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.35));
+            max-width: 350px;
+        }
+
+        .values-section {
+            background-color: #f1f3ec;
+            color: #2b2b2b;
+            padding-top: 4rem;
+            padding-bottom: 4rem;
+        }
+
+        .values-title {
+            font-family: 'Georgia', serif;
+            font-size: 2.2rem;
+        }
+
+        .values-description {
+            max-width: 750px;
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #444;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom px-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">☰ MENÜ</a>
+            <div class="mx-auto text-white fw-bold fs-4">Madrin Hotel</div>
+            <div>
+                <button class="btn btn-outline-light me-2">BİZE ULAŞIN</button>
+                <button class="btn btn-light">REZERVASYON</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- VIDEO CAROUSEL -->
+    <div id="aboutCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active position-relative">
+                <video autoplay muted loop playsinline>
+                    <source src="~/Videos/aboutVideo.mp4" type="video/mp4">
+                </video>
+                <div class="video-overlay"></div>
+                <div class="carousel-caption text-center">
+                    <h1>Biz Kimiz?</h1>
+                    <p>Hayallerinizi konfora dönüştüren bir anlayışla çalışıyoruz.</p>
+                </div>
+            </div>
+            <div class="carousel-item position-relative">
+                <video autoplay muted loop playsinline>
+                    <source src="~/Videos/aboutVideo2.mp4" type="video/mp4">
+                </video>
+                <div class="video-overlay"></div>
+                <div class="carousel-caption text-center">
+                    <h1>Yaşamdan İlham Aldık</h1>
+                    <p>Madrin Hotel’de her detay, sizin için düşünüldü.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TANITIM -->
+    <section class="py-5" style="background-color: #e7e9e2;">
+        <div class="container text-center">
+            <h2 class="fw-bold mb-4">Madrin Hotel’e Dair</h2>
+            <p class="lead mx-auto" style="max-width: 800px;">
+                Kuruluşumuzdan bu yana misafirlerimize sadece bir konaklama değil, unutulmaz bir deneyim sunmayı hedefliyoruz.
+                Denize sıfır manzaramız, gurme mutfağımız ve huzurlu atmosferimizle tatil anlayışınıza yeni bir soluk getiriyoruz.
+            </p>
+        </div>
+    </section>
+    <section class="info-section py-5" style="background-color: #e7e9e2;">
+        <div class="container">
+
+            <!--misafirperverlik kısmı-->
+            <section class="misafirperververlik-row-full">
+                <div class="container-fluid">
+                    <div class="row align-items-center">
+                        <!-- Görsel -->
+                        <div class="col-md-6 p-4">
+                            <img src="~/images/misafirperverlik.jpg" alt="Misafirperverlik" class="misafirperververlik-img">
+                        </div>
+
+                        <!-- Metin -->
+                        <div class="col-md-6 p-4">
+                            <h5 class="text-uppercase fw-bold">MİSAFİRPERVERLİĞİN ZİRVESİ</h5>
+                            <p>
+                                Maxx Royal'e adım attığınız ilk anda güler yüzle, güven duygusu uyandıran bir misafirperverlikle karşılanacaksınız.
+                                Aramızda yeni ve kalıcı bağlar kurulacak, tatiliniz boyunca hissedeceğiniz güzel duygular yanınıza kalacak.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="info-highlight py-5">
+                <div class="container text-center">
+                    <h2 class="highlight-title">Sınırsız Deneyimler</h2>
+                    <p class="highlight-text mx-auto">
+                        Yarattığımız benzersiz deneyimler, bizi konaklama sektörünün öncülerinden biri olarak öne çıkarıyor.
+                        Dünya standartlarındaki restoranlarımız, sağlıklı yaşam programımız, ödüllü çocuk kulübümüz ve
+                        kişiselleştirilmiş hizmetlerimizle her misafirin beklentilerini karşılayacak, kendinden ve hayallerinden
+                        bir parça bulacağı eşsiz ve etkileyici destinasyonlar sunuyoruz.
+                    </p>
+                    <p class="highlight-subtext mt-3">
+                        Amacımız bir tatilin ötesinde kalıcı izler bırakan, yeni farkındalıklar edineceğiniz olağanüstü deneyimler yaratmak.
+                    </p>
+                </div>
+            </section>
+
+
+            <!-- 1. Blok - Fotoğraf sağda -->
+            <div class="row align-items-center mb-5">
+                <div class="col-md-6 text-start">
+                    <h2 class="fw-bold">Lei Terrace Bar</h2>
+                    <p>Akşamın yıldızı, tropik dokunuşlarla tasarlanmış özel barımız. Taze kokteyller ve egzotik ortam sizi bekliyor.</p>
+                </div>
+                <div class="col-md-6">
+                    <img src="~/images/aboutimage.jpg" alt="Lei Terrace Bar" class="img-fluid rounded shadow">
+                </div>
+            </div>
+
+            <!-- 2. Blok - Fotoğraf solda -->
+            <div class="row align-items-center mb-5 flex-md-row-reverse">
+                <div class="col-md-6 text-start">
+                    <h2 class="fw-bold">Spa Dinlenme Alanı</h2>
+                    <p>Sessizliğin içinde kaybolmak için mum ışığı ve sıcak bitki çaylarıyla buluşun. Zihninizi boşaltın.</p>
+                </div>
+                <div class="col-md-6">
+                    <img src="~/images/aboutimage2.jpg" alt="Spa Candle" class="img-fluid rounded shadow">
+                </div>
+            </div>
+
+            <!-- 3. Blok -->
+            <div class="row align-items-center mb-5">
+                <div class="col-md-6 text-start">
+                    <h2 class="fw-bold">Jakuzili Suit Oda</h2>
+                    <p>Konforun sınırlarını zorlayan jakuzili özel odalar, Madrin’in ayrıcalıklı atmosferini evinize getirir.</p>
+                </div>
+                <div class="col-md-6">
+                    <img src="~/images/aboutimage3.jpg" alt="Jakuzili Oda" class="img-fluid rounded shadow">
+                </div>
+            </div>
+
+            <!-- 4. Blok -->
+            <div class="row align-items-center mb-5 flex-md-row-reverse">
+                <div class="col-md-6 text-start">
+                    <h2 class="fw-bold">Spa & Bakım</h2>
+                    <p>Profesyonel masaj ve yüz bakımı hizmetlerimizle ruhunuzu ve bedeninizi şımartın.</p>
+                </div>
+                <div class="col-md-6">
+                    <img src="~/images/aboutimage4.jpg" alt="Yüz Maskesi" class="img-fluid rounded shadow">
+                </div>
+            </div>
+
+            <!-- 5. Blok -->
+            <div class="row align-items-center mb-5">
+                <div class="col-md-6 text-start">
+                    <h2 class="fw-bold">Plaj Voleybolu</h2>
+                    <p>Spor ve eğlenceyi bir araya getiren plaj voleybolu, tatilinize hareket katar.</p>
+                </div>
+                <div class="col-md-6">
+                    <img src="~/images/aboutimage5.jpg" alt="Voleybol" class="img-fluid rounded shadow">
+                </div>
+            </div>
+
+            <!-- 6. Blok -->
+            <div class="row align-items-center mb-5 flex-md-row-reverse">
+                <div class="col-md-6 text-start">
+                    <h2 class="fw-bold">Tenis Kortu</h2>
+                    <p>Madrin’in özel tenis kortunda güne başlamak enerjinizi tazeler.</p>
+                </div>
+                <div class="col-md-6">
+                    <img src="~/images/aboutimage6.jpg" alt="Tenis Kortu" class="img-fluid rounded shadow">
+                </div>
+            </div>
+
+        </div>
+    </section>
+    <!--söz kısmı-->
+    <section class="py-5" style="background-color: #3f554a; color: #fff;">
+        <div class="container text-center px-4">
+            <blockquote class="fs-4 fst-italic" style="max-width: 900px; margin: auto;">
+                “İnsanlar onlara ne söylediğinizi unutabilirler, onlara ne yaptığınızı da unutabilirler ama onlara kendilerini nasıl hissettirdiğinizi asla unutmazlar.”
+            </blockquote>
+            <p class="fw-bold text-uppercase mt-4" style="letter-spacing: 1px;">Maya Angelou</p>
+            <hr class="mx-auto mt-3 opacity-50" style="width: 140px; border-top: 2px solid #fff;">
+        </div>
+    </section>
+    <section style="background-color: #e7e9e2;" class="py-5">
+        <div class="container">
+
+            <!-- aile değerleri kısmı -->
+            <div class="text-start mb-5">
+                <h5 class="text-uppercase fw-bold">AİLE DEĞERLERİ</h5>
+                <p class="mb-0">
+                    Köklerimizin bağlı olduğu aile değerlerini hizmetimize de yansıtıyoruz.
+                    Kadromuzun her üyesi ailenin bir parçası. Size de aileden biri olduğunuzu hissettirmeyi amaçlıyor,
+                    çocuklara özenle bakıyoruz.
+                </p>
+            </div>
+
+            <!-- Fotoğraf Grubu 1 -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <img src="~/images/family.jpg" class="family-img" alt="Aile Sofrası">
+                </div>
+                <div class="col-md-6">
+                    <img src="~/images/family2.jpg" class="family-img" alt="Aile Tatili">
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--ödüller kısmı-->
+    <section class="award-section position-relative">
+        <img src="~/images/ödüller.jpg" alt="Ödül Alan Havuz" class="w-100 award-img">
+
+        <div class="award-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center">
+            <div class="container">
+                <div class="award-box text-white p-4 rounded shadow">
+                    <h6 class="text-uppercase fw-bold small">BAŞARILARIMIZ</h6>
+                    <h2 class="fst-italic fw-bold">Ödüller</h2>
+                    <p class="small">
+                        Dünya çapında prestijli otellerin yer aldığı <strong>The Leading Hotels of the World</strong>'ün bir parçası olan Madrin Hotel,
+                        gezginlerin oylarıyla belirlenen <strong>HolidayCheck</strong> ve <strong>Traveller Review</strong>'de derece kazandı.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--son açıklama bölümü-->
+    <section class="values-section py-5">
+        <div class="container text-center px-4">
+            <h2 class="fw-bold mb-4 values-title">İnsan Odaklı Değerlerimiz</h2>
+            <p class="values-description mx-auto">
+                Madrin Hotel olarak sunduğumuz hizmetin merkezinde insan yer alır. Misafirlerimizin beklentilerini aşmak,
+                sadece fiziksel değil duygusal ihtiyaçlarını da karşılamak önceliğimizdir.
+                Saygı, zarafet, samimiyet ve duyarlılık; tüm çalışanlarımızla birlikte benimsediğimiz temel değerlerdir.
+            </p>
+            <p class="values-description mx-auto mt-3">
+                Her tebessümde içtenliğimizi, her ayrıntıda özenimizi hissedeceğiniz bu yolculukta,
+                sizi sadece ağırlamıyor; sizinle kalıcı bir bağ kuruyoruz. Çünkü bizce lüks, insanı değerli hissettirmekle başlar.
+            </p>
+        </div>
+    </section>
+
+
+
+
+
+
+    <!-- FOOTER -->
+    <footer class="text-white pt-5 pb-3" style="background-color: #2c2c2c;">
+        <div class="container">
+            <div class="row">
+                <!-- Logo / Otel adı -->
+                <div class="col-md-4 mb-4">
+                    <h4 class="fw-bold">Madrin Hotel</h4>
+                    <p class="small">Lüksü, konforu ve huzuru bir araya getiriyoruz. Tatilinizi unutulmaz kılmak için buradayız.</p>
+                </div>
+
+                <!-- Menü -->
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-semibold">Hızlı Erişim</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/Home/Hakkimizda" class="text-white text-decoration-none">Hakkımızda</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Odalar</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Rezervasyon</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">İletişim</a></li>
+                    </ul>
+                </div>
+
+                <!-- İletişim -->
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-semibold">İletişim</h5>
+                    <p class="mb-1"><i class="bi bi-telephone-fill me-2"></i> +90 212 000 00 00</p>
+                    <p class="mb-1"><i class="bi bi-envelope-fill me-2"></i> info@madrinhotel.com</p>
+                    <p><i class="bi bi-geo-alt-fill me-2"></i> Bodrum, Muğla / Türkiye</p>
+
+                    <!-- Sosyal ikonlar -->
+                    <div class="d-flex gap-3 mt-2">
+                        <a href="#" class="text-white fs-5"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-white fs-5"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-white fs-5"><i class="bi bi-twitter-x"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-light opacity-25">
+            <div class="text-center small">© 2025 Madrin Hotel. Tüm hakları saklıdır.</div>
+        </div>
+    </footer>
+
+</body>
+</html>
