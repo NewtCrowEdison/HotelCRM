@@ -18,10 +18,19 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.11.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\MadrinHotelCRM.Repositories\MadrinHotelCRM.Repositories.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+ 		 <ProjectReference Include="..\MadrinHotelCRM.DTO\MadrinHotelCRM.DTO.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+ 		 <ProjectReference Include="..\MadrinHotelCRM.Services\MadrinHotelCRM.Services.csproj" />
+	</ItemGroup>
+	
 
 </Project>
