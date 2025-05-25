@@ -1,0 +1,27 @@
+﻿@model MadrinHotelCRM.DTO.DTOModels.MusteriDTO
+
+@{
+    ViewData["Title"] = "Müşteri Detayı";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">Ad Soyad</dt>
+    <dd class="col-sm-9">@Model.Ad @Model.Soyad</dd>
+    <dt class="col-sm-3">TC / Pasaport</dt>
+    <dd class="col-sm-9">@(Model.YabanciUyrukluMu ? Model.PasaportNo : Model.TcNo)</dd>
+    <dt class="col-sm-3">Email</dt>
+    <dd class="col-sm-9">@Model.Email</dd>
+    <dt class="col-sm-3">Telefon</dt>
+    <dd class="col-sm-9">@Model.TelNo</dd>
+    <dt class="col-sm-3">Doğum Tarihi</dt>
+    <dd class="col-sm-9">@Model.DogumTarihi.ToString("dd.MM.yyyy")</dd>
+    <dt class="col-sm-3">Cinsiyet</dt>
+    <dd class="col-sm-9">@Model.Cinsiyet</dd>
+    <dt class="col-sm-3">Adres</dt>
+    <dd class="col-sm-9">@Model.Adres</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.MusteriId" class="btn btn-warning">Düzenle</a>
+<a asp-action="Index" class="btn btn-secondary">Listeye Dön</a>

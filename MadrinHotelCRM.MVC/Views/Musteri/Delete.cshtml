@@ -1,0 +1,24 @@
+﻿@model MadrinHotelCRM.DTO.DTOModels.MusteriDTO
+
+@{
+    ViewData["Title"] = "Müşteri Sil";
+}
+
+<h2>@ViewData["Title"]</h2>
+<h4>Bu müşteriyi silmek istediğinize emin misiniz?</h4>
+<dl class="row">
+    <dt class="col-sm-2">Ad</dt>
+    <dd class="col-sm-10">@Model.Ad</dd>
+
+    <dt class="col-sm-2">Soyad</dt>
+    <dd class="col-sm-10">@Model.Soyad</dd>
+
+    <dt class="col-sm-2">Email</dt>
+    <dd class="col-sm-10">@Model.Email</dd>
+</dl>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="MusteriId" />
+    <button type="submit" class="btn btn-danger">Sil</button>
+    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+</form>
