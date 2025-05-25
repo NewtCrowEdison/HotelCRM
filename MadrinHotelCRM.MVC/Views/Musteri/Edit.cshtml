@@ -1,0 +1,62 @@
+﻿@model MadrinHotelCRM.DTO.DTOModels.MusteriDTO
+
+@{
+    ViewData["Title"] = "Müşteri Düzenle";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="MusteriId" />
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="Ad" class="form-label"></label>
+                <input asp-for="Ad" class="form-control" />
+                <span asp-validation-for="Ad" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Soyad" class="form-label"></label>
+                <input asp-for="Soyad" class="form-control" />
+                <span asp-validation-for="Soyad" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TcNo" class="form-label"></label>
+                <input asp-for="TcNo" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="PasaportNo" class="form-label"></label>
+                <input asp-for="PasaportNo" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="YabanciUyrukluMu" class="form-check-label"></label>
+                <input asp-for="YabanciUyrukluMu" class="form-check-input" type="checkbox" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label asp-for="TelNo" class="form-label"></label>
+                <input asp-for="TelNo" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="DogumTarihi" class="form-label"></label>
+                <input asp-for="DogumTarihi" class="form-control" type="date" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Cinsiyet" class="form-label"></label>
+                <select asp-for="Cinsiyet" class="form-select" asp-items="Html.GetEnumSelectList<MadrinHotelCRM.Entities.Enums.Cinsiyet>()"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Adres" class="form-label"></label>
+                <textarea asp-for="Adres" class="form-control"></textarea>
+            </div>
+        </div>
+    </div>
+    @Html.Partial("_MusteriForm", Model)
+    <button type="submit" class="btn btn-primary mt-3">Güncelle</button>
+    <a asp-action="Index" class="btn btn-secondary mt-3">İptal</a>
+</form>

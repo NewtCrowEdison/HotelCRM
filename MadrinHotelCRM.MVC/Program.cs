@@ -23,8 +23,6 @@ namespace MadrinHotelCRM.MVC
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            //builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<MadrinHotelCRMMVCContext>();
-
             // Identity
             builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddRoles<IdentityRole<string>>().AddEntityFrameworkStores<AppDbContext>();
 
@@ -56,12 +54,11 @@ namespace MadrinHotelCRM.MVC
             //  UnitOfWork ve Repositoryleri 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            //  Service Katmanı  (service eklenince açılacak)
-            // builder.Services.AddScoped<MusteriService>();
-            // builder.Services.AddScoped<RezervasyonService>();
-
             // MVC Controllerları 
             builder.Services.AddControllersWithViews();
+
+            // API den gelen Controllerlar için servis
+            builder.Services.AddHttpClient();
 
             var app = builder.Build();
 
@@ -80,6 +77,7 @@ namespace MadrinHotelCRM.MVC
             app.MapRazorPages();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.MapControllers();
 
             //  MVC Routing
             app.MapControllerRoute(

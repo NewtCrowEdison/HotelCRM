@@ -32,12 +32,13 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -87,7 +88,9 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                 {
                     MusteriId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TcNo = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: false),
+                    YabanciUyrukluMu = table.Column<bool>(type: "bit", nullable: false),
+                    PasaportNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    TcNo = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: true),
                     Ad = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Soyad = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     TelNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
@@ -127,7 +130,9 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                     Soyad = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Telefon = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TcKimlik = table.Column<int>(type: "int", nullable: false)
+                    YabanciUyrukluMu = table.Column<bool>(type: "bit", nullable: false),
+                    PasaportNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    TcKimlik = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -412,8 +417,6 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                     TarifeId = table.Column<int>(type: "int", nullable: false),
                     OlusturmaTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Durum = table.Column<int>(type: "int", nullable: false),
-                    OtelGiris = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    OtelCıkıs = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IptalTarihi = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IptalNedeni = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -487,6 +490,36 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PersonelRezervasyon",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PersonelId = table.Column<int>(type: "int", nullable: false),
+                    RezervasyonId = table.Column<int>(type: "int", nullable: false),
+                    CheckInTarihi = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CheckOutTarihi = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Durum = table.Column<int>(type: "int", nullable: false),
+                    Notlar = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PersonelRezervasyon", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PersonelRezervasyon_Personeller_PersonelId",
+                        column: x => x.PersonelId,
+                        principalTable: "Personeller",
+                        principalColumn: "PersonelId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PersonelRezervasyon_Rezervasyonlar_RezervasyonId",
+                        column: x => x.RezervasyonId,
+                        principalTable: "Rezervasyonlar",
+                        principalColumn: "RezervasyonId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RezervasyonPaketler",
                 columns: table => new
                 {
@@ -540,8 +573,7 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                 values: new object[,]
                 {
                     { "1", null, "Admin", "ADMIN" },
-                    { "2", null, "Personel", "PERSONEL" },
-                    { "3", null, "Musteri", "MUSTERI" }
+                    { "2", null, "Personel", "PERSONEL" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -624,6 +656,16 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                 column: "FaturaId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PersonelRezervasyon_PersonelId",
+                table: "PersonelRezervasyon",
+                column: "PersonelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PersonelRezervasyon_RezervasyonId",
+                table: "PersonelRezervasyon",
+                column: "RezervasyonId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Rezervasyonlar_MusteriId",
                 table: "Rezervasyonlar",
                 column: "MusteriId");
@@ -681,6 +723,9 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                 name: "Odemeler");
 
             migrationBuilder.DropTable(
+                name: "PersonelRezervasyon");
+
+            migrationBuilder.DropTable(
                 name: "RezervasyonPaketler");
 
             migrationBuilder.DropTable(
@@ -696,13 +741,13 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                 name: "Etiketler");
 
             migrationBuilder.DropTable(
-                name: "Personeller");
-
-            migrationBuilder.DropTable(
                 name: "Odalar");
 
             migrationBuilder.DropTable(
                 name: "Faturalar");
+
+            migrationBuilder.DropTable(
+                name: "Personeller");
 
             migrationBuilder.DropTable(
                 name: "EkPaketler");
