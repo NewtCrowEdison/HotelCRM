@@ -326,6 +326,137 @@ namespace MadrinHotelCRM.DataAccess.Context
                       .OnDelete(DeleteBehavior.Cascade);
 
             });
+            modelBuilder.Entity<EkPaket>().HasData(
+                new EkPaket
+                {
+                    EkPaketId = 1,
+                    PaketAdi = "Spa ve Masaj Paketi",
+                    PaketAciklama = "Misafirlerimize özel 1 saatlik spa ve masaj hizmeti.",
+                    Fiyat = 750.00m,
+                    OlusturmaTarihi = new DateTime(2025, 5, 1)
+                },
+                new EkPaket
+                {
+                    EkPaketId = 2,
+                    PaketAdi = "Havalimanı Transferi",
+                    PaketAciklama = "Geliş ve dönüş için VIP transfer hizmeti.",
+                    Fiyat = 1200.00m,
+                    OlusturmaTarihi = new DateTime(2025, 5, 1)
+                },
+                new EkPaket
+                {
+                    EkPaketId = 3,
+                    PaketAdi = "Romantik Akşam Yemeği",
+                    PaketAciklama = "Deniz manzaralı restoranda 2 kişilik özel akşam yemeği.",
+                    Fiyat = 950.00m,
+                    OlusturmaTarihi = new DateTime(2025, 5, 1)
+                },
+                new EkPaket
+                {
+                    EkPaketId = 4,
+                    PaketAdi = "Çocuk Bakımı Hizmeti",
+                    PaketAciklama = "Eğitimli personel tarafından saatlik çocuk bakımı.",
+                    Fiyat = 300.00m,
+                    OlusturmaTarihi = new DateTime(2025, 5, 1)
+                },
+                new EkPaket
+                {
+                    EkPaketId = 5,
+                    PaketAdi = "Yarım Gün Tekne Turu",
+                    PaketAciklama = "Bodrum koylarını keşfedeceğiniz 4 saatlik tekne turu.",
+                    Fiyat = 1800.00m,
+                    OlusturmaTarihi = new DateTime(2025, 5, 1)
+                });
+
+            modelBuilder.Entity<Tarife>().HasData(
+                new Tarife
+                {
+                    TarifeId = 1,
+                    TarifeAdi = "Yaz Sezonu Standart Tarife",
+                    Fiyat = 2800.00m,
+                    BaslangicTarihi = new DateTime(2025, 6, 1),
+                    BitisTarihi = new DateTime(2025, 8, 31),
+                    IndirimOrani = 0
+                },
+                new Tarife
+                {
+                    TarifeId = 2,
+                    TarifeAdi = "Kış Kampanyası",
+                    Fiyat = 1800.00m,
+                    BaslangicTarihi = new DateTime(2025, 1, 1),
+                    BitisTarihi = new DateTime(2025, 2, 28),
+                    IndirimOrani = 20
+                },
+                new Tarife
+                {
+                    TarifeId = 3,
+                    TarifeAdi = "Sevgililer Günü Paketi",
+                    Fiyat = 2200.00m,
+                    BaslangicTarihi = new DateTime(2025, 2, 10),
+                    BitisTarihi = new DateTime(2025, 2, 16),
+                    IndirimOrani = 15
+                },
+                new Tarife
+                {
+                    TarifeId = 4,
+                    TarifeAdi = "Bayram Özel Tarife",
+                    Fiyat = 3200.00m,
+                    BaslangicTarihi = new DateTime(2025, 4, 1),
+                    BitisTarihi = new DateTime(2025, 4, 15),
+                    IndirimOrani = 10
+                },
+                new Tarife
+                {
+                    TarifeId = 5,
+                    TarifeAdi = "Sonbahar Erken Rezervasyon",
+                    Fiyat = 2000.00m,
+                    BaslangicTarihi = new DateTime(2025, 10, 1),
+                    BitisTarihi = new DateTime(2025, 11, 30),
+                    IndirimOrani = 25
+                });
+
+            modelBuilder.Entity<OdaTipi>().HasData(
+                new OdaTipi
+                {
+                    OdaTipiId = 1,
+                    OdaTurAd = "Standart Tek Kişilik",
+                    Kapasite = 1,
+                    Fiyat = 1200.00m,
+                    OdaAciklama = "Konforlu tek kişilik yatak, şehir manzaralı, mini bar ve ücretsiz Wi-Fi."
+                },
+                new OdaTipi
+                {
+                    OdaTipiId = 2,
+                    OdaTurAd = "Standart Çift Kişilik",
+                    Kapasite = 2,
+                    Fiyat = 1800.00m,
+                    OdaAciklama = "Geniş çift kişilik yatak, klima, balkon ve televizyon."
+                },
+                new OdaTipi
+                {
+                    OdaTipiId = 3,
+                    OdaTurAd = "Deluxe Oda",
+                    Kapasite = 2,
+                    Fiyat = 2500.00m,
+                    OdaAciklama = "Deniz manzaralı, king size yatak, özel jakuzi, kahve makinesi."
+                },
+                new OdaTipi
+                {
+                    OdaTipiId = 4,
+                    OdaTurAd = "Aile Odası",
+                    Kapasite = 4,
+                    Fiyat = 3200.00m,
+                    OdaAciklama = "İki ayrı oda, geniş salon, çocuk yatağı, mutfak bölümü."
+                },
+                new OdaTipi
+                {
+                    OdaTipiId = 5,
+                    OdaTurAd = "Balayı Süiti",
+                    Kapasite = 2,
+                    Fiyat = 4000.00m,
+                    OdaAciklama = "Romantik dekorasyon, jakuzili banyo, özel teras, sürpriz ikramlar."
+                });
+
         }
     }
 }

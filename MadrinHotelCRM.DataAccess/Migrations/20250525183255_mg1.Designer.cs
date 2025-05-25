@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MadrinHotelCRM.DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250525131411_mg1")]
+    [Migration("20250525183255_mg1")]
     partial class mg1
     {
         /// <inheritdoc />

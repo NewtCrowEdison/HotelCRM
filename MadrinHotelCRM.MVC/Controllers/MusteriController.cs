@@ -104,6 +104,7 @@ namespace MadrinHotelCRM.MVC.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var response = await _httpClient.DeleteAsync($"api/musteri/{id}");

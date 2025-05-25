@@ -14,7 +14,7 @@ namespace MadrinHotelCRM.MVC.Controllers
 {
     public class UserController : Controller
     {
-     private readonly SignInManager<AppUser> _signInManager;
+       private readonly SignInManager<AppUser> _signInManager;
        private readonly UserManager<AppUser> _userManager;
        private readonly IConfiguration _configuration;
        
