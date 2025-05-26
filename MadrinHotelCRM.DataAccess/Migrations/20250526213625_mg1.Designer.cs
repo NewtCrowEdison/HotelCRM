@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MadrinHotelCRM.DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250526142911_mg3")]
-    partial class mg3
+    [Migration("20250526213625_mg1")]
+    partial class mg1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
