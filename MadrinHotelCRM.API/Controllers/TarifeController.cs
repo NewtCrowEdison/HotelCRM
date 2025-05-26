@@ -7,7 +7,7 @@ namespace MadrinHotelCRM.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TarifeController : ControllerBase
+    public class TarifeController : Controller
     {
         private readonly ITarifeService _tarifeService;
 

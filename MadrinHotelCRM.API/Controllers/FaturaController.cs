@@ -8,7 +8,7 @@ namespace MadrinHotelCRM.API.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-    public class FaturaController : ControllerBase
+    public class FaturaController : Controller
     {
         private readonly IFaturaService _faturaService;
 

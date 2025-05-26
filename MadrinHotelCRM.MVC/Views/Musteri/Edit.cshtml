@@ -4,59 +4,173 @@
     ViewData["Title"] = "Müşteri Düzenle";
 }
 
-<h2>@ViewData["Title"]</h2>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Madrin Hotel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            font-family: 'Segoe UI', sans-serif;
+        }
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="MusteriId" />
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label asp-for="Ad" class="form-label"></label>
-                <input asp-for="Ad" class="form-control" />
-                <span asp-validation-for="Ad" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Soyad" class="form-label"></label>
-                <input asp-for="Soyad" class="form-control" />
-                <span asp-validation-for="Soyad" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TcNo" class="form-label"></label>
-                <input asp-for="TcNo" class="form-control" />
-            </div>
-            <div class="form-group">
-                <label asp-for="PasaportNo" class="form-label"></label>
-                <input asp-for="PasaportNo" class="form-control" />
-            </div>
-            <div class="form-group">
-                <label asp-for="YabanciUyrukluMu" class="form-check-label"></label>
-                <input asp-for="YabanciUyrukluMu" class="form-check-input" type="checkbox" />
+        .navbar-custom {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            z-index: 20;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(6px);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom px-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">☰ MENÜ</a>
+            <div class="mx-auto text-white fw-bold fs-4">Madrin Hotel</div>
+            <div>
+                <button class="btn btn-outline-light me-2">BİZE ULAŞIN</button>
+                <button class="btn btn-light">REZERVASYON</button>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label asp-for="TelNo" class="form-label"></label>
-                <input asp-for="TelNo" class="form-control" />
-            </div>
-            <div class="form-group">
-                <label asp-for="Email" class="form-label"></label>
-                <input asp-for="Email" class="form-control" />
-            </div>
-            <div class="form-group">
-                <label asp-for="DogumTarihi" class="form-label"></label>
-                <input asp-for="DogumTarihi" class="form-control" type="date" />
-            </div>
-            <div class="form-group">
-                <label asp-for="Cinsiyet" class="form-label"></label>
-                <select asp-for="Cinsiyet" class="form-select" asp-items="Html.GetEnumSelectList<MadrinHotelCRM.Entities.Enums.Cinsiyet>()"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Adres" class="form-label"></label>
-                <textarea asp-for="Adres" class="form-control"></textarea>
-            </div>
+    </nav>
+
+    <!-- Müşteri Düzenle -->
+    <section class="py-5" style="background-color: #ffffff;">
+        <div class="container">
+            <h2 class="fw-bold text-center mb-4">@ViewData["Title"]</h2>
+            <form asp-action="Edit" method="post">
+                <input type="hidden" asp-for="MusteriId" />
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Ad" class="form-label"></label>
+                            <input asp-for="Ad" class="form-control" />
+                            <span asp-validation-for="Ad" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Soyad" class="form-label"></label>
+                            <input asp-for="Soyad" class="form-control" />
+                            <span asp-validation-for="Soyad" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="TcNo" class="form-label"></label>
+                            <input asp-for="TcNo" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="PasaportNo" class="form-label"></label>
+                            <input asp-for="PasaportNo" class="form-control" />
+                        </div>
+                        <div class="form-check mb-3">
+                            <input asp-for="YabanciUyrukluMu" class="form-check-input" type="checkbox" />
+                            <label asp-for="YabanciUyrukluMu" class="form-check-label"></label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="TelNo" class="form-label"></label>
+                            <input asp-for="TelNo" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="DogumTarihi" class="form-label"></label>
+                            <input asp-for="DogumTarihi" class="form-control" type="date" />
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Cinsiyet" class="form-label"></label>
+                            <select asp-for="Cinsiyet" class="form-select" asp-items="Html.GetEnumSelectList<MadrinHotelCRM.Entities.Enums.Cinsiyet>()"></select>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Adres" class="form-label"></label>
+                            <textarea asp-for="Adres" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Butonlar -->
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="bi bi-save"></i> Güncelle
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> İptal
+                    </a>
+                </div>
+            </form>
         </div>
-    </div>
-    @Html.Partial("_MusteriForm", Model)
-    <button type="submit" class="btn btn-primary mt-3">Güncelle</button>
-    <a asp-action="Index" class="btn btn-secondary mt-3">İptal</a>
-</form>
+    </section>
+
+    <!-- Hakkımızda Bölümü -->
+    <section class="py-3" style="background-color: #d6dbd0;">
+        <div class="container text-center">
+            <h2 class="display-6 fw-bold mb-2">Mükemmelliğin <em>Kalp</em> Notası</h2>
+            <p class="lead mx-auto mb-3" style="max-width: 700px; font-size: 1rem;">
+                Madrin Hotel olarak 2025 yılında lüks tatilin sınır tanımayan özgünlüğünü sizlerle buluşturduk.
+                Konaklama deneyimini bir hizmetten öte, ilham kaynağı kılmayı amaçlıyoruz.
+            </p>
+            <a href="/Home/Hakkimizda" class="btn btn-outline-dark mt-2 px-3 py-1">
+                Madrin Hotel’i Keşfedin →
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-white pt-5 pb-3" style="background-color: #2c2c2c;">
+        <div class="container">
+            <div class="row">
+                <!-- Logo / Otel adı -->
+                <div class="col-md-4 mb-4">
+                    <h4 class="fw-bold">Madrin Hotel</h4>
+                    <p class="small">Lüksü, konforu ve huzuru bir araya getiriyoruz. Tatilinizi unutulmaz kılmak için buradayız.</p>
+                </div>
+
+                <!-- Menü -->
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-semibold">Hızlı Erişim</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/Home/Hakkimizda" class="text-white text-decoration-none">Hakkımızda</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Odalar</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Rezervasyon</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">İletişim</a></li>
+                    </ul>
+                </div>
+
+                <!-- İletişim -->
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-semibold">İletişim</h5>
+                    <p class="mb-1"><i class="bi bi-telephone-fill me-2"></i> +90 212 000 00 00</p>
+                    <p class="mb-1"><i class="bi bi-envelope-fill me-2"></i> info@madrinhotel.com</p>
+                    <p><i class="bi bi-geo-alt-fill me-2"></i> Bodrum, Muğla / Türkiye</p>
+
+                    <!-- Sosyal ikonlar -->
+                    <div class="d-flex gap-3 mt-2">
+                        <a href="#" class="text-white fs-5"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-white fs-5"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-white fs-5"><i class="bi bi-twitter-x"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-light opacity-25">
+            <div class="text-center small">© 2025 Madrin Hotel. Tüm hakları saklıdır.</div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
