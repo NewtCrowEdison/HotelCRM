@@ -7,6 +7,11 @@ using MadrinHotelCRM.Services.Services;
 using MadrinHotelCRM.Business.Mapp;
 using MadrinHotelCRM.Entities.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using MadrinHotelCRM.API.Middlewares;
+using Serilog;
 
 
 namespace MadrinHotelCRM.API
@@ -33,6 +38,8 @@ namespace MadrinHotelCRM.API
                 options.AddPolicy("Personel", policy => policy.RequireRole("Personel"));
 
             });
+
+            builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.File("Logs/log.txt", rollingInterval: RollingInterval.Day));
 
             // AutoMapper: MapProfiles sınıfını kullanacak
             builder.Services.AddAutoMapper(typeof(MapProfiles));
@@ -64,6 +71,25 @@ namespace MadrinHotelCRM.API
             builder.Services.AddScoped<ITarifeService, TarifeService>();
             builder.Services.AddScoped<IOdaTarifeService, OdaTarifeService>();
 
+
+            builder.Services.AddAuthentication(x =>
+            {
+                     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x=>{
+                x.RequireHttpsMetadata = false;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = "MadrinHotelCrm.com",
+                    ValidateAudience = false,
+                    ValidAudience = "",//kimler için 
+
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration.GetSection("AppSettings:Secret").Value ?? "")), 
+                    ValidateLifetime = true
+                };
+            });
+
             //  Controller'lari ekle
             builder.Services.AddRazorPages();
             builder.Services.AddControllers();
@@ -86,7 +112,7 @@ namespace MadrinHotelCRM.API
 
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UseMiddleware<TrackingMiddleware>();
             app.MapRazorPages();
             app.MapControllers();
             app.MapControllerRoute(
