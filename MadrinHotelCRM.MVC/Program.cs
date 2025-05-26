@@ -23,15 +23,6 @@ namespace MadrinHotelCRM.MVC
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            // Identity
-            builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddRoles<IdentityRole<string>>().AddEntityFrameworkStores<AppDbContext>();
-
-            builder.Services.AddAuthorization(options =>
-            {
-                options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
-                options.AddPolicy("Personel", policy => policy.RequireRole("Personel"));
-                
-            });
 
            builder.Services.AddAuthentication(x =>
             {
@@ -74,8 +65,8 @@ namespace MadrinHotelCRM.MVC
 
             app.UseRouting();
 
-            app.MapRazorPages();
-            app.UseAuthentication();
+            //app.MapRazorPages();
+            //app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
 
