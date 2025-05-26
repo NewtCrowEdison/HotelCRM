@@ -6,6 +6,7 @@ using MadrinHotelCRM.Services.Interfaces;
 using MadrinHotelCRM.Services.Services;
 using MadrinHotelCRM.Business.Mapp;
 using MadrinHotelCRM.Entities.Models;
+using Microsoft.AspNetCore.Identity;
 
 
 namespace MadrinHotelCRM.API
@@ -22,8 +23,16 @@ namespace MadrinHotelCRM.API
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
             // Identity
-            builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<AppDbContext>();
+            builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddRoles<IdentityRole<string>>().AddEntityFrameworkStores<AppDbContext>().AddDefaultUI();
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("Personel", policy => policy.RequireRole("Personel"));
+
+            });
 
             // AutoMapper: MapProfiles sınıfını kullanacak
             builder.Services.AddAutoMapper(typeof(MapProfiles));
@@ -54,8 +63,9 @@ namespace MadrinHotelCRM.API
             builder.Services.AddScoped<IRezervasyonYonetimService, RezervasyonYonetimService>();
             builder.Services.AddScoped<ITarifeService, TarifeService>();
             builder.Services.AddScoped<IOdaTarifeService, OdaTarifeService>();
-            
+
             //  Controller'lari ekle
+            builder.Services.AddRazorPages();
             builder.Services.AddControllers();
 
             // Swagger/OpenAPI ekle
@@ -73,9 +83,15 @@ namespace MadrinHotelCRM.API
 
             app.UseHttpsRedirection();
 
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
+            app.MapRazorPages();
             app.MapControllers();
+            app.MapControllerRoute(
+                name: "areas",
+                pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
         }

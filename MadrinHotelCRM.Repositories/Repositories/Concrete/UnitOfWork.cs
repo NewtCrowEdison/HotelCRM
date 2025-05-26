@@ -54,7 +54,7 @@ namespace MadrinHotelCRM.Repositories.Repositories.Concrete
             return await _context.SaveChangesAsync();
         }
 
-        public void Dispose()
+        public void Dispose() // veritabanını bağlantılarını açık bırakmayı engelliyor 
         {
             _context.Dispose();
         }
