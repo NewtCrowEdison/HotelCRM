@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MadrinHotelCRM.DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250525183255_mg1")]
+    [Migration("20250526102129_mg1")]
     partial class mg1
     {
         /// <inheritdoc />
@@ -122,6 +122,48 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                     b.HasKey("EkPaketId");
 
                     b.ToTable("EkPaketler");
+
+                    b.HasData(
+                        new
+                        {
+                            EkPaketId = 1,
+                            Fiyat = 750.00m,
+                            OlusturmaTarihi = new DateTime(2025, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            PaketAciklama = "Misafirlerimize özel 1 saatlik spa ve masaj hizmeti.",
+                            PaketAdi = "Spa ve Masaj Paketi"
+                        },
+                        new
+                        {
+                            EkPaketId = 2,
+                            Fiyat = 1200.00m,
+                            OlusturmaTarihi = new DateTime(2025, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            PaketAciklama = "Geliş ve dönüş için VIP transfer hizmeti.",
+                            PaketAdi = "Havalimanı Transferi"
+                        },
+                        new
+                        {
+                            EkPaketId = 3,
+                            Fiyat = 950.00m,
+                            OlusturmaTarihi = new DateTime(2025, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            PaketAciklama = "Deniz manzaralı restoranda 2 kişilik özel akşam yemeği.",
+                            PaketAdi = "Romantik Akşam Yemeği"
+                        },
+                        new
+                        {
+                            EkPaketId = 4,
+                            Fiyat = 300.00m,
+                            OlusturmaTarihi = new DateTime(2025, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            PaketAciklama = "Eğitimli personel tarafından saatlik çocuk bakımı.",
+                            PaketAdi = "Çocuk Bakımı Hizmeti"
+                        },
+                        new
+                        {
+                            EkPaketId = 5,
+                            Fiyat = 1800.00m,
+                            OlusturmaTarihi = new DateTime(2025, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            PaketAciklama = "Bodrum koylarını keşfedeceğiniz 4 saatlik tekne turu.",
+                            PaketAdi = "Yarım Gün Tekne Turu"
+                        });
                 });
 
             modelBuilder.Entity("MadrinHotelCRM.Entities.Models.Etiket", b =>
@@ -407,6 +449,48 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                     b.HasKey("OdaTipiId");
 
                     b.ToTable("OdaTipleri");
+
+                    b.HasData(
+                        new
+                        {
+                            OdaTipiId = 1,
+                            Fiyat = 1200.00m,
+                            Kapasite = 1,
+                            OdaAciklama = "Konforlu tek kişilik yatak, şehir manzaralı, mini bar ve ücretsiz Wi-Fi.",
+                            OdaTurAd = "Standart Tek Kişilik"
+                        },
+                        new
+                        {
+                            OdaTipiId = 2,
+                            Fiyat = 1800.00m,
+                            Kapasite = 2,
+                            OdaAciklama = "Geniş çift kişilik yatak, klima, balkon ve televizyon.",
+                            OdaTurAd = "Standart Çift Kişilik"
+                        },
+                        new
+                        {
+                            OdaTipiId = 3,
+                            Fiyat = 2500.00m,
+                            Kapasite = 2,
+                            OdaAciklama = "Deniz manzaralı, king size yatak, özel jakuzi, kahve makinesi.",
+                            OdaTurAd = "Deluxe Oda"
+                        },
+                        new
+                        {
+                            OdaTipiId = 4,
+                            Fiyat = 3200.00m,
+                            Kapasite = 4,
+                            OdaAciklama = "İki ayrı oda, geniş salon, çocuk yatağı, mutfak bölümü.",
+                            OdaTurAd = "Aile Odası"
+                        },
+                        new
+                        {
+                            OdaTipiId = 5,
+                            Fiyat = 4000.00m,
+                            Kapasite = 2,
+                            OdaAciklama = "Romantik dekorasyon, jakuzili banyo, özel teras, sürpriz ikramlar.",
+                            OdaTurAd = "Balayı Süiti"
+                        });
                 });
 
             modelBuilder.Entity("MadrinHotelCRM.Entities.Models.Odeme", b =>
@@ -648,6 +732,53 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                     b.HasKey("TarifeId");
 
                     b.ToTable("Tarifeler");
+
+                    b.HasData(
+                        new
+                        {
+                            TarifeId = 1,
+                            BaslangicTarihi = new DateTime(2025, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            BitisTarihi = new DateTime(2025, 8, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Fiyat = 2800.00m,
+                            IndirimOrani = 0,
+                            TarifeAdi = "Yaz Sezonu Standart Tarife"
+                        },
+                        new
+                        {
+                            TarifeId = 2,
+                            BaslangicTarihi = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            BitisTarihi = new DateTime(2025, 2, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Fiyat = 1800.00m,
+                            IndirimOrani = 20,
+                            TarifeAdi = "Kış Kampanyası"
+                        },
+                        new
+                        {
+                            TarifeId = 3,
+                            BaslangicTarihi = new DateTime(2025, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            BitisTarihi = new DateTime(2025, 2, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Fiyat = 2200.00m,
+                            IndirimOrani = 15,
+                            TarifeAdi = "Sevgililer Günü Paketi"
+                        },
+                        new
+                        {
+                            TarifeId = 4,
+                            BaslangicTarihi = new DateTime(2025, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            BitisTarihi = new DateTime(2025, 4, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Fiyat = 3200.00m,
+                            IndirimOrani = 10,
+                            TarifeAdi = "Bayram Özel Tarife"
+                        },
+                        new
+                        {
+                            TarifeId = 5,
+                            BaslangicTarihi = new DateTime(2025, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            BitisTarihi = new DateTime(2025, 11, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Fiyat = 2000.00m,
+                            IndirimOrani = 25,
+                            TarifeAdi = "Sonbahar Erken Rezervasyon"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<string>", b =>
