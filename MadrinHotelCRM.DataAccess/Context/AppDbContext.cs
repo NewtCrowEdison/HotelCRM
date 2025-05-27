@@ -33,6 +33,9 @@ namespace MadrinHotelCRM.DataAccess.Context
         public DbSet<SistemLog> SistemLoglar { get; set; }
         public DbSet<Tarife> Tarifeler { get; set; }
         public DbSet<PersonelRezervasyon> PersonelRezervasyon { get; set; }
+        public DbSet<Departman> Departmanlar { get; set; }
+        public DbSet<MusteriRezervasyon> MusteriRezervasyonlar { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -326,6 +329,46 @@ namespace MadrinHotelCRM.DataAccess.Context
                       .OnDelete(DeleteBehavior.Cascade);
 
             });
+
+            //Departman Konfigürasyonu
+            modelBuilder.Entity<Departman>(entity =>
+            {
+                entity.HasKey(d => d.DepartmanId);
+
+                entity.Property(d => d.DepartmanAdi)
+                      .IsRequired()
+                      .HasMaxLength(100);
+
+                entity.HasMany(d => d.Personeller)
+                      .WithOne(p => p.Departman)
+                      .HasForeignKey(p => p.DepartmanId)
+                      .OnDelete(DeleteBehavior.Restrict); // Departman silinse bile personeller kalır
+            });
+
+            //MusteriRezervasyon Konfigürasyonu
+            modelBuilder.Entity<MusteriRezervasyon>(entity =>
+            {
+                entity.HasKey(mr => new { mr.MusteriId, mr.RezervasyonId }); // Composite key
+
+                entity.Property(mr => mr.GirisYaptiMi)
+                      .HasDefaultValue(false);
+
+                entity.HasOne(mr => mr.Musteri)
+                      .WithMany()
+                      .HasForeignKey(mr => mr.MusteriId)
+                      .OnDelete(DeleteBehavior.Restrict); // Müşteri silinse rezervasyonlar silinmesin .EF ve veritabanı kontrol eder, ilişkili veri varsa silinmesine izin vermez
+
+                entity.HasOne(mr => mr.Rezervasyon)
+                      .WithMany()
+                      .HasForeignKey(mr => mr.RezervasyonId)
+                      .OnDelete(DeleteBehavior.Restrict); // Rezervasyon silinse bağlantı kaybı olmasın
+
+                entity.HasOne(mr => mr.Personel)
+                      .WithMany()
+                      .HasForeignKey(mr => mr.PersonelId)
+                      .OnDelete(DeleteBehavior.Restrict); // Personel silinse loglar gitmesin
+            });
+
             modelBuilder.Entity<EkPaket>().HasData(
                 new EkPaket
                 {
@@ -456,7 +499,6 @@ namespace MadrinHotelCRM.DataAccess.Context
                     Fiyat = 4000.00m,
                     OdaAciklama = "Romantik dekorasyon, jakuzili banyo, özel teras, sürpriz ikramlar."
                 });
-
         }
     }
 }
