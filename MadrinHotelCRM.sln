@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MadrinHotelCRM.DTO", "Madri
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MadrinHotelCRM.Entities", "MadrinHotelCRM.Entities\MadrinHotelCRM.Entities.csproj", "{DC0F5E89-57A3-467F-B376-ED96BA06B2E4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MadrinHotelCRMAdmin.MVC", "MadrinHotelCRMAdmin.MVC\MadrinHotelCRMAdmin.MVC.csproj", "{FBE6EDA9-A4FF-44BA-870B-A881EDF89CFA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{DC0F5E89-57A3-467F-B376-ED96BA06B2E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC0F5E89-57A3-467F-B376-ED96BA06B2E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC0F5E89-57A3-467F-B376-ED96BA06B2E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBE6EDA9-A4FF-44BA-870B-A881EDF89CFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBE6EDA9-A4FF-44BA-870B-A881EDF89CFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBE6EDA9-A4FF-44BA-870B-A881EDF89CFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBE6EDA9-A4FF-44BA-870B-A881EDF89CFA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
