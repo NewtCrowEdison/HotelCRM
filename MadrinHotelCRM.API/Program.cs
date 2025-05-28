@@ -70,6 +70,8 @@ namespace MadrinHotelCRM.API
             builder.Services.AddScoped<IRezervasyonYonetimService, RezervasyonYonetimService>();
             builder.Services.AddScoped<ITarifeService, TarifeService>();
             builder.Services.AddScoped<IOdaTarifeService, OdaTarifeService>();
+            builder.Services.AddScoped<IMusteriRezervasyonService, MusteriRezervasyonService>();
+            builder.Services.AddScoped<IDepartmanService, DepartmanService>();
 
 
             builder.Services.AddAuthentication(x =>
