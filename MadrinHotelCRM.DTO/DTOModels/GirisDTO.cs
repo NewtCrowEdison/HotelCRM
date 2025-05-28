@@ -11,5 +11,8 @@ namespace MadrinHotelCRM.DTO.DTOModels
         public string Email { get; set; }
         public string Sifre { get; set; }
         public bool BeniHatirla { get; set; }
+        //kullanıcının seçtiği rol u controller a taşımak için.
+        public string UserRole { get; set; }
+
     }
 }

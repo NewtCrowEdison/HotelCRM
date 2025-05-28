@@ -29,6 +29,14 @@ namespace MadrinHotelCRM.MVC.Controllers
         {
             if (!ModelState.IsValid)
                 return View(model);
+            //giriş başarılıysa paneline yönlendirmek için.
+
+            if (model.UserRole == "Admin")
+                return RedirectToAction("Index", "AdminPanel");
+
+            if (model.UserRole == "Personel")
+                return RedirectToAction("Index", "PersonelPanel");
+
 
             var response = await _api.PostAsJsonAsync("api/authorization/giris", model);
             if (response.IsSuccessStatusCode)
