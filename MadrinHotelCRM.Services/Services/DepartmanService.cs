@@ -13,54 +13,53 @@ namespace MadrinHotelCRM.Services.Services
 {
     public class DepartmanService : IDepartmanService
     {
-        private readonly IGenericRepository<Departman> _repo;
+        private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
-        private readonly IUnitOfWork _unitOfWork;
 
-        public DepartmanService(
-            IGenericRepository<Departman> repo,
-            IMapper mapper,
-            IUnitOfWork unitOfWork)
+        public DepartmanService(IUnitOfWork uow, IMapper mapper)
         {
-            _repo = repo;
+            _uow = uow;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
         }
 
         public async Task<IEnumerable<DepartmanDTO>> GetAllAsync()
         {
-            var entities = await _repo.GetAllAsync();
-            return _mapper.Map<IEnumerable<DepartmanDTO>>(entities);
+            var list = await _uow.Read<Departman>().GetAllAsync();
+            return _mapper.Map<IEnumerable<DepartmanDTO>>(list);
         }
 
         public async Task<DepartmanDTO> GetByIdAsync(int id)
         {
-            var entity = await _repo.GetByIdAsync(id);
+            var entity = await _uow.Read<Departman>().GetByIdAsync(id);
             return _mapper.Map<DepartmanDTO>(entity);
         }
 
         public async Task<DepartmanDTO> CreateAsync(DepartmanDTO dto)
         {
             var entity = _mapper.Map<Departman>(dto);
-            await _repo.AddAsync(entity);
-            await _unitOfWork.CommitAsync();
+            await _uow.Create<Departman>().AddAsync(entity);
+            await _uow.CommitAsync();
             return _mapper.Map<DepartmanDTO>(entity);
         }
 
         public async Task<DepartmanDTO> UpdateAsync(DepartmanDTO dto)
         {
-            var entity = _mapper.Map<Departman>(dto);
-            _repo.Update(entity);
-            await _unitOfWork.CommitAsync();
-            return _mapper.Map<DepartmanDTO>(entity);
+            var mevcut = await _uow.Read<Departman>().GetByIdAsync(dto.DepartmanId);
+            if (mevcut == null) return null;
+
+            _mapper.Map(dto, mevcut);
+            _uow.Update<Departman>().Update(mevcut);
+            await _uow.CommitAsync();
+            return _mapper.Map<DepartmanDTO>(mevcut);
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var entity = await _repo.GetByIdAsync(id);
+            var entity = await _uow.Read<Departman>().GetByIdAsync(id);
             if (entity == null) return false;
-            _repo.Delete(entity);
-            await _unitOfWork.CommitAsync();
+
+            _uow.Delete<Departman>().Delete(entity);
+            await _uow.CommitAsync();
             return true;
         }
     }

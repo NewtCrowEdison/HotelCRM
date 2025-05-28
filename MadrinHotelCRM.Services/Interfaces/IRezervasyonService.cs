@@ -15,13 +15,14 @@ namespace MadrinHotelCRM.Services.Interfaces
     /// Bağımlı olduğu tablolar : Rezervasyon, RezervasyonPaket
     /// </summary>
     public interface IRezervasyonService
-    {  
+    {
         Task<RezervasyonDTO> GetByIdAsync(int id);
         Task<IEnumerable<RezervasyonDTO>> GetAllAsync();
         Task<IEnumerable<RezervasyonDTO>> FindAsync(Expression<Func<Rezervasyon, bool>> predicate);
         Task<RezervasyonDTO> CreateAsync(RezervasyonDTO dto);
         Task<RezervasyonDTO> UpdateAsync(RezervasyonDTO dto);
         Task<bool> DeleteAsync(int id);
+
         Task<RezervasyonDTO> UpdateStatusAsync(int rezervasyonId, RezervasyonDurum yeniDurum);
         Task<bool> CancelReservationAsync(int rezervasyonId);
         Task<bool> AddPackageAsync(int rezervasyonId, int paketId);

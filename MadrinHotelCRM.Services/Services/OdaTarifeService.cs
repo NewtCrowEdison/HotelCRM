@@ -17,84 +17,67 @@ namespace MadrinHotelCRM.Services.Services
 {
     public class OdaTarifeService : IOdaTarifeService
     {
-        private readonly IGenericRepository<OdaTarife> _odaTarifeRepo;
+        private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
-        private readonly IUnitOfWork _unitOfWork;
 
-        public OdaTarifeService(
-            IGenericRepository<OdaTarife> odaTarifeRepo,
-            IMapper mapper,
-            IUnitOfWork unitOfWork)
+        public OdaTarifeService(IUnitOfWork uow, IMapper mapper)
         {
-            _odaTarifeRepo = odaTarifeRepo;
+            _uow = uow;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
         }
 
-        public async Task<OdaTarifeDTO> AddAsync(OdaTarifeDTO odaTarifeDTO)
+        public async Task<IEnumerable<OdaTarifeDTO>> GetAllAsync()
         {
-           var entity =  _mapper.Map<OdaTarife>(odaTarifeDTO);
-            await _odaTarifeRepo.AddAsync(entity);
-            await _unitOfWork.CommitAsync();
+            var list = await _uow.Read<OdaTarife>().GetAllAsync();
+            return _mapper.Map<IEnumerable<OdaTarifeDTO>>(list);
+        }
+
+        public async Task<OdaTarifeDTO> AddAsync(OdaTarifeDTO dto)
+        {
+            var entity = _mapper.Map<OdaTarife>(dto);
+            await _uow.Create<OdaTarife>().AddAsync(entity);
+            await _uow.CommitAsync();
             return _mapper.Map<OdaTarifeDTO>(entity);
         }
 
         public async Task<bool> DeleteAsync(int odaId, int tarifeId)
         {
-            // OdaTarife nesnesini silmeden önce odaId ve tarifeId'yi kontrol et
-            var odaTarife =await _odaTarifeRepo.GetAllAsync();
-             var typeOdaTarife = odaTarife.FirstOrDefault(x => x.OdaId == odaId && x.TarifeId == tarifeId);
-               
-            if (typeOdaTarife == null)
-            {
-                throw new ArgumentException("OdaTarife bulunamadı.");
-            }
+            var existing = (await _uow.Read<OdaTarife>()
+                .FindAsync(x => x.OdaId == odaId && x.TarifeId == tarifeId))
+                .FirstOrDefault();
 
-            
-            _odaTarifeRepo.Delete(typeOdaTarife);
-            await _unitOfWork.CommitAsync();
+            if (existing == null)
+                return false;
+
+            _uow.Delete<OdaTarife>().Delete(existing);
+            await _uow.CommitAsync();
             return true;
-        }
-
-        public async Task<IEnumerable<OdaTarifeDTO>> GetAllAsync()
-        {
-            var list = await _odaTarifeRepo.GetAllAsync();
-            return _mapper.Map<IEnumerable<OdaTarifeDTO>>(list);
         }
 
         public async Task<IEnumerable<OdaTarifeDTO>> GetByOdaIdAsync(int odaId)
         {
-            var oda = await _odaTarifeRepo.GetAllAsync();
-            var odaTarifeList = oda.Where(x => x.OdaId == odaId).ToList();
-            if (odaTarifeList == null || odaTarifeList.Count == 0)
-            {
-                throw new ArgumentException("OdaTarife bulunamadı.");
-            }
-            return _mapper.Map<IEnumerable<OdaTarifeDTO>>(odaTarifeList);
+            var list = await _uow.Read<OdaTarife>().FindAsync(x => x.OdaId == odaId);
+            return _mapper.Map<IEnumerable<OdaTarifeDTO>>(list);
         }
 
         public async Task<IEnumerable<OdaTarifeDTO>> GetByTarifeIdAsync(int tarifeId)
         {
-            var oda = await _odaTarifeRepo.GetAllAsync();
-            var odaTarifeList = oda.Where(x => x.TarifeId == tarifeId).ToList();
-            if (odaTarifeList == null || odaTarifeList.Count == 0)
-            {
-                throw new ArgumentException("OdaTarife bulunamadı.");
-            }
-            return _mapper.Map<IEnumerable<OdaTarifeDTO>>(odaTarifeList);
+            var list = await _uow.Read<OdaTarife>().FindAsync(x => x.TarifeId == tarifeId);
+            return _mapper.Map<IEnumerable<OdaTarifeDTO>>(list);
         }
 
         public async Task<OdaTarifeDTO> GetDetailsAsync(int odaId, int tarifeId)
         {
-            var odaTarife = await _odaTarifeRepo.GetAllAsync();
-            var typeOdaTarife = odaTarife.FirstOrDefault(x => x.OdaId == odaId && x.TarifeId == tarifeId);
-            if (typeOdaTarife == null)
-            {
-                throw new ArgumentException("OdaTarife bulunamadı.");
-            }
-            return _mapper.Map<OdaTarifeDTO>(typeOdaTarife);
+            var existing = (await _uow.Read<OdaTarife>()
+                .FindAsync(x => x.OdaId == odaId && x.TarifeId == tarifeId))
+                .FirstOrDefault();
+
+            if (existing == null)
+                return null;
+
+            return _mapper.Map<OdaTarifeDTO>(existing);
         }
 
-       
+
     }
 }

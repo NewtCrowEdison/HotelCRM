@@ -12,62 +12,60 @@ namespace MadrinHotelCRM.Services.Services
 {
     public class GenelTakipService : IGenelTakipService
     {
-        private readonly IGenericRepository<GenelTakip> _genelTakipRepo;
+        private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
-        private readonly IUnitOfWork _unitOfWork;
 
-        public GenelTakipService(
-            IGenericRepository<GenelTakip> genelTakipRepo,
-            IMapper mapper,
-            IUnitOfWork unitOfWork)
+        public GenelTakipService(IUnitOfWork uow, IMapper mapper)
         {
-            _genelTakipRepo = genelTakipRepo;
+            _uow = uow;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
         }
 
         public async Task<GenelTakipDTO> GetByIdAsync(int id)
         {
-            var entity = await _genelTakipRepo.GetByIdAsync(id);
+            var entity = await _uow.Read<GenelTakip>().GetByIdAsync(id);
             return _mapper.Map<GenelTakipDTO>(entity);
         }
 
         public async Task<IEnumerable<GenelTakipDTO>> GetAllAsync()
         {
-            var entities = await _genelTakipRepo.GetAllAsync();
-            return _mapper.Map<IEnumerable<GenelTakipDTO>>(entities);
+            var list = await _uow.Read<GenelTakip>().GetAllAsync();
+            return _mapper.Map<IEnumerable<GenelTakipDTO>>(list);
         }
 
         public async Task<IEnumerable<GenelTakipDTO>> FindAsync(Expression<Func<GenelTakip, bool>> predicate)
         {
-            var entities = await _genelTakipRepo.FindAsync(predicate);
-            return _mapper.Map<IEnumerable<GenelTakipDTO>>(entities);
+            var list = await _uow.Read<GenelTakip>().FindAsync(predicate);
+            return _mapper.Map<IEnumerable<GenelTakipDTO>>(list);
         }
 
         public async Task<GenelTakipDTO> CreateAsync(GenelTakipDTO dto)
         {
             var entity = _mapper.Map<GenelTakip>(dto);
-            await _genelTakipRepo.AddAsync(entity);
-            await _unitOfWork.CommitAsync();
+            await _uow.Create<GenelTakip>().AddAsync(entity);
+            await _uow.CommitAsync();
             return _mapper.Map<GenelTakipDTO>(entity);
         }
 
         public async Task<GenelTakipDTO> UpdateAsync(GenelTakipDTO dto)
         {
-            var entity = _mapper.Map<GenelTakip>(dto);
-            _genelTakipRepo.Update(entity);
-            await _unitOfWork.CommitAsync();
-            return dto;
+            var mevcut = await _uow.Read<GenelTakip>().GetByIdAsync(dto.GenelTakipId);
+            if (mevcut == null) return null;
+
+            _mapper.Map(dto, mevcut);
+            _uow.Update<GenelTakip>().Update(mevcut);
+            await _uow.CommitAsync();
+
+            return _mapper.Map<GenelTakipDTO>(mevcut);
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var entity = await _genelTakipRepo.GetByIdAsync(id);
-            if (entity == null)
-                return false;
+            var entity = await _uow.Read<GenelTakip>().GetByIdAsync(id);
+            if (entity == null) return false;
 
-            _genelTakipRepo.Delete(entity);
-            await _unitOfWork.CommitAsync();
+            _uow.Delete<GenelTakip>().Delete(entity);
+            await _uow.CommitAsync();
             return true;
         }
     }

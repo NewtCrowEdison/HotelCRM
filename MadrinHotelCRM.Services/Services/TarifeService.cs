@@ -15,93 +15,87 @@ namespace MadrinHotelCRM.Services.Services
 {
     public class TarifeService : ITarifeService
     {
-
-        private readonly IGenericRepository<Tarife> _tarifeRepo;
+        private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
-        private readonly IUnitOfWork _unitOfWork;
 
-        public TarifeService(IGenericRepository<Tarife> tarifeRepo, IMapper mapper, IUnitOfWork unitofWork)
+        public TarifeService(IUnitOfWork uow, IMapper mapper)
         {
-            _tarifeRepo = tarifeRepo;
+            _uow = uow;
             _mapper = mapper;
-            _unitOfWork = unitofWork;
         }
-        public async Task<TarifeDTO> ApplyDiscountAsync(int tarifeId, decimal discountRate)
-        {
-            var tarife = await _tarifeRepo.GetByIdAsync(tarifeId);
-            if (tarife == null)
-                return null;
-               
-           _tarifeRepo.Update(tarife);
-           await _unitOfWork.CommitAsync();
 
-            return _mapper.Map<TarifeDTO>(tarife);
+        public async Task<TarifeDTO> GetByIdAsync(int id)
+        {
+            var entity = await _uow.Read<Tarife>().GetByIdAsync(id);
+            return _mapper.Map<TarifeDTO>(entity);
+        }
+
+        public async Task<IEnumerable<TarifeDTO>> GetAllAsync()
+        {
+            var list = await _uow.Read<Tarife>().GetAllAsync();
+            return _mapper.Map<IEnumerable<TarifeDTO>>(list);
+        }
+
+        public async Task<IEnumerable<TarifeDTO>> FindAsync(Expression<Func<Tarife, bool>> predicate)
+        {
+            var list = await _uow.Read<Tarife>().FindAsync(predicate);
+            return _mapper.Map<IEnumerable<TarifeDTO>>(list);
         }
 
         public async Task<TarifeDTO> CreateAsync(TarifeDTO dto)
         {
             var entity = _mapper.Map<Tarife>(dto);
-            await _tarifeRepo.AddAsync(entity);
-            await _unitOfWork.CommitAsync();
+            await _uow.Create<Tarife>().AddAsync(entity);
+            await _uow.CommitAsync();
             return _mapper.Map<TarifeDTO>(entity);
+        }
+
+        public async Task<TarifeDTO> UpdateAsync(TarifeDTO dto)
+        {
+            var mevcut = await _uow.Read<Tarife>().GetByIdAsync(dto.TarifeId);
+            if (mevcut == null) return null;
+
+            _mapper.Map(dto, mevcut);
+            _uow.Update<Tarife>().Update(mevcut);
+            await _uow.CommitAsync();
+            return _mapper.Map<TarifeDTO>(mevcut);
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var entity = await _tarifeRepo.GetByIdAsync(id);
-            if (entity == null) return (false);
-            _tarifeRepo.Delete(entity);
-            await _unitOfWork.CommitAsync();
-            return (true);
+            var entity = await _uow.Read<Tarife>().GetByIdAsync(id);
+            if (entity == null) return false;
+
+            _uow.Delete<Tarife>().Delete(entity);
+            await _uow.CommitAsync();
+            return true;
         }
 
-        public async Task<IEnumerable<TarifeDTO>> FindAsync(Expression<Func<Tarife, bool>> predicate)
+        public async Task<TarifeDTO> ApplyDiscountAsync(int tarifeId, decimal discountRate)
         {
-            var list = await _tarifeRepo.FindAsync(predicate);
-            return _mapper.Map<IEnumerable<TarifeDTO>>(list);
-        }
+            var entity = await _uow.Read<Tarife>().GetByIdAsync(tarifeId);
+            if (entity == null) return null;
 
-        public async Task<IEnumerable<TarifeDTO>> GetAllAsync()
-        {
-                var list = await _tarifeRepo.GetAllAsync();
-            return _mapper.Map<IEnumerable<TarifeDTO>>(list);
-        }
-            
-        public async Task<TarifeDTO> GetByIdAsync(int id)
-        {
-            var list = await _tarifeRepo.GetByIdAsync(id);
-            return _mapper.Map<TarifeDTO>(list);
+            // İndirimi uygula
+            entity.IndirimOrani = (int)discountRate;
+            _uow.Update<Tarife>().Update(entity);
+            await _uow.CommitAsync();
+
+            return _mapper.Map<TarifeDTO>(entity);
         }
 
         public async Task<IEnumerable<TarifeDTO>> GetDiscountedTariffsAsync()
         {
-             var tarifeler = await _tarifeRepo.GetAllAsync();
-
-             var indirimliTarifeler = tarifeler
-               .Where(t =>  t.IndirimOrani > 0) 
-              .Select(t => _mapper.Map<TarifeDTO>(t))
-             .ToList();
-
-            return indirimliTarifeler;
+            // İndirim oranı > 0 olan tarifeleri getir
+            var list = await _uow.Read<Tarife>().FindAsync(t => t.IndirimOrani > 0);
+            return _mapper.Map<IEnumerable<TarifeDTO>>(list);
         }
 
-        public async  Task<IEnumerable<TarifeDTO>> GetRoomTariffsAsync(int odaId)
+        public async Task<IEnumerable<TarifeDTO>> GetRoomTariffsAsync(int odaId)
         {
-                 var tarifeler = await _tarifeRepo.GetAllAsync();
-                return tarifeler
-                .Where(t => t.OdaTarifeleri.Any(ot => ot.OdaId == odaId) )
-                .Select(t => _mapper.Map<TarifeDTO>(t))
-                .ToList();
-
-        }
-
-
-        public async Task<TarifeDTO> UpdateAsync(TarifeDTO dto)
-        {
-            var entity =  _mapper.Map<Tarife>(dto);
-            _tarifeRepo.Update(entity);
-            await _unitOfWork.CommitAsync();
-            return dto;
+            // Odaya ait tarifeleri getir
+            var list = await _uow.Read<Tarife>().FindAsync(t => t.OdaTarifeleri.Any(ot => ot.OdaId == odaId));
+            return _mapper.Map<IEnumerable<TarifeDTO>>(list);
         }
     }
 }

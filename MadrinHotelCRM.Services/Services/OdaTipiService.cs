@@ -14,62 +14,61 @@ namespace MadrinHotelCRM.Services.Services
 {
     public class OdaTipiService : IOdaTipiService
     {
-        private readonly IGenericRepository<OdaTipi> _odaTipiRepo;
+        private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
-        private readonly IUnitOfWork _unitOfWork;
 
-        public OdaTipiService(
-            IGenericRepository<OdaTipi> odaTipiRepo,
-            IMapper mapper,
-            IUnitOfWork unitOfWork)
+        public OdaTipiService(IUnitOfWork uow, IMapper mapper)
         {
-            _odaTipiRepo = odaTipiRepo;
+            _uow = uow;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
         }
 
         public async Task<OdaTipiDTO> CreateAsync(OdaTipiDTO dto)
         {
             var entity = _mapper.Map<OdaTipi>(dto);
-            await _odaTipiRepo.AddAsync(entity);
-            await _unitOfWork.CommitAsync();
+            await _uow.Create<OdaTipi>().AddAsync(entity);
+            await _uow.CommitAsync();
             return _mapper.Map<OdaTipiDTO>(entity);
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var entity = await _odaTipiRepo.GetByIdAsync(id);
+            var entity = await _uow.Read<OdaTipi>().GetByIdAsync(id);
             if (entity == null) return false;
 
-            _odaTipiRepo.Delete(entity);
-            await _unitOfWork.CommitAsync();
+            _uow.Delete<OdaTipi>().Delete(entity);
+            await _uow.CommitAsync();
             return true;
         }
 
         public async Task<IEnumerable<OdaTipiDTO>> FindAsync(Expression<Func<OdaTipi, bool>> predicate)
         {
-            var entities = await _odaTipiRepo.FindAsync(predicate);
-            return _mapper.Map<IEnumerable<OdaTipiDTO>>(entities);
+            var list = await _uow.Read<OdaTipi>().FindAsync(predicate);
+            return _mapper.Map<IEnumerable<OdaTipiDTO>>(list);
         }
 
         public async Task<IEnumerable<OdaTipiDTO>> GetAllAsync()
         {
-            var entities = await _odaTipiRepo.GetAllAsync();
-            return _mapper.Map<IEnumerable<OdaTipiDTO>>(entities);
+            var list = await _uow.Read<OdaTipi>().GetAllAsync();
+            return _mapper.Map<IEnumerable<OdaTipiDTO>>(list);
         }
 
         public async Task<OdaTipiDTO> GetByIdAsync(int id)
         {
-            var entity = await _odaTipiRepo.GetByIdAsync(id);
+            var entity = await _uow.Read<OdaTipi>().GetByIdAsync(id);
             return _mapper.Map<OdaTipiDTO>(entity);
         }
 
         public async Task<OdaTipiDTO> UpdateAsync(OdaTipiDTO dto)
         {
-            var entity = _mapper.Map<OdaTipi>(dto);
-            _odaTipiRepo.Update(entity);
-            await _unitOfWork.CommitAsync();
-            return dto;
+            var mevcut = await _uow.Read<OdaTipi>().GetByIdAsync(dto.OdaTipiId);
+            if (mevcut == null) return null;
+
+            _mapper.Map(dto, mevcut);
+            _uow.Update<OdaTipi>().Update(mevcut);
+            await _uow.CommitAsync();
+
+            return _mapper.Map<OdaTipiDTO>(mevcut);
         }
     }
 }

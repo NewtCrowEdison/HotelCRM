@@ -15,132 +15,111 @@ namespace MadrinHotelCRM.Services.Services
 {
     public class RezervasyonService : IRezervasyonService
     {
-
-         private readonly IGenericRepository<Rezervasyon> _rezervasyonRepo;
+        private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
-        private readonly IUnitOfWork _unitOfWork;
 
-        public RezervasyonService(IGenericRepository<Rezervasyon> rezervasyonRepo, IMapper mapper, IUnitOfWork unitofWork)
+        public RezervasyonService(IUnitOfWork uow, IMapper mapper)
         {
-            _rezervasyonRepo = rezervasyonRepo;
+            _uow = uow;
             _mapper = mapper;
-            _unitOfWork = unitofWork;
-        }
-        public async Task<bool> AddPackageAsync(int rezervasyonId, int paketId)
-        {
-            var rezervasyon = await _rezervasyonRepo.GetByIdAsync(rezervasyonId);
-             if (rezervasyon == null)
-             return false;
-
-             rezervasyon.RezervasyonPaketler.Any(rp=> rp.PaketId == paketId);
-
-             _rezervasyonRepo.Update(rezervasyon);
-             await _unitOfWork.CommitAsync();
-
-             return true;
-        }
-
-        public async Task<bool> CancelReservationAsync(int rezervasyonId)
-        {
-            var rezervasyon = await _rezervasyonRepo.GetByIdAsync(rezervasyonId);
-            if (rezervasyon == null)
-                  return false;
-
-             rezervasyon.Durum = RezervasyonDurum.İptalEdildi;
-
-
-             _rezervasyonRepo.Update(rezervasyon);
-             await _unitOfWork.CommitAsync();
-
-            return true;
-        }
-
-        public async Task<RezervasyonDTO> CreateAsync(RezervasyonDTO dto)
-        {
-             var entity = _mapper.Map<Rezervasyon>(dto);
-            await _rezervasyonRepo.AddAsync(entity);
-            await _unitOfWork.CommitAsync();
-            return _mapper.Map<RezervasyonDTO>(entity);
-        }
-
-        public async Task<bool> DeleteAsync(int id)
-        {
-            var entity = await _rezervasyonRepo.GetByIdAsync(id);
-            if (entity == null) return (false);
-            _rezervasyonRepo.Delete(entity);
-            await _unitOfWork.CommitAsync();
-            return (true);
-        }
-
-        public async Task<IEnumerable<RezervasyonDTO>> FindAsync(Expression<Func<Rezervasyon, bool>> predicate)
-        {
-             var list = await _rezervasyonRepo.FindAsync(predicate);
-            return _mapper.Map<IEnumerable<RezervasyonDTO>>(list);
         }
 
         public async Task<IEnumerable<RezervasyonDTO>> GetAllAsync()
         {
-            var list = await _rezervasyonRepo.GetAllAsync();
+            var list = await _uow.Read<Rezervasyon>().GetAllAsync();
             return _mapper.Map<IEnumerable<RezervasyonDTO>>(list);
         }
 
         public async Task<RezervasyonDTO> GetByIdAsync(int id)
         {
-            var list = await _rezervasyonRepo.GetByIdAsync(id);
-            return _mapper.Map<RezervasyonDTO>(list);
+            var entity = await _uow.Read<Rezervasyon>().GetByIdAsync(id);
+            return _mapper.Map<RezervasyonDTO>(entity);
         }
 
-        public async Task<IEnumerable<RezervasyonPaketDTO>> GetPackagesAsync(int rezervasyonId)
+        public async Task<IEnumerable<RezervasyonDTO>> FindAsync(Expression<Func<Rezervasyon, bool>> predicate)
         {
-             var rezervasyon = await _rezervasyonRepo.GetByIdAsync(rezervasyonId);
-             if (rezervasyon == null)
-                  return Enumerable.Empty<RezervasyonPaketDTO>();
-
-             var paketler = rezervasyon.RezervasyonPaketler ?? new List<RezervasyonPaket>();
-
-             var paketDtos = paketler.Select(p => _mapper.Map<RezervasyonPaketDTO>(p)).ToList();
-
-             return paketDtos;
+            var list = await _uow.Read<Rezervasyon>().FindAsync(predicate);
+            return _mapper.Map<IEnumerable<RezervasyonDTO>>(list);
         }
 
-        public async Task<bool> RemovePackageAsync(int rezervasyonId, int paketId)
+        public async Task<RezervasyonDTO> CreateAsync(RezervasyonDTO dto)
         {
-             var rezervasyon = await _rezervasyonRepo.GetByIdAsync(rezervasyonId);
-             if (rezervasyon == null)
-                   return false;
-
-             var paket = rezervasyon.RezervasyonPaketler?.FirstOrDefault(rp => rp.PaketId == paketId);
-               if (paket == null)
-                 return false;
-
-            rezervasyon.RezervasyonPaketler.Remove(paket);
-
-             _rezervasyonRepo.Update(rezervasyon);
-              await _unitOfWork.CommitAsync();
-
-              return true;
+            var entity = _mapper.Map<Rezervasyon>(dto);
+            await _uow.Create<Rezervasyon>().AddAsync(entity);
+            await _uow.CommitAsync();
+            return _mapper.Map<RezervasyonDTO>(entity);
         }
 
         public async Task<RezervasyonDTO> UpdateAsync(RezervasyonDTO dto)
         {
-             var entity =  _mapper.Map<Rezervasyon>(dto);
-            _rezervasyonRepo.Update(entity);
-            await _unitOfWork.CommitAsync();
-            return dto;
+            var mevcut = await _uow.Read<Rezervasyon>().GetByIdAsync(dto.RezervasyonId);
+            if (mevcut == null) return null;
+            _mapper.Map(dto, mevcut);
+            _uow.Update<Rezervasyon>().Update(mevcut);
+            await _uow.CommitAsync();
+            return _mapper.Map<RezervasyonDTO>(mevcut);
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var entity = await _uow.Read<Rezervasyon>().GetByIdAsync(id);
+            if (entity == null) return false;
+            _uow.Delete<Rezervasyon>().Delete(entity);
+            await _uow.CommitAsync();
+            return true;
         }
 
         public async Task<RezervasyonDTO> UpdateStatusAsync(int rezervasyonId, RezervasyonDurum yeniDurum)
         {
-              var rezervasyon = await _rezervasyonRepo.GetByIdAsync(rezervasyonId);
-              if (rezervasyon == null)
-                      return null;
+            var rezervasyon = await _uow.Read<Rezervasyon>().GetByIdAsync(rezervasyonId);
+            if (rezervasyon == null) return null;
+            rezervasyon.Durum = yeniDurum;
+            _uow.Update<Rezervasyon>().Update(rezervasyon);
+            await _uow.CommitAsync();
+            return _mapper.Map<RezervasyonDTO>(rezervasyon);
+        }
 
-             rezervasyon.Durum = yeniDurum;
+        public async Task<bool> CancelReservationAsync(int rezervasyonId)
+        {
+            var rezervasyon = await _uow.Read<Rezervasyon>().GetByIdAsync(rezervasyonId);
+            if (rezervasyon == null) return false;
+            rezervasyon.Durum = RezervasyonDurum.İptalEdildi;
+            _uow.Update<Rezervasyon>().Update(rezervasyon);
+            await _uow.CommitAsync();
+            return true;
+        }
 
-             _rezervasyonRepo.Update(rezervasyon);
-             await _unitOfWork.CommitAsync();
+        public async Task<bool> AddPackageAsync(int rezervasyonId, int paketId)
+        {
+            var rezervasyon = await _uow.Read<Rezervasyon>().GetByIdAsync(rezervasyonId);
+            if (rezervasyon == null) return false;
+            rezervasyon.RezervasyonPaketler ??= new List<RezervasyonPaket>();
+            if (!rezervasyon.RezervasyonPaketler.Any(rp => rp.PaketId == paketId))
+            {
+                rezervasyon.RezervasyonPaketler.Add(new RezervasyonPaket { RezervasyonId = rezervasyonId, PaketId = paketId });
+                _uow.Update<Rezervasyon>().Update(rezervasyon);
+                await _uow.CommitAsync();
+            }
+            return true;
+        }
 
-             return _mapper.Map<RezervasyonDTO>(rezervasyon);
+        public async Task<bool> RemovePackageAsync(int rezervasyonId, int paketId)
+        {
+            var rezervasyon = await _uow.Read<Rezervasyon>().GetByIdAsync(rezervasyonId);
+            if (rezervasyon?.RezervasyonPaketler == null) return false;
+            var paket = rezervasyon.RezervasyonPaketler.FirstOrDefault(rp => rp.PaketId == paketId);
+            if (paket == null) return false;
+            rezervasyon.RezervasyonPaketler.Remove(paket);
+            _uow.Update<Rezervasyon>().Update(rezervasyon);
+            await _uow.CommitAsync();
+            return true;
+        }
+
+        public async Task<IEnumerable<RezervasyonPaketDTO>> GetPackagesAsync(int rezervasyonId)
+        {
+            var rezervasyon = await _uow.Read<Rezervasyon>().GetByIdAsync(rezervasyonId);
+            if (rezervasyon?.RezervasyonPaketler == null) return Enumerable.Empty<RezervasyonPaketDTO>();
+            return rezervasyon.RezervasyonPaketler.Select(rp => _mapper.Map<RezervasyonPaketDTO>(rp)).ToList();
         }
     }
 }
