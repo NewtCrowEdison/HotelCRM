@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace MadrinHotelCRM.Services.Interfaces
 {
+    /// <summary>
+    /// IHttpClientService, HTTP işlemleri için ortak bir arayüz sağlar.
+    /// IHttpClientFactory ile çalışacak şekilde tasarlanmıştır ve test edilebilirliği artırır.
+    /// </summary>
     public interface IHttpClientService
     {
         Task<T> GetAsync<T>(string url);

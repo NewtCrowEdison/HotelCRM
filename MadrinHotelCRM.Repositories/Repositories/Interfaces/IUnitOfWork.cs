@@ -7,24 +7,16 @@ using MadrinHotelCRM.Entities.Models;
 
 namespace MadrinHotelCRM.Repositories.Repositories.Interfaces
 {
+    /// <summary>
+    /// IUnitOfWork arayüzü, tüm veritabanı işlemleri için repository'leri tek bir merkezden yönetmeyi sağlar.
+    /// Bu yapı, veritabanı işlemlerinde "Transaction" benzeri davranış sağlar.
+    /// </summary>
     public interface IUnitOfWork : IDisposable
     {
-        IGenericRepository<EkPaket> EkPaketler { get; }
-        IGenericRepository<Etiket> Etiketler { get; }
-        IGenericRepository<Fatura> Faturalar { get; }
-        IGenericRepository<GenelTakip> GenelTakipler { get; }
-        IGenericRepository<GeriBildirim> GeriBildirimler { get; }
-        IGenericRepository<Musteri> Musteriler { get; }
-        IGenericRepository<Oda> Odalar { get; }
-        IGenericRepository<OdaTarife> OdaTarifeleri { get; }
-        IGenericRepository<OdaTipi> OdaTipleri { get; }
-        IGenericRepository<Odeme> Odemeler { get; }
-        IGenericRepository<Personel> Personeller { get; }
-        IGenericRepository<Rezervasyon> Rezervasyonlar { get; }
-        IGenericRepository<RezervasyonPaket> RezervasyonPaketler { get; }
-        IGenericRepository<SistemLog> SistemLoglar { get; }
-        IGenericRepository<Tarife> Tarifeler { get; }
-
+        IReadRepository<T> Read<T>() where T : class;
+        ICreateRepository<T> Create<T>() where T : class;
+        IUpdateRepository<T> Update<T>() where T : class;
+        IDeleteRepository<T> Delete<T>() where T : class;
         Task<int> CommitAsync();
     }
 }
