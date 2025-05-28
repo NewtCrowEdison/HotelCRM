@@ -21,7 +21,5 @@ namespace MadrinHotelCRM.Services.Interfaces
         Task<PersonelDTO> CreateAsync(PersonelDTO dto);
         Task<PersonelDTO> UpdateAsync(PersonelDTO dto);
         Task<bool> DeleteAsync(int id);
-
-       
     }
 }

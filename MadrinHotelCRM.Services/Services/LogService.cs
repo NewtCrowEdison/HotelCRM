@@ -14,69 +14,91 @@ namespace MadrinHotelCRM.Services.Services
 {
     public class LogService : ILogService
     {
-        private readonly IGenericRepository<SistemLog> _logRepo; // veritabanındaki SistemLog kayıtlarına erişebilmek ve güncelleme yapabilmek için
+        private readonly IUnitOfWork _uow;// Veritabanı işlemlerini yönetmek için UnitOfWork entegrasyonu
+        private readonly IMapper _mapper;// Entity-DTO dönüşümlerini sağlamak için mapper
 
-        private readonly IMapper _mapper; // DTO ve Entitiy arasında dönüşüm yapabilmek için
-
-        private readonly IUnitOfWork _unitOfWork; // Repo üzerinde yapılan birden fazla değişikliği tek bir işlem ile kaydetmeyi sağlayabilmek için
-
-        public LogService(IGenericRepository<SistemLog> logRepo,IMapper mapper,IUnitOfWork unitOfWork)
+      
+        public LogService(IUnitOfWork uow, IMapper mapper)
         {
-            _logRepo = logRepo;
-            _mapper = mapper;
-            _unitOfWork = unitOfWork;
-        } // dışarıdan gelen logRepo, mapper ve unitOfWork alarak servis içinde kullanabilmeyi sağlamak için Constructor.
-
-        // Kayıt oluşturma anında kullanılır 
-        public async Task<SistemLogDTO> CreateAsync(SistemLogDTO dto)
-        {
-            var entity = _mapper.Map<SistemLog>(dto); // DTO dan Entitye dönüştürürüz 
-            await _logRepo.AddAsync(entity); // Repoya ekleme işlemini gerçekleştiririz
-            await _unitOfWork.CommitAsync(); // Değişikliği veritabanına kaydetme işlemini gerçekleştiririz
-            return _mapper.Map<SistemLogDTO>(entity); // Entityi tekrardan DTO ya çeviririz
+            _uow = uow;            
+            _mapper = mapper;     
         }
 
-        //Silme işelmi için kullanırız: 
-        public async Task<bool> DeleteAsync(int id)
-        {
-            var entity = await _logRepo.GetByIdAsync(id); // Id ile entity getiririz
-            if (entity == null) 
-            {
-                return false;
-            } // eğer Id ile eşleşen yok ise false döneriz
-
-            _logRepo.Delete(entity); // eşleşen var ise sileriz
-            await _unitOfWork.CommitAsync(); // değişikliği kaydederiz
-            return true; 
-        }
-
-        public async Task<IEnumerable<SistemLogDTO>> FindAsync(Expression<Func<SistemLog, bool>> filtre) // bu parametre ile hangi kayıtları isteyeceğimzi belirtiriz
-        {
-            var logKayitlari = await _logRepo.FindAsync(filtre); // sadece filtreye uyan kayıtları çekmek için
-            return _mapper.Map<IEnumerable<SistemLogDTO>>(logKayitlari); // entity modelini dto ya çevirerek döndürmek için
-        }
-
-        // Tüm kayıtlatı Listelemek için: 
-        public async Task<IEnumerable<SistemLogDTO>> GetAllAsync()
-        {
-            var entities = await _logRepo.GetAllAsync(); // tüm kayıtları alırız
-            return _mapper.Map<IEnumerable<SistemLogDTO>>(entities); // DTO ya çevirip geri döndürürüz
-        } 
-
-        // Id ile eşleşen kaydı getimek için kullanırız :
+        // Verilen ID’ye ait log kaydını getirir.
         public async Task<SistemLogDTO> GetByIdAsync(int id)
         {
-            var entity = await _logRepo.GetByIdAsync(id); // Id ile eşleşen kaydı alırız
-            return _mapper.Map<SistemLogDTO>(entity); // DTO ya çevirerek tekrar yollarız
+            //Repositoryden entityyi çekeriz
+            var entity = await _uow.Read<SistemLog>().GetByIdAsync(id);
+            //Entityi DTOya dönüştürüp döndürürüz
+            return _mapper.Map<SistemLogDTO>(entity);
         }
 
-        // Kayıt güncelleme için kullanırız: 
+    
+        // Tüm log kayıtlarını listeler.
+        public async Task<IEnumerable<SistemLogDTO>> GetAllAsync()
+        {
+            //Tüm entityleri çekeriz
+            var list = await _uow.Read<SistemLog>().GetAllAsync();
+            //Listeyi DTO listesine dönüştürürüz döndürüz
+            return _mapper.Map<IEnumerable<SistemLogDTO>>(list);
+        }
+
+       
+        // Belirli bir filtreye uyan log kayıtlarını getirir.
+        public async Task<IEnumerable<SistemLogDTO>> FindAsync(Expression<Func<SistemLog, bool>> predicate)
+        {
+            // Filtreye göre entityleri çekeriz
+            var list = await _uow.Read<SistemLog>().FindAsync(predicate);
+            // DTO listesine dönüştürür döndürürüz
+            return _mapper.Map<IEnumerable<SistemLogDTO>>(list);
+        }
+
+      
+        // Yeni bir log kaydı oluşturur.
+        public async Task<SistemLogDTO> CreateAsync(SistemLogDTO dto)
+        {
+            //DTOdan entityye dönüştürürz
+            var entity = _mapper.Map<SistemLog>(dto);
+            // Repositorye ekleriz
+            await _uow.Create<SistemLog>().AddAsync(entity);
+            //Değişiklikleri kaydetme işlemi
+            await _uow.CommitAsync();
+            //Kaydedilen entityi DTOya dönüştürüp döndürürüz
+            return _mapper.Map<SistemLogDTO>(entity);
+        }
+
+        // Mevcut bir log kaydını güncelleriz:
         public async Task<SistemLogDTO> UpdateAsync(SistemLogDTO dto)
         {
-            var entity = _mapper.Map<SistemLog>(dto); // DTO dan Entity e çeviririz
-            _logRepo.Update(entity); // Repodaki güncelleme metodunu çağırırarak güncelleriz
-            await _unitOfWork.CommitAsync(); // Kayıt işlemini gerçekleştirirz
-            return _mapper.Map<SistemLogDTO>(entity); // güncelediğim entitiy i DTOya dönüştürüp döndürürüm.
+            //Mevcut kaydı çekeriz
+            var mevcut = await _uow.Read<SistemLog>().GetByIdAsync(dto.SistemLogId);
+            if (mevcut == null)
+                return null;    // Kayıt bulunamazsa null döndürmek için
+
+            //DTOdan gelen alanlarla mevcut entityyi güncelleme
+            _mapper.Map(dto, mevcut);
+            //Değişiklikleri işaretleme
+            _uow.Update<SistemLog>().Update(mevcut);
+            //Kaydetme işlemi
+            await _uow.CommitAsync();
+            //Güncellenen entityi DTOya dönüştürüp  döndürürüz
+            return _mapper.Map<SistemLogDTO>(mevcut);
+        }
+
+        
+        // Belirtilen ID’ye sahip log kaydını siler.
+        public async Task<bool> DeleteAsync(int id)
+        {
+            //Kaydı çekeriz
+            var entity = await _uow.Read<SistemLog>().GetByIdAsync(id);
+            if (entity == null)
+                return false;   // Kayıt yoksa false döndürür
+
+            //Silme işlemini yaparız
+            _uow.Delete<SistemLog>().Delete(entity);
+            //Veritabanını Kaydederiz
+            await _uow.CommitAsync();
+            return true;
         }
     }
 }

@@ -15,60 +15,60 @@ namespace MadrinHotelCRM.Services.Services
 {
     public class PersonelService : IPersonelService
     {
-         private readonly IGenericRepository<Personel> _personelRepo;
+        private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
-        private readonly IUnitOfWork _unitOfWork;
 
-        public PersonelService(IGenericRepository<Personel> personelRepo, IMapper mapper, IUnitOfWork unitofWork)
+        public PersonelService(IUnitOfWork uow, IMapper mapper)
         {
-            _personelRepo = personelRepo;
+            _uow = uow;
             _mapper = mapper;
-            _unitOfWork = unitofWork;
         }
+
         public async Task<PersonelDTO> CreateAsync(PersonelDTO dto)
         {
-           var entity =  _mapper.Map<Personel>(dto);
-            await _personelRepo.AddAsync(entity);
-            await _unitOfWork.CommitAsync();
+            var entity = _mapper.Map<Personel>(dto);
+            await _uow.Create<Personel>().AddAsync(entity);
+            await _uow.CommitAsync();
             return _mapper.Map<PersonelDTO>(entity);
-        }
-
-        public async Task<bool> DeleteAsync(int id)
-        {
-             var entity = await _personelRepo.GetByIdAsync(id);
-            if (entity == null) return (false);
-            _personelRepo.Delete(entity);
-            await _unitOfWork.CommitAsync();
-            return (true);
-        }
-
-        public async Task<IEnumerable<PersonelDTO>> FindAsync(Expression<Func<Personel, bool>> predicate)
-        {
-             var list = await _personelRepo.FindAsync(predicate);
-            return _mapper.Map<IEnumerable<PersonelDTO>>(list);
-        }
-
-        public async Task<IEnumerable<PersonelDTO>> GetAllAsync()
-        {
-            var list = await _personelRepo.GetAllAsync();
-            return _mapper.Map<IEnumerable<PersonelDTO>>(list);
         }
 
         public async Task<PersonelDTO> GetByIdAsync(int id)
         {
-             var list = await _personelRepo.GetByIdAsync(id);
-            return _mapper.Map<PersonelDTO>(list);
+            var entity = await _uow.Read<Personel>().GetByIdAsync(id);
+            return _mapper.Map<PersonelDTO>(entity);
+        }
+
+        public async Task<IEnumerable<PersonelDTO>> GetAllAsync()
+        {
+            var list = await _uow.Read<Personel>().GetAllAsync();
+            return _mapper.Map<IEnumerable<PersonelDTO>>(list);
+        }
+
+        public async Task<IEnumerable<PersonelDTO>> FindAsync(Expression<Func<Personel, bool>> predicate)
+        {
+            var list = await _uow.Read<Personel>().FindAsync(predicate);
+            return _mapper.Map<IEnumerable<PersonelDTO>>(list);
         }
 
         public async Task<PersonelDTO> UpdateAsync(PersonelDTO dto)
         {
-             var entity =  _mapper.Map<Personel>(dto);
-            _personelRepo.Update(entity);
-            await _unitOfWork.CommitAsync();
-            return dto;
+            var mevcut = await _uow.Read<Personel>().GetByIdAsync(dto.PersonelId);
+            if (mevcut == null) return null;
+
+            _mapper.Map(dto, mevcut);
+            _uow.Update<Personel>().Update(mevcut);
+            await _uow.CommitAsync();
+            return _mapper.Map<PersonelDTO>(mevcut);
         }
 
-        
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var entity = await _uow.Read<Personel>().GetByIdAsync(id);
+            if (entity == null) return false;
 
+            _uow.Delete<Personel>().Delete(entity);
+            await _uow.CommitAsync();
+            return true;
+        }
     }
 }

@@ -12,14 +12,12 @@ namespace MadrinHotelCRM.Services.Services
     /// </summary>
     public interface IOdaTarifeService
     {
-          
-          Task<IEnumerable<OdaTarifeDTO>> GetAllAsync();
-          Task<OdaTarifeDTO> AddAsync(OdaTarifeDTO odaTarifeDTO );
-          
-          Task<bool> DeleteAsync(int odaId, int tarifeId);
-          
-          Task<IEnumerable<OdaTarifeDTO>> GetByOdaIdAsync(int odaId);
-          Task<IEnumerable<OdaTarifeDTO>> GetByTarifeIdAsync(int tarifeId);
-          Task<OdaTarifeDTO> GetDetailsAsync(int odaId, int tarifeId);
+
+        Task<IEnumerable<OdaTarifeDTO>> GetAllAsync();
+        Task<OdaTarifeDTO> AddAsync(OdaTarifeDTO dto);
+        Task<bool> DeleteAsync(int odaId, int tarifeId);
+        Task<IEnumerable<OdaTarifeDTO>> GetByOdaIdAsync(int odaId);
+        Task<IEnumerable<OdaTarifeDTO>> GetByTarifeIdAsync(int tarifeId);
+        Task<OdaTarifeDTO> GetDetailsAsync(int odaId, int tarifeId);
     }
 }

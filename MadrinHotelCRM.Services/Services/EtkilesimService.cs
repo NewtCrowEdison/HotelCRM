@@ -13,62 +13,58 @@ namespace MadrinHotelCRM.Services.Services
 {
     public class EtkilesimService : IEtkilesimService
     {
-        private readonly IGenericRepository<MusteriEtkilesim> _etkilesimRepo;
+        private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
-        private readonly IUnitOfWork _unitOfWork;
-
-        public EtkilesimService(
-            IGenericRepository<MusteriEtkilesim> etkilesimRepo,
-            IMapper mapper,
-            IUnitOfWork unitOfWork)
+        public EtkilesimService(IUnitOfWork uow, IMapper mapper)
         {
-            _etkilesimRepo = etkilesimRepo;
+            _uow = uow;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
         }
-
         public async Task<MusteriEtkilesimDTO> GetByIdAsync(int id)
         {
-            var entity = await _etkilesimRepo.GetByIdAsync(id);
+            var entity = await _uow.Read<MusteriEtkilesim>().GetByIdAsync(id);
             return _mapper.Map<MusteriEtkilesimDTO>(entity);
         }
 
         public async Task<IEnumerable<MusteriEtkilesimDTO>> GetAllAsync()
         {
-            var entities = await _etkilesimRepo.GetAllAsync();
-            return _mapper.Map<IEnumerable<MusteriEtkilesimDTO>>(entities);
+            var list = await _uow.Read<MusteriEtkilesim>().GetAllAsync();
+            return _mapper.Map<IEnumerable<MusteriEtkilesimDTO>>(list);
         }
 
         public async Task<IEnumerable<MusteriEtkilesimDTO>> FindAsync(Expression<Func<MusteriEtkilesim, bool>> predicate)
         {
-            var entities = await _etkilesimRepo.FindAsync(predicate);
-            return _mapper.Map<IEnumerable<MusteriEtkilesimDTO>>(entities);
+            var list = await _uow.Read<MusteriEtkilesim>().FindAsync(predicate);
+            return _mapper.Map<IEnumerable<MusteriEtkilesimDTO>>(list);
         }
 
         public async Task<MusteriEtkilesimDTO> CreateAsync(MusteriEtkilesimDTO dto)
         {
             var entity = _mapper.Map<MusteriEtkilesim>(dto);
-            await _etkilesimRepo.AddAsync(entity);
-            await _unitOfWork.CommitAsync();
+            await _uow.Create<MusteriEtkilesim>().AddAsync(entity);
+            await _uow.CommitAsync();
             return _mapper.Map<MusteriEtkilesimDTO>(entity);
         }
 
         public async Task<MusteriEtkilesimDTO> UpdateAsync(MusteriEtkilesimDTO dto)
         {
-            var entity = _mapper.Map<MusteriEtkilesim>(dto);
-            _etkilesimRepo.Update(entity);
-            await _unitOfWork.CommitAsync();
-            return dto;
+            var mevcut = await _uow.Read<MusteriEtkilesim>().GetByIdAsync(dto.MusteriEtkilesimId);
+            if (mevcut == null) return null;
+
+            _mapper.Map(dto, mevcut);
+            _uow.Update<MusteriEtkilesim>().Update(mevcut);
+            await _uow.CommitAsync();
+
+            return _mapper.Map<MusteriEtkilesimDTO>(mevcut);
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var entity = await _etkilesimRepo.GetByIdAsync(id);
-            if (entity == null)
-                return false;
+            var entity = await _uow.Read<MusteriEtkilesim>().GetByIdAsync(id);
+            if (entity == null) return false;
 
-            _etkilesimRepo.Delete(entity);
-            await _unitOfWork.CommitAsync();
+            _uow.Delete<MusteriEtkilesim>().Delete(entity);
+            await _uow.CommitAsync();
             return true;
         }
     }

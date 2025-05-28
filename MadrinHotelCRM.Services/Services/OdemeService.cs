@@ -14,62 +14,60 @@ namespace MadrinHotelCRM.Services.Services
 {
     public class OdemeService : IOdemeService
     {
-        private readonly IGenericRepository<Odeme> _odemeRepo;
+        private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
-        private readonly IUnitOfWork _unitOfWork;
 
-        public OdemeService(
-            IGenericRepository<Odeme> odemeRepo,
-            IMapper mapper,
-            IUnitOfWork unitOfWork)
+        public OdemeService(IUnitOfWork uow, IMapper mapper)
         {
-            _odemeRepo = odemeRepo;
+            _uow = uow;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
         }
 
         public async Task<OdemeDTO> CreateAsync(OdemeDTO dto)
         {
             var entity = _mapper.Map<Odeme>(dto);
-            await _odemeRepo.AddAsync(entity);
-            await _unitOfWork.CommitAsync();
+            await _uow.Create<Odeme>().AddAsync(entity);
+            await _uow.CommitAsync();
             return _mapper.Map<OdemeDTO>(entity);
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var entity = await _odemeRepo.GetByIdAsync(id);
+            var entity = await _uow.Read<Odeme>().GetByIdAsync(id);
             if (entity == null) return false;
 
-            _odemeRepo.Delete(entity);
-            await _unitOfWork.CommitAsync();
+            _uow.Delete<Odeme>().Delete(entity);
+            await _uow.CommitAsync();
             return true;
         }
 
         public async Task<IEnumerable<OdemeDTO>> FindAsync(Expression<Func<Odeme, bool>> predicate)
         {
-            var entities = await _odemeRepo.FindAsync(predicate);
-            return _mapper.Map<IEnumerable<OdemeDTO>>(entities);
+            var list = await _uow.Read<Odeme>().FindAsync(predicate);
+            return _mapper.Map<IEnumerable<OdemeDTO>>(list);
         }
 
         public async Task<IEnumerable<OdemeDTO>> GetAllAsync()
         {
-            var entities = await _odemeRepo.GetAllAsync();
-            return _mapper.Map<IEnumerable<OdemeDTO>>(entities);
+            var list = await _uow.Read<Odeme>().GetAllAsync();
+            return _mapper.Map<IEnumerable<OdemeDTO>>(list);
         }
 
         public async Task<OdemeDTO> GetByIdAsync(int id)
         {
-            var entity = await _odemeRepo.GetByIdAsync(id);
+            var entity = await _uow.Read<Odeme>().GetByIdAsync(id);
             return _mapper.Map<OdemeDTO>(entity);
         }
 
         public async Task<OdemeDTO> UpdateAsync(OdemeDTO dto)
         {
-            var entity = _mapper.Map<Odeme>(dto);
-            _odemeRepo.Update(entity);
-            await _unitOfWork.CommitAsync();
-            return dto;
+            var mevcut = await _uow.Read<Odeme>().GetByIdAsync(dto.OdemeId);
+            if (mevcut == null) return null;
+
+            _mapper.Map(dto, mevcut);
+            _uow.Update<Odeme>().Update(mevcut);
+            await _uow.CommitAsync();
+            return _mapper.Map<OdemeDTO>(mevcut);
         }
     }
 }

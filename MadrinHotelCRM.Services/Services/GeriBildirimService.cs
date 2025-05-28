@@ -14,67 +14,89 @@ namespace MadrinHotelCRM.Services.Services
 {
     public class GeriBildirimService : IGeriBildirimService
     {
-        private readonly IGenericRepository<GeriBildirim> _geriBildirimRepo;
-        private readonly IMapper _mapper; // Dto - Entity eşlemelerini gerçekleştirmek için
-        private readonly IUnitOfWork _unitOfWork; // Değişiklikleri toplu kaydetmekiçin
+        private readonly IUnitOfWork _uow; // repository erişimi ve transaction kontrolu yaparız
+        private readonly IMapper _mapper; // Entity - DTO dönüşümleri gerçekleştirilir.
 
-        public GeriBildirimService(IGenericRepository<GeriBildirim> geriBildirimRepo,IMapper mapper,IUnitOfWork unitOfWork)
+    
+        public GeriBildirimService(IUnitOfWork uow, IMapper mapper)
         {
-            _geriBildirimRepo = geriBildirimRepo;
-            _mapper = mapper;
-            _unitOfWork = unitOfWork;
+            _uow = uow;        
+            _mapper = mapper;      
         }
 
-        // geri bildirim oluşturmak için 
-        public async Task<GeriBildirimDTO> CreateAsync(GeriBildirimDTO dto)
-        {
-            var entity = _mapper.Map<GeriBildirim>(dto); // Dto yu entity e çeviririz
-            await _geriBildirimRepo.AddAsync(entity); // Yeni kaydı ekleriz
-            await _unitOfWork.CommitAsync(); // veritabanına kaydederiz
-            return _mapper.Map<GeriBildirimDTO>(entity); // oluşturulan entitiy i tekrar dto ya döndürürüz
-        }
-
-        // Silme işlemi için :
-        public async Task<bool> DeleteAsync(int id)
-        {
-            var entity = await _geriBildirimRepo.GetByIdAsync(id); // eşleşen ID deki kaydı çekeriz
-            if (entity == null)
-            {
-                return false;
-            } // o Id de kayıt yok ise false döner 
-            _geriBildirimRepo.Delete(entity); // eşleşme var ise sileriz
-            await _unitOfWork.CommitAsync(); // veritabanının son halini kaydederiz
-            return true;
-        }
-
-        // koşula uyan geribiidirm kayıtlarını listelemek için 
-        public async Task<IEnumerable<GeriBildirimDTO>> FindAsync(Expression<Func<GeriBildirim, bool>> filtre)
-        {
-            var entities = await _geriBildirimRepo.FindAsync(filtre); // koşula uyan kayıtları buluruz
-            return _mapper.Map<IEnumerable<GeriBildirimDTO>>(entities); // DTO listesi olarak döneriz
-        }
-        
-        // geri bildirim kayıtlarını lstelemek için 
-        public async Task<IEnumerable<GeriBildirimDTO>> GetAllAsync()
-        {
-            var entities = await _geriBildirimRepo.GetAllAsync();
-            return _mapper.Map<IEnumerable<GeriBildirimDTO>>(entities);
-        }
-
-        // id ile eşleşen kayıtları listelemek için
+        // Belirtilen ID'ye sahip geri bildirimi getirir.
         public async Task<GeriBildirimDTO> GetByIdAsync(int id)
         {
-            var entity = await _geriBildirimRepo.GetByIdAsync(id);
+            // Repository'den entity'yi alırız
+            var entity = await _uow.Read<GeriBildirim>().GetByIdAsync(id);
+            // Entity'i DTO'ya dönüştürüp gerii döndürürüz
             return _mapper.Map<GeriBildirimDTO>(entity);
         }
 
-        // güncelleme yapabilmek iiçin ;
+        // Tüm geri bildirim kayıtlarını listelemek için;
+        public async Task<IEnumerable<GeriBildirimDTO>> GetAllAsync()
+        {
+            //Tüm entity'leri çekeriz
+            var entities = await _uow.Read<GeriBildirim>().GetAllAsync();
+            //Listeyi DTO listesine dönüştürüp geri döndürürüz
+            return _mapper.Map<IEnumerable<GeriBildirimDTO>>(entities);
+        }
+
+  
+        // Belirli bir filtreye uyan geri bildirimleri getirmek için
+        public async Task<IEnumerable<GeriBildirimDTO>> FindAsync(Expression<Func<GeriBildirim, bool>> predicate)
+        {
+            //Filtreye uygun entityleri çekeriz
+            var entities = await _uow.Read<GeriBildirim>().FindAsync(predicate);
+            //DTO listesine dönüştürürüz ve döndürürürz
+            return _mapper.Map<IEnumerable<GeriBildirimDTO>>(entities);
+        }
+
+        // Yeni bir geri bildirim oluşturma:
+        public async Task<GeriBildirimDTO> CreateAsync(GeriBildirimDTO dto)
+        {
+            //DTO'yu Entity'e dönüştürme:
+            var entity = _mapper.Map<GeriBildirim>(dto);
+            //Repositorye ekleme
+            await _uow.Create<GeriBildirim>().AddAsync(entity);
+            //Değişiklikleri kaydetme
+            await _uow.CommitAsync();
+            //Kaydedilen entityi DTOya dönüştürüp döndürme
+            return _mapper.Map<GeriBildirimDTO>(entity);
+        }
+
+     
+        // Mevcut bir geri bildirimi günceller.
         public async Task<GeriBildirimDTO> UpdateAsync(GeriBildirimDTO dto)
-        { 
-            var entity = _mapper.Map<GeriBildirim>(dto); // DTO yu Entity e çevirmek için
-            _geriBildirimRepo.Update(entity); // Repoda güncelleme işlemini gerçekleştirirz
-            await _unitOfWork.CommitAsync(); // veritabanına kaydederiz
-            return _mapper.Map<GeriBildirimDTO>(entity); // entity i tekrar dto ya çevirir döneriz
+        {
+            //Mevcut kaydı çekeriz
+            var mevcut = await _uow.Read<GeriBildirim>().GetByIdAsync(dto.GeriBildirimId);
+            if (mevcut == null)
+                return null;    // Kayıt yoksa null döneriz
+
+            //DTO'dan gelen alanlarla mevcut entityi güncelleriz
+            _mapper.Map(dto, mevcut);
+            //Değişiklik işaretleme yapılır
+            _uow.Update<GeriBildirim>().Update(mevcut);
+            //Kaydet
+            await _uow.CommitAsync();
+            //Güncellenen entity'i DTO'ya dönüştürür ve döndürürüz
+            return _mapper.Map<GeriBildirimDTO>(mevcut);
+        }
+
+        // Belirtilen ID'ye sahip geri bildirimi siler.
+        public async Task<bool> DeleteAsync(int id)
+        {
+            //Kaydı çekeriz
+            var entity = await _uow.Read<GeriBildirim>().GetByIdAsync(id);
+            if (entity == null)
+                return false;   // Kayıt yoksa false döneriz
+
+            //Silme işlemi
+            _uow.Delete<GeriBildirim>().Delete(entity);
+            //Kaydetme 
+            await _uow.CommitAsync();
+            return true;      
         }
     }
 }

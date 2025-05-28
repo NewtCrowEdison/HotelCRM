@@ -12,62 +12,60 @@ namespace MadrinHotelCRM.Services.Services
 {
     public class FaturaService : IFaturaService
     {
-        private readonly IGenericRepository<Fatura> _faturaRepo;
+        private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
-        private readonly IUnitOfWork _unitOfWork;
 
-        public FaturaService(
-            IGenericRepository<Fatura> faturaRepo,
-            IMapper mapper,
-            IUnitOfWork unitOfWork)
+        public FaturaService(IUnitOfWork uow, IMapper mapper)
         {
-            _faturaRepo = faturaRepo;
+            _uow = uow;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
         }
 
         public async Task<FaturaDTO> GetByIdAsync(int id)
         {
-            var entity = await _faturaRepo.GetByIdAsync(id);
+            var entity = await _uow.Read<Fatura>().GetByIdAsync(id);
             return _mapper.Map<FaturaDTO>(entity);
         }
 
         public async Task<IEnumerable<FaturaDTO>> GetAllAsync()
         {
-            var entities = await _faturaRepo.GetAllAsync();
-            return _mapper.Map<IEnumerable<FaturaDTO>>(entities);
+            var list = await _uow.Read<Fatura>().GetAllAsync();
+            return _mapper.Map<IEnumerable<FaturaDTO>>(list);
         }
 
         public async Task<IEnumerable<FaturaDTO>> FindAsync(Expression<Func<Fatura, bool>> predicate)
         {
-            var entities = await _faturaRepo.FindAsync(predicate);
-            return _mapper.Map<IEnumerable<FaturaDTO>>(entities);
+            var list = await _uow.Read<Fatura>().FindAsync(predicate);
+            return _mapper.Map<IEnumerable<FaturaDTO>>(list);
         }
 
         public async Task<FaturaDTO> CreateAsync(FaturaDTO dto)
         {
             var entity = _mapper.Map<Fatura>(dto);
-            await _faturaRepo.AddAsync(entity);
-            await _unitOfWork.CommitAsync();
+            await _uow.Create<Fatura>().AddAsync(entity);
+            await _uow.CommitAsync();
             return _mapper.Map<FaturaDTO>(entity);
         }
 
         public async Task<FaturaDTO> UpdateAsync(FaturaDTO dto)
         {
-            var entity = _mapper.Map<Fatura>(dto);
-            _faturaRepo.Update(entity);
-            await _unitOfWork.CommitAsync();
-            return dto;
+            var mevcut = await _uow.Read<Fatura>().GetByIdAsync(dto.FaturaId);
+            if (mevcut == null) return null;
+
+            _mapper.Map(dto, mevcut);
+            _uow.Update<Fatura>().Update(mevcut);
+            await _uow.CommitAsync();
+
+            return _mapper.Map<FaturaDTO>(mevcut);
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var entity = await _faturaRepo.GetByIdAsync(id);
-            if (entity == null)
-                return false;
+            var entity = await _uow.Read<Fatura>().GetByIdAsync(id);
+            if (entity == null) return false;
 
-            _faturaRepo.Delete(entity);
-            await _unitOfWork.CommitAsync();
+            _uow.Delete<Fatura>().Delete(entity);
+            await _uow.CommitAsync();
             return true;
         }
     }

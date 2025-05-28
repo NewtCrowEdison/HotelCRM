@@ -14,54 +14,53 @@ namespace MadrinHotelCRM.Services.Services
 {
     public class MusteriRezervasyonService : IMusteriRezervasyonService
     {
-        private readonly IGenericRepository<MusteriRezervasyon> _repo;
+
+        private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
-        private readonly IUnitOfWork _unitOfWork;
 
-        public MusteriRezervasyonService(
-            IGenericRepository<MusteriRezervasyon> repo,
-            IMapper mapper,
-            IUnitOfWork unitOfWork)
+        public MusteriRezervasyonService(IUnitOfWork uow, IMapper mapper)
         {
-            _repo = repo;
+            _uow = uow;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
         }
-
         public async Task<IEnumerable<MusteriRezervasyonDTO>> GetAllAsync()
         {
-            var entities = await _repo.GetAllAsync();
-            return _mapper.Map<IEnumerable<MusteriRezervasyonDTO>>(entities);
+            var list = await _uow.Read<MusteriRezervasyon>().GetAllAsync();
+            return _mapper.Map<IEnumerable<MusteriRezervasyonDTO>>(list);
         }
 
         public async Task<MusteriRezervasyonDTO> GetByIdAsync(int id)
         {
-            var entity = await _repo.GetByIdAsync(id);
+            var entity = await _uow.Read<MusteriRezervasyon>().GetByIdAsync(id);
             return _mapper.Map<MusteriRezervasyonDTO>(entity);
         }
 
         public async Task<MusteriRezervasyonDTO> CreateAsync(MusteriRezervasyonDTO dto)
         {
             var entity = _mapper.Map<MusteriRezervasyon>(dto);
-            await _repo.AddAsync(entity);
-            await _unitOfWork.CommitAsync();
+            await _uow.Create<MusteriRezervasyon>().AddAsync(entity);
+            await _uow.CommitAsync();
             return _mapper.Map<MusteriRezervasyonDTO>(entity);
         }
 
         public async Task<MusteriRezervasyonDTO> UpdateAsync(MusteriRezervasyonDTO dto)
         {
-            var entity = _mapper.Map<MusteriRezervasyon>(dto);
-            _repo.Update(entity);
-            await _unitOfWork.CommitAsync();
-            return _mapper.Map<MusteriRezervasyonDTO>(entity);
+            var mevcut = await _uow.Read<MusteriRezervasyon>().GetByIdAsync(dto.RezervasyonId);
+            if (mevcut == null) return null;
+
+            _mapper.Map(dto, mevcut);
+            _uow.Update<MusteriRezervasyon>().Update(mevcut);
+            await _uow.CommitAsync();
+            return _mapper.Map<MusteriRezervasyonDTO>(mevcut);
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var entity = await _repo.GetByIdAsync(id);
+            var entity = await _uow.Read<MusteriRezervasyon>().GetByIdAsync(id);
             if (entity == null) return false;
-            _repo.Delete(entity);
-            await _unitOfWork.CommitAsync();
+
+            _uow.Delete<MusteriRezervasyon>().Delete(entity);
+            await _uow.CommitAsync();
             return true;
         }
     }

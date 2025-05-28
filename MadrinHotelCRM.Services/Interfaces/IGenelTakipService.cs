@@ -21,6 +21,5 @@ namespace MadrinHotelCRM.Services.Interfaces
         Task<GenelTakipDTO> CreateAsync(GenelTakipDTO dto);
         Task<GenelTakipDTO> UpdateAsync(GenelTakipDTO dto);
         Task<bool> DeleteAsync(int id);
-
     }
 }
