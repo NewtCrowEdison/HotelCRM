@@ -26,6 +26,8 @@ namespace MadrinHotelCRM.Business.Mapp
             CreateMap<RezervasyonPaket, RezervasyonPaketDTO>().ReverseMap();
             CreateMap<SistemLog, SistemLogDTO>().ReverseMap();
             CreateMap<Tarife, TarifeDTO>().ReverseMap();
+            CreateMap<Departman, DepartmanDTO>().ReverseMap();
+            CreateMap<MusteriRezervasyon, MusteriRezervasyonDTO>().ReverseMap();
             
         }
     }
