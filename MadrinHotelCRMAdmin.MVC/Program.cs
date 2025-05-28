@@ -54,7 +54,7 @@ namespace MadrinHotelCRMAdmin.MVC
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Admin}/{action=Login}/{id?}");
+                pattern: "{controller=Auth}/{action=Giris}/{id?}");
 
             app.Run();
         }
