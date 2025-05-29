@@ -1,0 +1,23 @@
+﻿@using MadrinHotelCRM.DTO.DTOModels
+@model List<OdaTipiDTO>
+
+<h4>Oda Tipleri</h4>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Oda Türü</th>
+            <th>Kapasite</th>
+            <th>Fiyat</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.OdaTurAd</td>
+                <td>@item.Kapasite</td>
+                <td>@item.Fiyat ₺</td>
+            </tr>
+        }
+    </tbody>
+</table>

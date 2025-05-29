@@ -2,8 +2,12 @@
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
+
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using MadrinHotelCRM.Business.Mapp;
+using MadrinHotelCRM.Services.Interfaces;
+using MadrinHotelCRM.Services.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -37,15 +41,27 @@ namespace MadrinHotelCRMAdmin.MVC
                     options.ExpireTimeSpan = TimeSpan.FromDays(1);
                 });
 
-            // 4) API’ya istek atmak için HttpClient
+            // 4) APIï¿½ya istek atmak iï¿½in HttpClient
             builder.Services
                 .AddHttpClient("ApiClient", client =>
                 {
                     client.BaseAddress = new Uri("https://localhost:7225/");
                     client.DefaultRequestHeaders.Accept
                           .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            //  2) AutoMapper Profili tanÄ±mÄ±
+            builder.Services.AddAutoMapper(typeof(MapProfiles));
+            //ek paket servisi view componentinde kullanmak iÃ§in servis ekleme
+            builder.Services.AddScoped<IEkPaketService, EkPaketService>();
+
+            // 3) APIâ€™ya istek atmak iÃ§in HttpClient
+            builder.Services
+                .AddHttpClient("ApiClient", client =>
+                {
+                    client.BaseAddress = new Uri("https://localhost:5001/"); // APIâ€™nizin URLâ€™si
+                    client.DefaultRequestHeaders.Accept.Add(
+                        new MediaTypeWithQualityHeaderValue("application/json"));
                 })
-                // Biz cookie’leri manuel yöneteceðimiz için HttpClientHandler'da UseCookies = false
+                // Biz cookieï¿½leri manuel yï¿½neteceï¿½imiz iï¿½in HttpClientHandler'da UseCookies = false
                 .ConfigurePrimaryHttpMessageHandler(() =>
                     new HttpClientHandler { UseCookies = false }
                 );
@@ -63,7 +79,8 @@ namespace MadrinHotelCRMAdmin.MVC
             app.UseStaticFiles();
             app.UseRouting();
 
-            app.UseSession();        // önce Session
+
+            app.UseSession();        // ï¿½nce Session
             app.UseAuthentication(); // sonra Auth
             app.UseAuthorization();
 

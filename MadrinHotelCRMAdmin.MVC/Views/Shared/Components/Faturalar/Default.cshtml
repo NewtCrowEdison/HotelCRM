@@ -1,0 +1,25 @@
+﻿@using MadrinHotelCRM.DTO.DTOModels
+@model List<FaturaDTO>
+
+<h4>Fatura Listesi</h4>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Fatura ID</th>
+            <th>Toplam Tutar</th>
+            <th>Durum</th>
+            <th>Oluşturulma Tarihi</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var fatura in Model)
+        {
+            <tr>
+                <td>@fatura.FaturaId</td>
+                <td>@fatura.ToplamTutar ₺</td>
+                <td>@fatura.Durum</td>
+                <td>@fatura.FaturaOlusturmaTarihi.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>

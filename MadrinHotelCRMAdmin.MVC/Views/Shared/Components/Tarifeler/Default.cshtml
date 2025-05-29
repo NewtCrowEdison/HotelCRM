@@ -1,0 +1,25 @@
+﻿@using MadrinHotelCRM.DTO.DTOModels
+@model List<TarifeDTO>
+
+<h4>Tarifeler</h4>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Tarife Adı</th>
+            <th>Fiyat</th>
+            <th>Başlangıç</th>
+            <th>Bitiş</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var t in Model)
+        {
+            <tr>
+                <td>@t.TarifeAdi</td>
+                <td>@t.Fiyat ₺</td>
+                <td>@t.BaslangicTarihi.ToShortDateString()</td>
+                <td>@t.BitisTarihi.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>

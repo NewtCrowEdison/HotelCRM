@@ -5,9 +5,8 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
 {
     public class AdminPanelController : Controller
     {
-        private readonly HttpClient _api;
-        //base adresi çekebilmek için IHttpClientFactory kullanıyoruz
-        public AdminPanelController(IHttpClientFactory httpFactory)
+        // Sadece Index sayfasını açacak. CRUD işlemleri  API vw AJAX ile yapılcak
+        public IActionResult Index()
         {
             _api = httpFactory.CreateClient("ApiClient");
         }
