@@ -1,0 +1,23 @@
+﻿@using MadrinHotelCRM.DTO.DTOModels
+@model List<MusteriDTO>
+
+<h4>Müşteri Listesi</h4>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Ad</th>
+            <th>Soyad</th>
+            <th>Email</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var m in Model)
+        {
+            <tr>
+                <td>@m.Ad</td>
+                <td>@m.Soyad</td>
+                <td>@m.Email</td>
+            </tr>
+        }
+    </tbody>
+</table>

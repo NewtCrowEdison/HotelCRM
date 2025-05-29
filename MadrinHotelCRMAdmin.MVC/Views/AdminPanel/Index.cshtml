@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Admin Panel";
+    ViewData["Title"] = "Admin Panel - Oda Yönetimi";
 }
 
 <div class="container-fluid">
@@ -19,7 +19,7 @@
 
         <!-- SAĞ PANEL AJAX İLE YÜKLENECEK -->
         <div class="col-md-9 p-4" id="panelContent">
-            <h5 class="text-muted">Hoş geldin Admin </h5>
+            <h5 class="text-muted">Hoş geldin Admin</h5>
             <p>Sol menüden bir bölüm seçerek işlem yapmaya başlayabilirsin.</p>
         </div>
     </div>
@@ -29,8 +29,17 @@
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        function loadPanel(GetAllOdalar) {
-            $("#panelContent").load(`/AdminPanel/${GetAllOdalar}`);
+        function loadPanel(viewComponentName) {
+            $.ajax({
+                url: `/ViewComponent/${viewComponentName}`,
+                type: 'GET',
+                success: function (result) {
+                    $('#panelContent').html(result);
+                },
+                error: function () {
+                    $('#panelContent').html('<p class="text-danger">Yüklenirken hata oluştu.</p>');
+                }
+            });
         }
     </script>
 }

@@ -4,7 +4,7 @@ using MadrinHotelCRM.Entities.Models;
 
 namespace MadrinHotelCRM.Business.Mapp
 {
-    public class MapProfiles: Profile
+    public class MapProfiles : Profile
     {
         public MapProfiles()
         {
@@ -21,14 +21,16 @@ namespace MadrinHotelCRM.Business.Mapp
             CreateMap<OdaTarife, OdaTarifeDTO>().ReverseMap();
             CreateMap<OdaTipi, OdaTipiDTO>().ReverseMap();
             CreateMap<Odeme, OdemeDTO>().ReverseMap();
-            CreateMap<Personel, PersonelDTO>().ReverseMap();
+            CreateMap<Personel, PersonelDTO>()
+             .ForMember(dest => dest.DepartmanAdi, opt => opt.MapFrom(src => src.Departman.DepartmanAdi));
+            CreateMap<PersonelDTO, Personel>();
             CreateMap<Rezervasyon, RezervasyonDTO>().ReverseMap();
             CreateMap<RezervasyonPaket, RezervasyonPaketDTO>().ReverseMap();
             CreateMap<SistemLog, SistemLogDTO>().ReverseMap();
             CreateMap<Tarife, TarifeDTO>().ReverseMap();
             CreateMap<Departman, DepartmanDTO>().ReverseMap();
             CreateMap<MusteriRezervasyon, MusteriRezervasyonDTO>().ReverseMap();
-            
+
         }
     }
 }

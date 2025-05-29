@@ -1,0 +1,23 @@
+﻿@using MadrinHotelCRM.DTO.DTOModels
+@model List<EkPaketDTO>
+
+<h4>Ek Paketler</h4>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Paket Adı</th>
+            <th>Açıklama</th>
+            <th>Fiyat</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var paket in Model)
+        {
+            <tr>
+                <td>@paket.PaketAdi</td>
+                <td>@paket.PaketAciklama</td>
+                <td>@paket.Fiyat ₺</td>
+            </tr>
+        }
+    </tbody>
+</table>
