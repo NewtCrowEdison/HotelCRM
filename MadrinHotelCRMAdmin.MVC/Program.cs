@@ -1,8 +1,10 @@
-﻿// Program.cs
+// Program.cs (MadrinHotelCRMAdmin.MVC)
 using System;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using MadrinHotelCRM.Business.Mapp;
 using MadrinHotelCRM.Services.Interfaces;
 using MadrinHotelCRM.Services.Services;
@@ -21,6 +23,31 @@ namespace MadrinHotelCRMAdmin.MVC
             // 1) MVC
             builder.Services.AddControllersWithViews();
 
+            // 2) Session
+            builder.Services.AddSession(options =>
+            {
+                options.Cookie.Name = "MadrinHotelSession";
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+            });
+
+            // 3) Cookie-based Authentication
+            builder.Services
+                .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/Auth/Giris";
+                    options.Cookie.Name = "HotelCRMAuth";
+                    options.ExpireTimeSpan = TimeSpan.FromDays(1);
+                });
+
+            // 4) API�ya istek atmak i�in HttpClient
+            builder.Services
+                .AddHttpClient("ApiClient", client =>
+                {
+                    client.BaseAddress = new Uri("https://localhost:7225/");
+                    client.DefaultRequestHeaders.Accept
+                          .Add(new MediaTypeWithQualityHeaderValue("application/json"));
             //  2) AutoMapper Profili tanımı
             builder.Services.AddAutoMapper(typeof(MapProfiles));
             //ek paket servisi view componentinde kullanmak için servis ekleme
@@ -34,17 +61,14 @@ namespace MadrinHotelCRMAdmin.MVC
                     client.DefaultRequestHeaders.Accept.Add(
                         new MediaTypeWithQualityHeaderValue("application/json"));
                 })
+                // Biz cookie�leri manuel y�netece�imiz i�in HttpClientHandler'da UseCookies = false
                 .ConfigurePrimaryHttpMessageHandler(() =>
-                    new HttpClientHandler
-                    {
-                        UseCookies = true,
-                        CookieContainer = new CookieContainer()
-                    }
+                    new HttpClientHandler { UseCookies = false }
                 );
 
             var app = builder.Build();
 
-            // 4) Middleware pipeline
+            // 5) Middleware pipeline
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
@@ -53,11 +77,11 @@ namespace MadrinHotelCRMAdmin.MVC
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
 
-            // Eğer MVC’de kendi cookie/auth kullanıyorsan:
-            // app.UseAuthentication();
+
+            app.UseSession();        // �nce Session
+            app.UseAuthentication(); // sonra Auth
             app.UseAuthorization();
 
             app.MapControllerRoute(

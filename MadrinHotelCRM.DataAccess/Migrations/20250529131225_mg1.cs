@@ -53,6 +53,19 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Departmanlar",
+                columns: table => new
+                {
+                    DepartmanId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DepartmanAdi = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Departmanlar", x => x.DepartmanId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "EkPaketler",
                 columns: table => new
                 {
@@ -117,25 +130,6 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_OdaTipleri", x => x.OdaTipiId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Personeller",
-                columns: table => new
-                {
-                    PersonelId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Ad = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Soyad = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Telefon = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    YabanciUyrukluMu = table.Column<bool>(type: "bit", nullable: false),
-                    PasaportNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    TcKimlik = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Personeller", x => x.PersonelId);
                 });
 
             migrationBuilder.CreateTable(
@@ -221,8 +215,8 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
@@ -266,8 +260,8 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -279,6 +273,32 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Personeller",
+                columns: table => new
+                {
+                    PersonelId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Ad = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Soyad = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Telefon = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DepartmanId = table.Column<int>(type: "int", nullable: false),
+                    YabanciUyrukluMu = table.Column<bool>(type: "bit", nullable: false),
+                    PasaportNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    TcKimlik = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Personeller", x => x.PersonelId);
+                    table.ForeignKey(
+                        name: "FK_Personeller_Departmanlar_DepartmanId",
+                        column: x => x.DepartmanId,
+                        principalTable: "Departmanlar",
+                        principalColumn: "DepartmanId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -350,6 +370,45 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Rezervasyonlar",
+                columns: table => new
+                {
+                    RezervasyonId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BaslangicTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BitisTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    MusteriId = table.Column<int>(type: "int", nullable: false),
+                    OdaTipiId = table.Column<int>(type: "int", nullable: false),
+                    TarifeId = table.Column<int>(type: "int", nullable: false),
+                    OlusturmaTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Durum = table.Column<int>(type: "int", nullable: false),
+                    IptalTarihi = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IptalNedeni = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Rezervasyonlar", x => x.RezervasyonId);
+                    table.ForeignKey(
+                        name: "FK_Rezervasyonlar_Musteriler_MusteriId",
+                        column: x => x.MusteriId,
+                        principalTable: "Musteriler",
+                        principalColumn: "MusteriId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Rezervasyonlar_OdaTipleri_OdaTipiId",
+                        column: x => x.OdaTipiId,
+                        principalTable: "OdaTipleri",
+                        principalColumn: "OdaTipiId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Rezervasyonlar_Tarifeler_TarifeId",
+                        column: x => x.TarifeId,
+                        principalTable: "Tarifeler",
+                        principalColumn: "TarifeId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "GenelTakipler",
                 columns: table => new
                 {
@@ -404,45 +463,6 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Rezervasyonlar",
-                columns: table => new
-                {
-                    RezervasyonId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    BaslangicTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BitisTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MusteriId = table.Column<int>(type: "int", nullable: false),
-                    OdaTipiId = table.Column<int>(type: "int", nullable: false),
-                    TarifeId = table.Column<int>(type: "int", nullable: false),
-                    OlusturmaTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Durum = table.Column<int>(type: "int", nullable: false),
-                    IptalTarihi = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IptalNedeni = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Rezervasyonlar", x => x.RezervasyonId);
-                    table.ForeignKey(
-                        name: "FK_Rezervasyonlar_Musteriler_MusteriId",
-                        column: x => x.MusteriId,
-                        principalTable: "Musteriler",
-                        principalColumn: "MusteriId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Rezervasyonlar_OdaTipleri_OdaTipiId",
-                        column: x => x.OdaTipiId,
-                        principalTable: "OdaTipleri",
-                        principalColumn: "OdaTipiId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Rezervasyonlar_Tarifeler_TarifeId",
-                        column: x => x.TarifeId,
-                        principalTable: "Tarifeler",
-                        principalColumn: "TarifeId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "OdaTarifeleri",
                 columns: table => new
                 {
@@ -482,6 +502,38 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                     table.PrimaryKey("PK_Faturalar", x => x.FaturaId);
                     table.ForeignKey(
                         name: "FK_Faturalar_Rezervasyonlar_RezervasyonId",
+                        column: x => x.RezervasyonId,
+                        principalTable: "Rezervasyonlar",
+                        principalColumn: "RezervasyonId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MusteriRezervasyonlar",
+                columns: table => new
+                {
+                    RezervasyonId = table.Column<int>(type: "int", nullable: false),
+                    MusteriId = table.Column<int>(type: "int", nullable: false),
+                    PersonelId = table.Column<int>(type: "int", nullable: false),
+                    GirisYaptiMi = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MusteriRezervasyonlar", x => new { x.MusteriId, x.RezervasyonId });
+                    table.ForeignKey(
+                        name: "FK_MusteriRezervasyonlar_Musteriler_MusteriId",
+                        column: x => x.MusteriId,
+                        principalTable: "Musteriler",
+                        principalColumn: "MusteriId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_MusteriRezervasyonlar_Personeller_PersonelId",
+                        column: x => x.PersonelId,
+                        principalTable: "Personeller",
+                        principalColumn: "PersonelId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_MusteriRezervasyonlar_Rezervasyonlar_RezervasyonId",
                         column: x => x.RezervasyonId,
                         principalTable: "Rezervasyonlar",
                         principalColumn: "RezervasyonId",
@@ -676,6 +728,16 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                 column: "PersonelId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MusteriRezervasyonlar_PersonelId",
+                table: "MusteriRezervasyonlar",
+                column: "PersonelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MusteriRezervasyonlar_RezervasyonId",
+                table: "MusteriRezervasyonlar",
+                column: "RezervasyonId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Odalar_OdaTipiId",
                 table: "Odalar",
                 column: "OdaTipiId");
@@ -689,6 +751,11 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                 name: "IX_Odemeler_FaturaId",
                 table: "Odemeler",
                 column: "FaturaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Personeller_DepartmanId",
+                table: "Personeller",
+                column: "DepartmanId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PersonelRezervasyon_PersonelId",
@@ -752,6 +819,9 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                 name: "MusteriEtkilesimler");
 
             migrationBuilder.DropTable(
+                name: "MusteriRezervasyonlar");
+
+            migrationBuilder.DropTable(
                 name: "OdaTarifeleri");
 
             migrationBuilder.DropTable(
@@ -789,6 +859,9 @@ namespace MadrinHotelCRM.DataAccess.Migrations
 
             migrationBuilder.DropTable(
                 name: "Rezervasyonlar");
+
+            migrationBuilder.DropTable(
+                name: "Departmanlar");
 
             migrationBuilder.DropTable(
                 name: "Musteriler");

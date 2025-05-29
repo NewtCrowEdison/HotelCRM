@@ -1,67 +1,60 @@
 ﻿// Services/Services/AuthorizationService.cs
-using MadrinHotelCRM.DTO;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using MadrinHotelCRM.DTO.DTOModels;
 using MadrinHotelCRM.Entities.Models;
-using MadrinHotelCRM.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
-using System.Threading.Tasks;
+using MadrinHotelCRM.Services.Interfaces;   // <-- bu arayüzü kullan
 
 namespace MadrinHotelCRM.Services.Services
 {
+
     public class AuthorizationService : IAuthorizationService
     {
-        private readonly UserManager<AppUser> _userMgr;
-        private readonly SignInManager<AppUser> _signInMgr;
-        private readonly RoleManager<IdentityRole> _roleMgr;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
 
         public AuthorizationService(
-            UserManager<AppUser> userMgr,
-            SignInManager<AppUser> signInMgr,
-            RoleManager<IdentityRole> roleMgr)
+            UserManager<AppUser> userManager,
+            SignInManager<AppUser> signInManager)
         {
-            _userMgr = userMgr;
-            _signInMgr = signInMgr;
-            _roleMgr = roleMgr;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
-        public async Task<SignInResult> LoginAsync(GirisDTO model)
+        public async Task<SignInResult> LoginAsync(GirisDTO dto)
         {
-            // Email üzerinden kullanıcıyı bulma ;
-            var user = await _userMgr.FindByEmailAsync(model.Email);
+            // 1) Email’den kullanıcıyı bul
+            var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null)
                 return SignInResult.Failed;
 
-            // Şifre kontrolü + cookie oluşturma işlemi;
-            return await _signInMgr.PasswordSignInAsync(
-                user, model.Sifre, model.BeniHatirla, lockoutOnFailure: false);
+            // 2) Şifreyi kontrol et (hash’li şifreyle karşılaştırır)
+            var result = await _signInManager.CheckPasswordSignInAsync(
+                user, dto.Password, lockoutOnFailure: false);
+
+            return result;
+        }
+
+        public async Task<IdentityResult> CreateUserAsync(KullaniciOlusturDTO dto)
+        {
+            var user = new AppUser
+            {
+                UserName = dto.Email,
+                Email = dto.Email
+            };
+            // 1) Kullanıcıyı ekle
+            var res = await _userManager.CreateAsync(user, dto.Sifre);
+            if (!res.Succeeded)
+                return res;
+
+            // 2) Rol ataması
+            await _userManager.AddToRoleAsync(user, dto.Rol);
+            return res;
         }
 
         public async Task LogoutAsync()
-        {
-            await _signInMgr.SignOutAsync();
-        }
-
-        public async Task<IdentityResult> CreateUserAsync(KullaniciOlusturDTO model)
-        {
-            // Yeni kullanıcı oluşturmak için kullanıcı nesnesi;
-            var user = new AppUser
-            {
-                UserName = model.Email,
-                Email = model.Email
-            };
-
-            // yeni oluşturulan kullanıcıyı veritabanına ekleme işlemi
-            var result = await _userMgr.CreateAsync(user, model.Sifre);
-            if (!result.Succeeded)
-                return result;
-
-            //// Rol yoksa oluştur
-            //if (!await _roleMgr.RoleExistsAsync(model.Rol))
-            //    await _roleMgr.CreateAsync(new IdentityRole(model.Rol));
-
-            // Kullanıcıya rol atama işlemi
-            await _userMgr.AddToRoleAsync(user, model.Rol);
-            return IdentityResult.Success;
-        }
+            => await _signInManager.SignOutAsync();
     }
 }
