@@ -1,19 +1,77 @@
-﻿<h3> Personel Listesi</h3>
-<table class="table table-hover">
+﻿@model List<MadrinHotelCRM.DTO.DTOModels.PersonelDTO>
+
+<h3>👥 Personel Yönetimi</h3>
+
+<form id="personelForm" class="row g-2 mb-4">
+    <div class="col-md-4">
+        <input name="Ad" class="form-control" placeholder="Ad" required />
+    </div>
+    <div class="col-md-4">
+        <input name="Soyad" class="form-control" placeholder="Soyad" required />
+    </div>
+    <div class="col-md-4">
+        <input name="Email" type="email" class="form-control" placeholder="Email" required />
+    </div>
+    <div class="col-md-4">
+        <input name="Telefon" class="form-control" placeholder="Telefon" />
+    </div>
+  @*   <div class="col-md-4">
+        <select name="DepartmanId" class="form-select" required>
+            <option value="">Departman seçin</option>
+            <!-- İstersen burayı dinamik doldurabilirsin -->
+            <option value="1">Satış</option>
+            <option value="2">Muhasebe</option>
+        </select>
+    </div> *@
+    <div class="col-md-4 form-check">
+        <input name="YabanciUyrukluMu" type="checkbox" class="form-check-input" id="yabanciCheck" />
+        <label for="yabanciCheck" class="form-check-label">Yabancı Uyruklu</label>
+    </div>
+    <div class="col-md-4">
+        <input name="PasaportNo" class="form-control" placeholder="Pasaport No" />
+    </div>
+    <div class="col-md-4">
+        <input name="TcKimlik" class="form-control" placeholder="T.C. Kimlik" />
+    </div>
+    <div class="col-md-12 text-end">
+        <button type="submit" class="btn btn-primary">Personel Ekle</button>
+    </div>
+</form>
+
+<table class="table table-striped">
     <thead>
-        <tr>
-            <th>Ad Soyad</th>
-            <th>Departman</th>
-            <th>İletişim</th>
-            <th>İşlem</th>
-        </tr>
+        <tr><th>Ad</th><th>Soyad</th><th>Email</th><th>İşlem</th></tr>
     </thead>
     <tbody>
-        <tr>
-            <td>Ayşe Kaya</td>
-            <td>Resepsiyon</td>
-            <td>ayse.kaya@otel.com</td>
-            <td><button class="btn btn-sm btn-info">Güncelle</button></td>
-        </tr>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.Ad</td>
+                <td>@p.Soyad</td>
+                <td>@p.Email</td>
+                <td>
+                    <button class="btn btn-sm btn-danger btnPersonelSil" data-id="@p.PersonelId">Sil</button>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<script>
+    // Yeni personel ekle
+    $("#personelForm").submit(function(e) {
+        e.preventDefault();
+        var data = $(this).serialize();
+        $.post("/AdminPanel/PersonelEkle", data)
+            .done(() => loadPanel("Personel"))
+            .fail(() => alert("Personel eklenirken hata oluştu."));
+    });
+
+    // Silme butonları
+    $(".btnPersonelSil").click(function() {
+        var id = $(this).data("id");
+        $.post("/AdminPanel/PersonelSil", { id })
+            .done(() => loadPanel("Personel"))
+            .fail(() => alert("Personel silinemedi."));
+    });
+</script>

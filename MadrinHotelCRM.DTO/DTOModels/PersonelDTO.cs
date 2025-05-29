@@ -27,5 +27,6 @@ namespace MadrinHotelCRM.DTO.DTOModels
         public string? PasaportNo { get; set; }
         [MaxLength(11)]
         public string? TcKimlik { get; set; }
+        public int? DepartmanId { get; set; }
     }
 }

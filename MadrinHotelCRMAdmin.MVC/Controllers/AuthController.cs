@@ -1,5 +1,4 @@
-﻿// Controllers/AuthController.cs
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Net.Http;
@@ -33,7 +32,7 @@ namespace MadrinHotelCRM.MVC.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            // API’ye giriş isteği atarız
+            // API’ye giriş isteği at
             var response = await _api.PostAsJsonAsync("api/authorization/giris", model);
             if (!response.IsSuccessStatusCode)
             {
@@ -42,11 +41,15 @@ namespace MadrinHotelCRM.MVC.Controllers
                 return View(model);
             }
 
-            // 2) ClaimsPrincipal oluştur ve cookie ile imzala
+            // API'den kullanıcı rolü dönmesini bekliyoruz (örnek: {"role": "Admin"})
+            var responseContent = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+            var role = responseContent?["role"] ?? "Personel";
+
+            // Kullanıcıyı kimliklendir
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name,  model.Email),
-                new Claim(ClaimTypes.Role,  model.UserRole)
+                new Claim(ClaimTypes.Name, model.Email),
+                new Claim(ClaimTypes.Role, role)
             };
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
@@ -59,17 +62,38 @@ namespace MadrinHotelCRM.MVC.Controllers
                     IsPersistent = model.RememberMe
                 });
 
-            // Session'da ek bilgi saklamak için
+            // Session'a kaydet
             HttpContext.Session.SetString("UserEmail", model.Email);
-            HttpContext.Session.SetString("UserRole", model.UserRole);
+            HttpContext.Session.SetString("UserRole", role);
 
-            // Role bazlı yönlendirme yapmak için
-            return model.UserRole switch
+            // Role'a göre yönlendir
+            return role switch
             {
                 "Admin" => RedirectToAction("Index", "AdminPanel"),
                 "Personel" => RedirectToAction("Index", "PersonelPanel"),
                 _ => RedirectToAction("Index", "Home")
             };
+        }
+
+        // GET: /Auth/Kayit
+        [HttpGet]
+        public IActionResult Kayit()
+            => View(new KullaniciOlusturDTO());
+
+        // POST: /Auth/Kayit
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Kayit(KullaniciOlusturDTO model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Model geçersiz.");
+
+            var response = await _api.PostAsJsonAsync("api/authorization/kayit", model);
+            if (response.IsSuccessStatusCode)
+                return Ok();
+
+            var errorContent = await response.Content.ReadAsStringAsync();
+            return BadRequest("API Hatası: " + errorContent);
         }
 
         // POST: /Auth/Cikis

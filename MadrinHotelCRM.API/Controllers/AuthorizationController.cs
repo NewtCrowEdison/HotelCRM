@@ -1,6 +1,5 @@
 ﻿// API/Controllers/AuthorizationController.cs
 using ServiceAuth = MadrinHotelCRM.Services.Interfaces.IAuthorizationService;
-using MadrinHotelCRM.DTO;
 using MadrinHotelCRM.DTO.DTOModels;
 using MadrinHotelCRM.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -14,9 +13,15 @@ namespace MadrinHotelCRM.API.Controllers
     public class AuthorizationController : ControllerBase
     {
         private readonly ServiceAuth _authSvc;
+        private readonly IPersonelService _personelSvc;
 
-        public AuthorizationController(ServiceAuth authSvc)
-            => _authSvc = authSvc;
+        public AuthorizationController(
+            ServiceAuth authSvc,
+            IPersonelService personelSvc)
+        {
+            _authSvc = authSvc;
+            _personelSvc = personelSvc;
+        }
 
         // POST: /api/authorization/giris
         [HttpPost("giris")]
@@ -27,7 +32,12 @@ namespace MadrinHotelCRM.API.Controllers
             if (!result.Succeeded)
                 return Unauthorized(new { message = "Email veya şifre yanlış." });
 
-            return Ok(new { message = "Hoş geldin!" });
+            // Kullanıcıyı bul ve rolünü al
+            var user = await _authSvc.GetUserByEmailAsync(dto.Email);
+            var roles = await _authSvc.GetRolesAsync(user); // bunu interface'e ekleyeceğiz
+            var userRole = roles.FirstOrDefault() ?? "Personel";
+
+            return Ok(new { message = "Hoş geldin!", role = userRole });
         }
 
         // POST: /api/authorization/kayit
@@ -39,7 +49,31 @@ namespace MadrinHotelCRM.API.Controllers
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
-            return Ok(new { message = $"{dto.Rol} rolünde yeni kullanıcı oluşturuldu!" });
+            if (dto.Rol == "Personel")
+            {
+                var personelDto = new PersonelDTO
+                {
+                    Ad = dto.Ad,
+                    Soyad = dto.Soyad,
+                    Email = dto.Email,
+                    Telefon = dto.Telefon,
+                   // DepartmanId = dto.DepartmanId,
+                    YabanciUyrukluMu = dto.YabanciUyrukluMu,
+                    PasaportNo = dto.PasaportNo,
+                    TcKimlik = dto.TcKimlik
+                };
+
+                try
+                {
+                    await _personelSvc.CreateAsync(personelDto);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(new { message = "Kullanıcı oluşturuldu ancak personel kaydı başarısız: " + ex.Message });
+                }
+            }
+
+            return Ok(new { message = $"{dto.Rol} rolünde kullanıcı başarıyla oluşturuldu." });
         }
 
         // POST: /api/authorization/cikis

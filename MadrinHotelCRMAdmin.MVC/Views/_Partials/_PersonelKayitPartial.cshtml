@@ -1,0 +1,111 @@
+﻿@using MadrinHotelCRM.DTO.DTOModels
+@model Tuple<KullaniciOlusturDTO, List<PersonelDTO>>
+
+<h4>👤 Yeni Personel + Kullanıcı Kaydı</h4>
+
+<form id="kayitForm" class="row g-2" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="col-md-4">
+        <input name="Ad" class="form-control" placeholder="Ad" required />
+    </div>
+    <div class="col-md-4">
+        <input name="Soyad" class="form-control" placeholder="Soyad" required />
+    </div>
+    <div class="col-md-4">
+        <input name="Email" type="email" class="form-control" placeholder="Email" required />
+    </div>
+    <div class="col-md-4">
+        <input name="Sifre" type="password" class="form-control" placeholder="Şifre" required />
+    </div>
+    <div class="col-md-4">
+        <input name="Telefon" class="form-control" placeholder="Telefon" required />
+    </div>
+
+    <div class="col-md-4 form-check">
+        <input name="YabanciUyrukluMu" type="checkbox" class="form-check-input" id="yabanciCheck" />
+        <label for="yabanciCheck" class="form-check-label">Yabancı Uyruklu</label>
+    </div>
+    <div class="col-md-4">
+        <input name="PasaportNo" class="form-control" placeholder="Pasaport No" />
+    </div>
+    <div class="col-md-4">
+        <input name="TcKimlik" class="form-control" placeholder="T.C. Kimlik" />
+    </div>
+
+    <input type="hidden" name="Rol" value="Personel" />
+
+    <div class="col-12 text-end">
+        <button type="submit" class="btn btn-success">Kaydet</button>
+    </div>
+</form>
+
+<hr />
+
+<h5 class="mt-4">📋 Kayıtlı Personeller</h5>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Ad</th>
+            <th>Soyad</th>
+            <th>Email</th>
+            <th>Telefon</th>
+            <th>İşlem</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model.Item2)
+        {
+            <tr>
+                <td>@p.Ad</td>
+                <td>@p.Soyad</td>
+                <td>@p.Email</td>
+                <td>@p.Telefon</td>
+                <td>
+                    <button class="btn btn-sm btn-danger btnPersonelSil" data-id="@p.PersonelId">Sil</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    // Kayıt işlemi
+    $("#kayitForm").submit(function (e) {
+        e.preventDefault();
+
+        var form = document.getElementById("kayitForm");
+        var formData = new FormData(form);
+
+        $.ajax({
+            url: "/AdminPanel/PersonelKayit",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function () {
+                alert("✅ Personel + Kullanıcı oluşturuldu");
+                loadPanel("PersonelKayitFormu");
+            },
+            error: function (xhr) {
+                let msg = xhr.responseText || "Bilinmeyen bir hata oluştu.";
+                alert("❌ Kayıt işlemi başarısız. Hata: " + msg);
+            }
+        });
+    });
+
+    // Silme işlemi
+    $(".btnPersonelSil").click(function () {
+        var id = $(this).data("id");
+
+        if (!confirm("Bu personeli silmek istediğine emin misin?")) return;
+
+        $.post("/AdminPanel/PersonelSil", { id })
+            .done(() => {
+                alert("🗑️ Personel silindi.");
+                loadPanel("PersonelKayitFormu");
+            })
+            .fail(() => alert("❌ Silme işlemi başarısız."));
+    });
+</script>

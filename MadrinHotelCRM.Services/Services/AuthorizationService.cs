@@ -1,15 +1,15 @@
-﻿// Services/Services/AuthorizationService.cs
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MadrinHotelCRM.DTO.DTOModels;
 using MadrinHotelCRM.Entities.Models;
-using MadrinHotelCRM.Services.Interfaces;   // <-- bu arayüzü kullan
+using MadrinHotelCRM.Services.Interfaces;
 
 namespace MadrinHotelCRM.Services.Services
 {
-
     public class AuthorizationService : IAuthorizationService
     {
         private readonly UserManager<AppUser> _userManager;
@@ -25,14 +25,17 @@ namespace MadrinHotelCRM.Services.Services
 
         public async Task<SignInResult> LoginAsync(GirisDTO dto)
         {
-            // 1) Email’den kullanıcıyı bul
+            Console.WriteLine($"🟡 Giriş Denemesi - Email: {dto.Email}");
+
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null)
+            {
+                Console.WriteLine("🔴 Kullanıcı bulunamadı.");
                 return SignInResult.Failed;
+            }
 
-            // 2) Şifreyi kontrol et (hash’li şifreyle karşılaştırır)
-            var result = await _signInManager.CheckPasswordSignInAsync(
-                user, dto.Password, lockoutOnFailure: false);
+            var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
+            Console.WriteLine($"🟢 Şifre kontrol sonucu: {result.Succeeded}");
 
             return result;
         }
@@ -41,20 +44,34 @@ namespace MadrinHotelCRM.Services.Services
         {
             var user = new AppUser
             {
-                UserName = dto.Email,
-                Email = dto.Email
+                Email = dto.Email,
+                UserName = dto.Email,        // Giriş için gerekli
+                EmailConfirmed = true        // Şartlı kontrol varsa login engelini kaldırır
             };
-            // 1) Kullanıcıyı ekle
+
             var res = await _userManager.CreateAsync(user, dto.Sifre);
+
             if (!res.Succeeded)
                 return res;
 
-            // 2) Rol ataması
             await _userManager.AddToRoleAsync(user, dto.Rol);
             return res;
         }
 
+        public async Task<AppUser> GetUserByEmailAsync(string email)
+        {
+            return await _userManager.FindByEmailAsync(email);
+        }
+
+        public async Task<IList<string>> GetRolesAsync(AppUser user)
+        {
+            return await _userManager.GetRolesAsync(user);
+        }
+
         public async Task LogoutAsync()
-            => await _signInManager.SignOutAsync();
+        {
+            Console.WriteLine("🔚 Kullanıcı çıkış yapıyor...");
+            await _signInManager.SignOutAsync();
+        }
     }
 }

@@ -1,9 +1,7 @@
-﻿using System;
+﻿// Services/Services/PersonelService.cs
+using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using MadrinHotelCRM.DTO.DTOModels;
@@ -26,48 +24,62 @@ namespace MadrinHotelCRM.Services.Services
 
         public async Task<PersonelDTO> CreateAsync(PersonelDTO dto)
         {
+            var repo = _uow.Create<Personel>();
             var entity = _mapper.Map<Personel>(dto);
-            await _uow.Create<Personel>().AddAsync(entity);
+
+            await repo.AddAsync(entity);
             await _uow.CommitAsync();
+
             return _mapper.Map<PersonelDTO>(entity);
         }
 
         public async Task<PersonelDTO> GetByIdAsync(int id)
         {
-            var entity = await _uow.Read<Personel>().GetByIdAsync(id);
+            var repo = _uow.Read<Personel>();
+            var entity = await repo.GetByIdAsync(id)
+                         ?? throw new KeyNotFoundException($"Personel {id} bulunamadı.");
             return _mapper.Map<PersonelDTO>(entity);
         }
 
         public async Task<IEnumerable<PersonelDTO>> GetAllAsync()
         {
-            var list = await _uow.Read<Personel>().GetAllAsync();
+            var repo = _uow.Read<Personel>();
+            var list = await repo.GetAllAsync();
             return _mapper.Map<IEnumerable<PersonelDTO>>(list);
         }
 
         public async Task<IEnumerable<PersonelDTO>> FindAsync(Expression<Func<Personel, bool>> predicate)
         {
-            var list = await _uow.Read<Personel>().FindAsync(predicate);
+            var repo = _uow.Read<Personel>();
+            var list = await repo.FindAsync(predicate);
             return _mapper.Map<IEnumerable<PersonelDTO>>(list);
         }
 
         public async Task<PersonelDTO> UpdateAsync(PersonelDTO dto)
         {
-            var mevcut = await _uow.Read<Personel>().GetByIdAsync(dto.PersonelId);
-            if (mevcut == null) return null;
+            var readRepo = _uow.Read<Personel>();
+            var entity = await readRepo.GetByIdAsync(dto.PersonelId)
+                            ?? throw new KeyNotFoundException($"Personel {dto.PersonelId} bulunamadı.");
 
-            _mapper.Map(dto, mevcut);
-            _uow.Update<Personel>().Update(mevcut);
+            _mapper.Map(dto, entity);
+
+            var updRepo = _uow.Update<Personel>();
+            updRepo.Update(entity);
             await _uow.CommitAsync();
-            return _mapper.Map<PersonelDTO>(mevcut);
+
+            return _mapper.Map<PersonelDTO>(entity);
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var entity = await _uow.Read<Personel>().GetByIdAsync(id);
+            var readRepo = _uow.Read<Personel>();
+            var entity = await readRepo.GetByIdAsync(id);
             if (entity == null) return false;
 
-            _uow.Delete<Personel>().Delete(entity);
+            var delRepo = _uow.Delete<Personel>();
+            delRepo.Delete(entity);
             await _uow.CommitAsync();
+
             return true;
         }
     }
