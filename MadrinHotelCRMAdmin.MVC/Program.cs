@@ -1,8 +1,11 @@
-// Program.cs
+ï»¿// Program.cs
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using MadrinHotelCRM.Business.Mapp;
+using MadrinHotelCRM.Services.Interfaces;
+using MadrinHotelCRM.Services.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -18,11 +21,16 @@ namespace MadrinHotelCRMAdmin.MVC
             // 1) MVC
             builder.Services.AddControllersWithViews();
 
-            // 2) API’ya istek atmak için HttpClient
+            //  2) AutoMapper Profili tanÄ±mÄ±
+            builder.Services.AddAutoMapper(typeof(MapProfiles));
+            //ek paket servisi view componentinde kullanmak iÃ§in servis ekleme
+            builder.Services.AddScoped<IEkPaketService, EkPaketService>();
+
+            // 3) APIâ€™ya istek atmak iÃ§in HttpClient
             builder.Services
                 .AddHttpClient("ApiClient", client =>
                 {
-                    client.BaseAddress = new Uri("https://localhost:5001/"); // API’nizin URL’si
+                    client.BaseAddress = new Uri("https://localhost:5001/"); // APIâ€™nizin URLâ€™si
                     client.DefaultRequestHeaders.Accept.Add(
                         new MediaTypeWithQualityHeaderValue("application/json"));
                 })
@@ -36,7 +44,7 @@ namespace MadrinHotelCRMAdmin.MVC
 
             var app = builder.Build();
 
-            // 3) Middleware pipeline
+            // 4) Middleware pipeline
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
@@ -48,7 +56,7 @@ namespace MadrinHotelCRMAdmin.MVC
 
             app.UseRouting();
 
-            // Eðer MVC’de kendi cookie/auth kullanýyorsan:
+            // EÄŸer MVCâ€™de kendi cookie/auth kullanÄ±yorsan:
             // app.UseAuthentication();
             app.UseAuthorization();
 

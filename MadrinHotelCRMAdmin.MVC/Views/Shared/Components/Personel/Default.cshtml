@@ -1,0 +1,23 @@
+﻿@using MadrinHotelCRM.DTO.DTOModels
+@model List<PersonelDTO>
+
+<h4>Personel Listesi</h4>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Ad</th>
+            <th>Soyad</th>
+            <th>Departman</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var personel in Model)
+        {
+            <tr>
+                <td>@personel.Ad</td>
+                <td>@personel.Soyad</td>
+                <td>@personel.DepartmanAdi</td> 
+            </tr>
+        }
+    </tbody>
+</table>

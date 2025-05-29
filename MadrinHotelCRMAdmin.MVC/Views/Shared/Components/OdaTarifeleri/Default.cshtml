@@ -1,0 +1,21 @@
+﻿@using MadrinHotelCRM.DTO.DTOModels
+@model List<OdaTarifeDTO>
+
+<h4>Oda Tarifeleri</h4>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Oda ID</th>
+            <th>Tarife ID</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var t in Model)
+        {
+            <tr>
+                <td>@t.OdaId</td>
+                <td>@t.TarifeId</td>
+            </tr>
+        }
+    </tbody>
+</table>
