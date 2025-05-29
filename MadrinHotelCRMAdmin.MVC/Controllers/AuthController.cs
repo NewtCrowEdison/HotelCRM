@@ -1,11 +1,15 @@
-﻿// MVC/Controllers/AuthController.cs
+﻿// Controllers/AuthController.cs
+using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using MadrinHotelCRM.DTO;
-using MadrinHotelCRM.DTO.DTOModels;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
+using MadrinHotelCRM.DTO.DTOModels;
 
 namespace MadrinHotelCRM.MVC.Controllers
 {
@@ -14,9 +18,7 @@ namespace MadrinHotelCRM.MVC.Controllers
         private readonly HttpClient _api;
 
         public AuthController(IHttpClientFactory httpFactory)
-        {
-            _api = httpFactory.CreateClient("ApiClient");
-        }
+            => _api = httpFactory.CreateClient("ApiClient");
 
         // GET: /Auth/Giris
         [HttpGet]
@@ -25,57 +27,58 @@ namespace MadrinHotelCRM.MVC.Controllers
 
         // POST: /Auth/Giris
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Giris(GirisDTO model)
         {
             if (!ModelState.IsValid)
                 return View(model);
-            //giriş başarılıysa paneline yönlendirmek için.
 
-            if (model.UserRole == "Admin")
-                return RedirectToAction("Index", "AdminPanel");
-
-            if (model.UserRole == "Personel")
-                return RedirectToAction("Index", "PersonelPanel");
-
-
+            // API’ye giriş isteği atarız
             var response = await _api.PostAsJsonAsync("api/authorization/giris", model);
-            if (response.IsSuccessStatusCode)
-                return RedirectToAction("Index", "Home");
-
-            // Hata mesajını  ModelState’e ekleme
-            var error = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
-            ModelState.AddModelError(string.Empty, error?["message"] ?? "Giriş başarısız.");
-            return View(model);
-        }
-
-        // GET: /Auth/Kayit
-        [HttpGet]
-        public IActionResult Kayit()
-            => View(new KullaniciOlusturDTO());
-
-        // POST: /Auth/Kayit
-        [HttpPost]
-        public async Task<IActionResult> Kayit(KullaniciOlusturDTO model)
-        {
-            if (!ModelState.IsValid)
+            if (!response.IsSuccessStatusCode)
+            {
+                var err = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                ModelState.AddModelError(string.Empty, err?["message"] ?? "Giriş başarısız.");
                 return View(model);
+            }
 
-            var response = await _api.PostAsJsonAsync("api/authorization/kayit", model);
-            if (response.IsSuccessStatusCode)
-                return RedirectToAction("Giris");
+            // 2) ClaimsPrincipal oluştur ve cookie ile imzala
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name,  model.Email),
+                new Claim(ClaimTypes.Role,  model.UserRole)
+            };
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
 
-            var errors = await response.Content.ReadFromJsonAsync<List<IdentityError>>();
-            foreach (var e in errors)
-                ModelState.AddModelError(string.Empty, e.Description);
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                principal,
+                new AuthenticationProperties
+                {
+                    IsPersistent = model.RememberMe
+                });
 
-            return View(model);
+            // Session'da ek bilgi saklamak için
+            HttpContext.Session.SetString("UserEmail", model.Email);
+            HttpContext.Session.SetString("UserRole", model.UserRole);
+
+            // Role bazlı yönlendirme yapmak için
+            return model.UserRole switch
+            {
+                "Admin" => RedirectToAction("Index", "AdminPanel"),
+                "Personel" => RedirectToAction("Index", "PersonelPanel"),
+                _ => RedirectToAction("Index", "Home")
+            };
         }
 
         // POST: /Auth/Cikis
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Cikis()
         {
-            await _api.PostAsync("api/authorization/cikis", null);
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            HttpContext.Session.Clear();
             return RedirectToAction("Giris");
         }
     }

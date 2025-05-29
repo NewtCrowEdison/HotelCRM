@@ -1,5 +1,7 @@
-﻿@{
-    ViewData["Title"] = "Admin Giriş";
+﻿@model MadrinHotelCRM.DTO.DTOModels.GirisDTO
+
+@{
+    ViewData["Title"] = "Madrin Hotel CRM - Kullanıcı Girişi";
     Layout = null;
 }
 
@@ -8,8 +10,9 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Madrin Hotel CRM - Giriş</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet" />
     <style>
         body {
             background: linear-gradient(to right, #e1f7e7, #f4fff6);
@@ -18,6 +21,7 @@
             justify-content: center;
             height: 100vh;
             font-family: 'Segoe UI', sans-serif;
+            margin: 0;
         }
 
         .login-box {
@@ -32,42 +36,48 @@
 </head>
 <body>
     <div class="login-box">
-        <h2 class="text-center mb-4">Madrin Hotel  - Kullanıcı Giriş</h2>
+        <h2 class="text-center mb-4">@ViewData["Title"]</h2>
 
-        @if (ViewBag.Error != null)
-        {
-            <div class="alert alert-danger">@ViewBag.Error</div>
-        }
-
-        <form method="post" action="/Admin/Login">
-
+        <form asp-controller="Auth" asp-action="Giris" method="post">
+            @* Sadece hata olduğunda görünür olması için *@
+            @if (ViewData.ModelState.ErrorCount > 0)
+            {
+                <div asp-validation-summary="All" class="alert alert-danger"></div>
+            }
 
             <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input type="email" name="Email" class="form-control" required />
+                <label asp-for="Email" class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Şifre</label>
-                <input type="password" name="Password" class="form-control" required />
+                <label asp-for="Password" class="form-label">Şifre</label>
+                <input asp-for="Password" type="password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Statü</label>
-                <select name="UserRole" class="form-select" required>
+                <label asp-for="UserRole" class="form-label">Statü</label>
+                <select asp-for="UserRole" class="form-select">
                     <option value="">Statü Seçiniz</option>
                     <option value="Admin">Admin</option>
                     <option value="Personel">Personel</option>
                 </select>
+                <span asp-validation-for="UserRole" class="text-danger"></span>
             </div>
 
             <div class="form-check mb-3">
-                <input type="checkbox" name="RememberMe" class="form-check-input" />
-                <label class="form-check-label">Beni Hatırla</label>
+                <input asp-for="RememberMe" class="form-check-input" />
+                <label asp-for="RememberMe" class="form-check-label">Beni Hatırla</label>
             </div>
 
             <button type="submit" class="btn btn-success w-100">Giriş Yap</button>
         </form>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.12/dist/jquery.validate.unobtrusive.min.js"></script>
 </body>
 </html>

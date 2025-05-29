@@ -12,6 +12,12 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
             _api = httpFactory.CreateClient("ApiClient");
         }
 
+        [HttpGet]
+        public IActionResult Index()
+        {
+            return View();                      
+        }
+
         //  Oda Yönetimi
         public IActionResult Odalar() => PartialView("~/Views/_Partials/_OdalarPartial.cshtml");
         public IActionResult OdaTipleri() => PartialView("~/Views/_Partials/_OdaTipleriPartial.cshtml");

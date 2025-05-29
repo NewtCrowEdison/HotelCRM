@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MadrinHotelCRM.DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250526213625_mg1")]
+    [Migration("20250529131225_mg1")]
     partial class mg1
     {
         /// <inheritdoc />
@@ -88,6 +88,24 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("MadrinHotelCRM.Entities.Models.Departman", b =>
+                {
+                    b.Property<int>("DepartmanId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DepartmanId"));
+
+                    b.Property<string>("DepartmanAdi")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("DepartmanId");
+
+                    b.ToTable("Departmanlar");
                 });
 
             modelBuilder.Entity("MadrinHotelCRM.Entities.Models.EkPaket", b =>
@@ -378,6 +396,31 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                     b.ToTable("MusteriEtkilesimler");
                 });
 
+            modelBuilder.Entity("MadrinHotelCRM.Entities.Models.MusteriRezervasyon", b =>
+                {
+                    b.Property<int>("MusteriId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RezervasyonId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("GirisYaptiMi")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("PersonelId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MusteriId", "RezervasyonId");
+
+                    b.HasIndex("PersonelId");
+
+                    b.HasIndex("RezervasyonId");
+
+                    b.ToTable("MusteriRezervasyonlar");
+                });
+
             modelBuilder.Entity("MadrinHotelCRM.Entities.Models.Oda", b =>
                 {
                     b.Property<int>("OdaId")
@@ -529,6 +572,9 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("DepartmanId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -553,6 +599,8 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                         .HasColumnType("bit");
 
                     b.HasKey("PersonelId");
+
+                    b.HasIndex("DepartmanId");
 
                     b.ToTable("Personeller");
                 });
@@ -869,12 +917,10 @@ namespace MadrinHotelCRM.DataAccess.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -911,12 +957,10 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -997,6 +1041,33 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                     b.Navigation("Personeller");
                 });
 
+            modelBuilder.Entity("MadrinHotelCRM.Entities.Models.MusteriRezervasyon", b =>
+                {
+                    b.HasOne("MadrinHotelCRM.Entities.Models.Musteri", "Musteri")
+                        .WithMany()
+                        .HasForeignKey("MusteriId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MadrinHotelCRM.Entities.Models.Personel", "Personel")
+                        .WithMany()
+                        .HasForeignKey("PersonelId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MadrinHotelCRM.Entities.Models.Rezervasyon", "Rezervasyon")
+                        .WithMany()
+                        .HasForeignKey("RezervasyonId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Musteri");
+
+                    b.Navigation("Personel");
+
+                    b.Navigation("Rezervasyon");
+                });
+
             modelBuilder.Entity("MadrinHotelCRM.Entities.Models.Oda", b =>
                 {
                     b.HasOne("MadrinHotelCRM.Entities.Models.OdaTipi", "OdaTipi")
@@ -1036,6 +1107,17 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Fatura");
+                });
+
+            modelBuilder.Entity("MadrinHotelCRM.Entities.Models.Personel", b =>
+                {
+                    b.HasOne("MadrinHotelCRM.Entities.Models.Departman", "Departman")
+                        .WithMany("Personeller")
+                        .HasForeignKey("DepartmanId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Departman");
                 });
 
             modelBuilder.Entity("MadrinHotelCRM.Entities.Models.PersonelRezervasyon", b =>
@@ -1152,6 +1234,11 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("MadrinHotelCRM.Entities.Models.Departman", b =>
+                {
+                    b.Navigation("Personeller");
                 });
 
             modelBuilder.Entity("MadrinHotelCRM.Entities.Models.EkPaket", b =>

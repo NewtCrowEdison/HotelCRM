@@ -9,9 +9,8 @@ namespace MadrinHotelCRM.DTO.DTOModels
     public class GirisDTO
     {
         public string Email { get; set; }
-        public string Sifre { get; set; }
-        public bool BeniHatirla { get; set; }
-        //kullanıcının seçtiği rol u controller a taşımak için.
+        public string Password { get; set; }   
+        public bool RememberMe { get; set; }    
         public string UserRole { get; set; }
 
     }

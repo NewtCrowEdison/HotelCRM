@@ -12,6 +12,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using MadrinHotelCRM.API.Middlewares;
 using Serilog;
+using MadrinHotelCRM.Services.Interfaces;
+using MadrinHotelCRM.Services.Services;
 
 
 namespace MadrinHotelCRM.API
@@ -72,6 +74,7 @@ namespace MadrinHotelCRM.API
             builder.Services.AddScoped<IOdaTarifeService, OdaTarifeService>();
             builder.Services.AddScoped<IMusteriRezervasyonService, MusteriRezervasyonService>();
             builder.Services.AddScoped<IDepartmanService, DepartmanService>();
+            builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
 
 
             builder.Services.AddAuthentication(x =>

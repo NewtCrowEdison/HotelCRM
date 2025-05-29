@@ -22,6 +22,11 @@
             <h5 class="text-muted">Hoş geldin Admin </h5>
             <p>Sol menüden bir bölüm seçerek işlem yapmaya başlayabilirsin.</p>
         </div>
+        <!-- Çıkış Yap Butonu -->
+        <form asp-controller="Auth" asp-action="Cikis" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-outline-danger">Çıkış Yap</button>
+        </form>
     </div>
 </div>
 
