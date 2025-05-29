@@ -14,5 +14,10 @@ namespace MadrinHotelCRM.DTO.DTOModels
         public string OdaNumarasi { get; set; }
         public OdaDurum Durum { get; set; }  // Enum olarak kullanıldı
         public OdaTipiDTO OdaTipi { get; set; }  //odaTipiId odatipiDto referansı 
+
+        // view e erişmek için. viewde odatipi id yerine oda tipinin adı görünmesi için eklenen property
+        public string OdaTipiAdi => OdaTipi?.OdaTurAd ?? "Tanımsız";
+       
+
     }
 }
