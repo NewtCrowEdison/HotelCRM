@@ -32,7 +32,7 @@ namespace MadrinHotelCRM.API
 
 
             // Identity
-            builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddRoles<IdentityRole<string>>().AddEntityFrameworkStores<AppDbContext>().AddDefaultUI();
+            builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = false).AddRoles<IdentityRole<string>>().AddEntityFrameworkStores<AppDbContext>().AddDefaultUI();
 
             builder.Services.AddAuthorization(options =>
             {
@@ -79,9 +79,9 @@ namespace MadrinHotelCRM.API
 
             builder.Services.AddAuthentication(x =>
             {
-                     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(x=>{
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x => {
                 x.RequireHttpsMetadata = false;
                 x.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -90,7 +90,7 @@ namespace MadrinHotelCRM.API
                     ValidAudience = "",//kimler için 
 
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration.GetSection("AppSettings:Secret").Value ?? "")), 
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration.GetSection("AppSettings:Secret").Value ?? "")),
                     ValidateLifetime = true
                 };
             });

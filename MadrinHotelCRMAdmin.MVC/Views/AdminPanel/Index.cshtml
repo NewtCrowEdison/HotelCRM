@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Admin Panel - Oda Yönetimi";
+    ViewData["Title"] = "Admin Panel - Yönetim Ekranı";
 }
 
 <div class="container-fluid">
@@ -9,41 +9,102 @@
         <div class="col-md-3 bg-light vh-100 shadow-sm">
             <h4 class="mt-4 text-center text-success">Admin Panel</h4>
             <ul class="list-group list-group-flush mt-4">
-                <li class="list-group-item list-group-item-action" onclick="loadPanel('Odalar')">🛏️ Oda Yönetimi</li>
-                <li class="list-group-item list-group-item-action" onclick="loadPanel('Personel')">👤 Personel Yönetimi</li>
-                <li class="list-group-item list-group-item-action" onclick="loadPanel('EkPaketler')">📦 Ek Paketler</li>
-                <li class="list-group-item list-group-item-action" onclick="loadPanel('Faturalar')">🧾 Faturalar</li>
-                <li class="list-group-item list-group-item-action" onclick="loadPanel('Raporlar')">📊 Raporlar</li>
+                <li class="list-group-item list-group-item-action" onclick="loadComponent('Odalar')">🛏️ Oda Yönetimi</li>
+                <li class="list-group-item list-group-item-action" onclick="loadComponent('Personel')">👤 Personel Yönetimi</li>
+                <li class="list-group-item list-group-item-action" onclick="loadComponent('EkPaketler')">📦 Ek Paketler</li>
+                <li class="list-group-item list-group-item-action" onclick="loadComponent('Faturalar')">🧾 Faturalar</li>
+                <li class="list-group-item list-group-item-action" onclick="loadComponent('Raporlar')">📊 Raporlar</li>
             </ul>
+
+            <!-- Çıkış Butonu -->
+            <form asp-controller="Auth" asp-action="Cikis" method="post" class="mt-4 text-center">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-outline-danger">Çıkış Yap</button>
+            </form>
         </div>
 
-        <!-- SAĞ PANEL AJAX İLE YÜKLENECEK -->
+        <!-- SAĞ PANEL -->
         <div class="col-md-9 p-4" id="panelContent">
             <h5 class="text-muted">Hoş geldin Admin</h5>
             <p>Sol menüden bir bölüm seçerek işlem yapmaya başlayabilirsin.</p>
         </div>
-        <!-- Çıkış Yap Butonu -->
-        <form asp-controller="Auth" asp-action="Cikis" method="post">
-            @Html.AntiForgeryToken()
-            <button type="submit" class="btn btn-outline-danger">Çıkış Yap</button>
-        </form>
+
     </div>
 </div>
 
-<!-- AJAX KODU -->
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script>
-        function loadPanel(viewComponentName) {
+        function loadComponent(componentName) {
             $.ajax({
-                url: `/ViewComponent/${viewComponentName}`,
+                url: `/ViewComponent/${componentName}`,
                 type: 'GET',
-                success: function (result) {
-                    $('#panelContent').html(result);
+                success: function (html) {
+                    $("#panelContent").html(html);
+
+                    // Sadece personel için eventleri yeniden bağlamayı sağlıyor
+                    if (componentName === "Personel") {
+                        setTimeout(bindPersonelEvents, 100);
+                    }
                 },
                 error: function () {
-                    $('#panelContent').html('<p class="text-danger">Yüklenirken hata oluştu.</p>');
+                    $("#panelContent").html("<div class='alert alert-danger'>İçerik yüklenirken hata oluştu.</div>");
                 }
+            });
+        }
+
+        function bindPersonelEvents() {
+            try {
+                window.personeller = JSON.parse($("#personel-data").val());
+            } catch (err) {
+                console.error("Personel verisi alınamadı:", err);
+                window.personeller = [];
+            }
+
+            // Ekle / Güncelle
+            $("#kayitForm").submit(function (e) {
+                e.preventDefault();
+                const form = new FormData(this);
+                const id = form.get("PersonelId");
+
+                const url = id && id !== "0"
+                    ? "/AdminPanel/PersonelGuncelle"
+                    : "/AdminPanel/PersonelKayit";
+
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    data: form,
+                    contentType: false,
+                    processData: false,
+                    success: () => loadComponent('Personel'),
+                    error: (xhr) => alert("Hata: " + xhr.responseText)
+                });
+            });
+
+            // Sil
+            $(".sil-btn").click(function () {
+                const id = $(this).data("id");
+                $.post("/AdminPanel/PersonelSil", { id })
+                    .done(() => loadComponent('Personel'))
+                    .fail(() => alert("Personel silinemedi."));
+            });
+
+            // Güncelle (çalışmıyor şuan)
+            $(".duzenle-btn").click(function () {
+                const id = $(this).data("id");
+                const p = personeller.find(x => x.PersonelId === id);
+                if (!p) return;
+
+                $("input[name='PersonelId']").val(p.PersonelId);
+                $("input[name='Ad']").val(p.Ad);
+                $("input[name='Soyad']").val(p.Soyad);
+                $("input[name='Email']").val(p.Email);
+                $("input[name='Telefon']").val(p.Telefon);
+                $("input[name='TcKimlik']").val(p.TcKimlik || "");
+                $("input[name='PasaportNo']").val(p.PasaportNo || "");
+                $("input[name='YabanciUyrukluMu']").prop("checked", p.YabanciUyrukluMu);
             });
         }
     </script>

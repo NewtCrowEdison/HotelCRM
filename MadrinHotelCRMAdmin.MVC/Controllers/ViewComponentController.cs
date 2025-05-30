@@ -4,46 +4,33 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
 {
     public class ViewComponentController : Controller
     {
-        public IActionResult Odalar()
-        {
-            return ViewComponent("Odalar");
-        }
-        public IActionResult OdaTipleri()
-        {
-            return ViewComponent("OdaTipleri");
-        }
-        public IActionResult Personel()
-        {
-            return ViewComponent("Personel");
-        }
-        public IActionResult EkPaketler()
-        {
-            return ViewComponent("EkPaketler");
-        }
-        public IActionResult Faturalar()
-        {
-            return ViewComponent("Faturalar");
-        }
-        public IActionResult Departmanlar()
-        {
-            return ViewComponent("Departmanlar");
-        }
-        public IActionResult Musteriler()
-        {
-            return ViewComponent("Musteriler");
-        }
-        public IActionResult OdaTarifeleri()
-        {
-            return ViewComponent("OdaTarifeleri");
-        }
-        public IActionResult Odemeler()
-        {
-            return ViewComponent("Odemeler");
-        }
-        public IActionResult Tarifeler()
-        {
-            return ViewComponent("Tarifeler");
-        }
+        // Oda Yönetimi
+        public IActionResult Odalar() => ViewComponent("OdaListesi");
+        public IActionResult OdaEkle() => ViewComponent("OdaEkleFormu");
+        public IActionResult OdaTipleri() => ViewComponent("OdaTipleri");
+        public IActionResult OdaTarifeleri() => ViewComponent("OdaTarifeleri");
 
+        // Personel Yönetimi
+        public IActionResult Personel() => ViewComponent("Personel"); // listeleme işlemimiz
+       // public IActionResult PersonelForm() => ViewComponent("PersonelForm"); //Ekleme işlemimiz
+
+        // Müşteri Yönetimi
+        public IActionResult Musteriler() => ViewComponent("Musteriler");
+
+        // Ek Paketler
+        public IActionResult EkPaketler() => ViewComponent("EkPaketler");
+
+        // Departmanlar
+        public IActionResult Departmanlar() => ViewComponent("Departmanlar");
+
+        // Faturalar ve Ödemeler
+        public IActionResult Faturalar() => ViewComponent("Faturalar");
+        public IActionResult Odemeler() => ViewComponent("Odemeler");
+        public IActionResult Tarifeler() => ViewComponent("Tarifeler");
+
+        // Geri Bildirim, Log, Takip (Eğer varsa ekleyebilirsin)
+        public IActionResult SistemLoglari() => ViewComponent("SistemLoglari");
+        public IActionResult GeriBildirimler() => ViewComponent("GeriBildirimler");
+        public IActionResult GenelTakip() => ViewComponent("GenelTakip");
     }
 }

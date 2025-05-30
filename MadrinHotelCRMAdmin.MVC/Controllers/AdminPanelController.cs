@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Threading.Tasks;
 
 namespace MadrinHotelCRMAdmin.MVC.Controllers
 {
@@ -9,44 +10,64 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
     {
         private readonly HttpClient _api;
 
-       
         public AdminPanelController(IHttpClientFactory httpFactory)
         {
             _api = httpFactory.CreateClient("ApiClient");
         }
 
-        // Admin panel giriş ekranı
+      
         [HttpGet]
         public IActionResult Index()
         {
-            return View();
+            return View(); // Views/AdminPanel/Index.cshtml
         }
 
-        ////  Oda CRUD
-        //[HttpPost]
-        //public async Task<IActionResult> OdaEkle(OdaDTO model)
-        //{
-        //    var response = await _api.PostAsJsonAsync("api/oda", model);
-        //    if (response.IsSuccessStatusCode)
-        //        return Ok();
-        //    return BadRequest("Oda eklenirken bir hata oluştu.");
-        //}
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetAllOdalar()
-        //{
-        //    var data = await _api.GetFromJsonAsync<List<OdaDTO>>("api/oda");
-        //    return PartialView("~/Views/_Partials/_OdalarPartial.cshtml", data);
-        //}
+        [HttpPost]
+        public async Task<IActionResult> PersonelKayit(KullaniciOlusturDTO model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                              .Select(e => e.ErrorMessage)
+                                              .ToList();
+                return BadRequest("Hatalar: " + string.Join(" | ", errors));
+            }
 
-        //[HttpPost]
-        //public async Task<IActionResult> OdaSil(int id)
-        //{
-        //    var response = await _api.DeleteAsync($"api/oda/{id}");
-        //    if (response.IsSuccessStatusCode)
-        //        return Ok();
+            var response = await _api.PostAsJsonAsync("api/authorization/kayit", model);
 
-        //    return BadRequest("Oda silinemedi.");
-        //}
+            if (response.IsSuccessStatusCode)
+                return Ok(" Personel kaydı ve kullanıcı oluşturma başarılı.");
+
+            var apiError = await response.Content.ReadAsStringAsync();
+            return BadRequest(" API Hatası: " + apiError);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PersonelGuncelle(PersonelDTO dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Model geçersiz!");
+
+            var response = await _api.PutAsJsonAsync("api/personel", dto);
+
+            if (response.IsSuccessStatusCode)
+                return Ok("Güncelleme başarılı!");
+
+            var hata = await response.Content.ReadAsStringAsync();
+            return BadRequest(" API Hatası: " + hata);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PersonelSil(int id)
+        {
+            var response = await _api.DeleteAsync($"api/personel/{id}");
+
+            if (response.IsSuccessStatusCode)
+                return Ok("Personel silindi.");
+
+            var apiError = await response.Content.ReadAsStringAsync();
+            return BadRequest(" Silme hatası: " + apiError);
+        }
     }
 }
