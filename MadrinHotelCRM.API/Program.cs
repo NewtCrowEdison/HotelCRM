@@ -32,7 +32,7 @@ namespace MadrinHotelCRM.API
 
 
             // Identity
-            builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = false).AddRoles<IdentityRole<string>>().AddEntityFrameworkStores<AppDbContext>().AddDefaultUI();
+            builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).AddRoles<IdentityRole<string>>().AddEntityFrameworkStores<AppDbContext>().AddDefaultUI();
 
             builder.Services.AddAuthorization(options =>
             {
@@ -118,7 +118,6 @@ namespace MadrinHotelCRM.API
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseMiddleware<TrackingMiddleware>();
-            app.UseMiddleware<RequestLoggingMiddleware>();
             app.MapRazorPages();
             app.MapControllers();
             app.MapControllerRoute(
