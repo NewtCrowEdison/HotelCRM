@@ -11,6 +11,11 @@ using MadrinHotelCRM.Services.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MadrinHotelCRM.Repositories.Repositories.Concrete;
+using MadrinHotelCRM.Repositories.Repositories.Interfaces;
+using MadrinHotelCRM.DataAccess.Context;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace MadrinHotelCRMAdmin.MVC
 {
@@ -41,34 +46,29 @@ namespace MadrinHotelCRMAdmin.MVC
                     options.ExpireTimeSpan = TimeSpan.FromDays(1);
                 });
 
-            // 4) API�ya istek atmak i�in HttpClient
+            // 4) HttpClient
             builder.Services
                 .AddHttpClient("ApiClient", client =>
                 {
-                    client.BaseAddress = new Uri("https://localhost:7225/");
-                    client.DefaultRequestHeaders.Accept
-                          .Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            //  2) AutoMapper Profili tanımı
-            builder.Services.AddAutoMapper(typeof(MapProfiles));
-            //ek paket servisi view componentinde kullanmak için servis ekleme
-            builder.Services.AddScoped<IEkPaketService, EkPaketService>();
-
-            // 3) API’ya istek atmak için HttpClient
-            builder.Services
-                .AddHttpClient("ApiClient", client =>
-                {
-                    client.BaseAddress = new Uri("https://localhost:5001/"); // API’nizin URL’si
+                    client.BaseAddress = new Uri("https://localhost:7225/"); // veya API portun neyse
                     client.DefaultRequestHeaders.Accept.Add(
                         new MediaTypeWithQualityHeaderValue("application/json"));
                 })
-                // Biz cookie�leri manuel y�netece�imiz i�in HttpClientHandler'da UseCookies = false
-                .ConfigurePrimaryHttpMessageHandler(() =>
-                    new HttpClientHandler { UseCookies = false }
-                );
+                .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false });
 
+            // 5) AutoMapper ve Services
+            builder.Services.AddAutoMapper(typeof(MapProfiles));
+            builder.Services.AddScoped<IEkPaketService, EkPaketService>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseSqlServer("Server=.;Database=MadrinHotelCRMDb;Trusted_Connection=True;");
+            });
+
+
+            // 6) Uygulama Oluştur
             var app = builder.Build();
 
-            // 5) Middleware pipeline
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
@@ -79,9 +79,8 @@ namespace MadrinHotelCRMAdmin.MVC
             app.UseStaticFiles();
             app.UseRouting();
 
-
-            app.UseSession();        // �nce Session
-            app.UseAuthentication(); // sonra Auth
+            app.UseSession();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
@@ -89,6 +88,7 @@ namespace MadrinHotelCRMAdmin.MVC
                 pattern: "{controller=Auth}/{action=Giris}/{id?}");
 
             app.Run();
+
         }
     }
 }
