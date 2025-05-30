@@ -118,6 +118,7 @@ namespace MadrinHotelCRM.API
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseMiddleware<TrackingMiddleware>();
+            app.UseMiddleware<RequestLoggingMiddleware>();
             app.MapRazorPages();
             app.MapControllers();
             app.MapControllerRoute(
