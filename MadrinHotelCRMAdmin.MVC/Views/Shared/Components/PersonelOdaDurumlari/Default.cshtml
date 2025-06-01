@@ -1,0 +1,37 @@
+﻿@model List<OdaDTO>
+@using MadrinHotelCRM.DTO.DTOModels
+@using MadrinHotelCRM.Entities.Enums
+@using MadrinHotelCRM.Entities.Helpers
+
+@{
+    Func<OdaDurum, string> renkGetir = durum => durum switch
+    {
+        OdaDurum.Bos => "text-success",
+        OdaDurum.Dolu => "text-danger",
+        OdaDurum.Bakimda => "text-warning",
+        OdaDurum.Temizlikte => "text-info",
+        OdaDurum.Rezervasyonlu => "text-primary",
+        OdaDurum.Opsionlu => "text-secondary",
+        _ => "text-muted"
+    };
+}
+
+<h4 class="mb-3">Oda Durumları</h4>
+<div class="row">
+    @foreach (var oda in Model)
+    {
+        var renk = renkGetir(oda.Durum);
+
+        <div class="col-md-4">
+            <div class="card mb-3 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Oda @oda.OdaNumarasi</h5>
+                    <p class="card-text">Tip: @oda.OdaTipiAdi</p>
+                    <p class="card-text">
+                        Durum: <span class="@renk">@oda.Durum.GetDisplayName()</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+</div>

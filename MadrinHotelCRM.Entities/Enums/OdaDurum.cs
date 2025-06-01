@@ -19,7 +19,7 @@ namespace MadrinHotelCRM.Entities.Enums
         Dolu = 2,
 
         [Display(Name = "Bakýmda")]
-        Bakýmda = 3,
+        Bakimda = 3,
 
         [Display(Name = "Temizlikte")]
         Temizlikte = 4,

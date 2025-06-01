@@ -1,0 +1,120 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using MadrinHotelCRM.Entities.Models
+@inject UserManager<AppUser> UserManager
+
+@{
+	ViewData["Title"] = "Personel Panel - Yönetim Ekranı";
+
+	var kullanici = await UserManager.GetUserAsync(User);
+	var tamAd = kullanici != null ? $"{kullanici.UserName} " : "Personel";
+}
+
+<div class="container-fluid">
+	<div class="row">
+
+		<!-- SOL MENÜ -->
+		<div class="col-md-3 bg-light vh-100 shadow-sm">
+			<h4 class="mt-4 text-center text-primary">Personel Panel</h4>
+			<ul class="list-group list-group-flush mt-4">
+				<li class="list-group-item list-group-item-action" onclick="loadComponent('Personel_Musteriler')">👥 Müşteri Yönetimi</li>
+				<li class="list-group-item list-group-item-action" onclick="loadComponent('Personel_Rezervasyon')">📝 Rezervasyonlar</li>
+				<li class="list-group-item list-group-item-action" onclick="loadComponent('Personel_OdaDurumlari')">🛏️ Oda Durumları</li>
+				<li class="list-group-item list-group-item-action" onclick="loadComponent('Personel_Bilgilerim')">🙋‍♂️ Bilgilerim</li>
+			</ul>
+
+			<!-- Çıkış Butonu -->
+			<form asp-controller="Auth" asp-action="Cikis" method="post" class="mt-4 text-center">
+				@Html.AntiForgeryToken()
+				<button type="submit" class="btn btn-outline-danger">Çıkış Yap</button>
+			</form>
+		</div>
+
+		<!-- SAĞ PANEL -->
+		<div class="col-md-9 p-4" id="panelContent">
+			<h5 class="text-muted">Hoş geldin @tamAd 👋</h5>
+			<p>Sol menüden bir işlem seçerek yönetim ekranını kullanabilirsin.</p>
+		</div>
+
+	</div>
+</div>
+
+@section Scripts {
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
+		function loadComponent(componentName) {
+			$.ajax({
+				url: `/ViewComponent/${componentName}`,
+				type: 'GET',
+				success: function (html) {
+					$("#panelContent").html(html);
+					//sadece müşteri için eventleri yeniden bağlamayı sağlıyor
+					if (componentName === "Personel_Musteriler") {
+						setTimeout(bindMusteriEvents, 100);
+					}
+				},
+				error: function () {
+					$("#panelContent").html("<div class='alert alert-danger'>İçerik yüklenirken hata oluştu.</div>");
+				}
+			});
+		}
+
+		function bindMusteriEvents(){
+			try {
+				window.musteriler = JSON.parse($("#musteri-data").val());
+			} catch (err) {
+				console.error("Müşteri verileri yüklenemedi:", err);
+				window.musteriler = [];
+			}
+		}
+		//ekle/güncelle
+		$("#kayitForm").submit(function(e){
+			e.preventDefault();
+			const form =new FormData(this);
+			const id= form.get("MusteriId");
+
+			const url= id && id !== "0"
+			? `/PersonelPanel/MusteriGuncelle/${id}`
+				: "/PersonelPanel/MusteriKaydet";
+
+				$.ajax({
+					url: url,
+					type: 'POST',
+					data: form,
+					processData: false,
+					contentType: false,
+					success: () => loadComponent("Personel_Musteriler"),
+					error: (xhr) => alert("Hata: " + xhr.responseText)
+
+				});
+		});
+		//sil
+		$(".sil-btn").click(function () {
+			const id = $(this).data("id");
+			$.post("/PersonelPanel/MusteriSil",{id })
+				.done(() => loadComponent("Personel_Musteriler"))
+				.fail(() => alert("Müşteri silinemedi."));
+		});
+
+		//güncelle
+		 $(".duzenle-btn").click(function () {
+				const id = $(this).data("id");
+				const m = musteriler.find(x => x.MusteriId === id);
+				if (!m) return;
+
+				$("input[name='MusteriId']").val(m.MusteriId);
+				$("input[name='Ad']").val(m.Ad);
+				$("input[name='Soyad']").val(m.Soyad);
+				$("input[name='Email']").val(m.Email);
+				$("input[name='TelNo']").val(m.TelNo);
+				$("input[name='TcNo']").val(m.TcNo || "");
+				$("input[name='PasaportNo']").val(m.PasaportNo || "");
+				$("input[name='DogumTarihi']").val(m.DogumTarihi?.split("T")[0]);
+				$("select[name='Cinsiyet']").val(m.Cinsiyet);
+				$("input[name='Adres']").val(m.Adres);
+				$("#YabanciUyrukluMu").prop("checked", m.YabanciUyrukluMu);
+			});
+
+
+		
+	</script>
+}

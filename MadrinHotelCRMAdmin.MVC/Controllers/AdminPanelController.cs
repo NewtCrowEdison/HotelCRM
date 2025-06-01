@@ -17,10 +17,8 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
 
       
         [HttpGet]
-        public IActionResult Index()
-        {
-            return View(); // Views/AdminPanel/Index.cshtml
-        }
+        public IActionResult Index() => View(); // Index.cshtml
+
 
 
         [HttpPost]

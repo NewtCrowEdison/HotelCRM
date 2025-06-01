@@ -32,5 +32,11 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
         public IActionResult SistemLoglari() => ViewComponent("SistemLoglari");
         public IActionResult GeriBildirimler() => ViewComponent("GeriBildirimler");
         public IActionResult GenelTakip() => ViewComponent("GenelTakip");
+
+        // Personel Paneli Yetkilere göre çağrılar
+        public IActionResult Personel_Musteriler() => ViewComponent("PersonelMusteriler"); 
+        public IActionResult Personel_Rezervasyon() => ViewComponent("PersonelRezervasyon"); 
+        public IActionResult Personel_OdaDurumlari() => ViewComponent("PersonelOdaDurumlari");
+        public IActionResult Personel_Bilgilerim() => ViewComponent("PersonelKullaniciBilgileri"); 
     }
 }
