@@ -15,6 +15,8 @@ using MadrinHotelCRM.Repositories.Repositories.Concrete;
 using MadrinHotelCRM.Repositories.Repositories.Interfaces;
 using MadrinHotelCRM.Services.Interfaces;
 using MadrinHotelCRM.Services.Services;
+using MadrinHotelCRM.Entities.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace MadrinHotelCRMAdmin.MVC
 {
@@ -63,6 +65,11 @@ namespace MadrinHotelCRMAdmin.MVC
             builder.Services.AddAutoMapper(typeof(MapProfiles));
             builder.Services.AddScoped<IEkPaketService, EkPaketService>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+           // Giriş yapan kullanıcının ad ve soyad bilgilerini gösterebilmek için 
+            builder.Services.AddIdentity<AppUser, IdentityRole>()
+              .AddEntityFrameworkStores<AppDbContext>()
+              .AddDefaultTokenProviders();
+
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer("Server=.;Database=MadrinHotelCRMDb;Trusted_Connection=True;"));
 

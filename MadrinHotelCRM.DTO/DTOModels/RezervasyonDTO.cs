@@ -22,5 +22,9 @@ namespace MadrinHotelCRM.DTO.DTOModels
         public DateTime? IptalTarihi { get; set; }
         public string IptalNedeni { get; set; }
         public MusteriDTO Musteri { get; set; }
+        public int YetiskinSayisi { get; set; }
+        public int CocukSayisi { get; set; }
+
+
     }
 }

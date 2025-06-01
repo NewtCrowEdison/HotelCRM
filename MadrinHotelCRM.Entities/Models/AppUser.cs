@@ -13,5 +13,6 @@ namespace MadrinHotelCRM.Entities.Models
          //public string Email { get; set; }
          //public string PasswordHash { get; set; } // hashlenmiş şifre
          //public string Role { get; set; } // "Admin", "Personel" vs.
+
     }
 }
