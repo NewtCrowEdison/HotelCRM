@@ -1,0 +1,45 @@
+﻿@model MadrinHotelCRM.DTO.DTOModels.PersonelDTO
+
+<div class="card p-4">
+    <h4 class="mb-3">Kendi Bilgilerim</h4>
+    <form method="post" asp-action="ProfilGuncelle" asp-controller="PersonelPanel">
+        <input type="hidden" name="PersonelId" value="@Model.PersonelId" />
+
+        <div class="mb-3">
+            <label class="form-label">Ad</label>
+            <input type="text" name="Ad" class="form-control" value="@Model.Ad" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Soyad</label>
+            <input type="text" name="Soyad" class="form-control" value="@Model.Soyad" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" name="Email" class="form-control" value="@Model.Email" />
+        </div>
+
+        <button type="submit" class="btn btn-success">Bilgilerimi Güncelle</button>
+    </form>
+</div>
+<hr />
+<h5>Şifre Değiştir</h5>
+<form method="post" asp-controller="PersonelPanel" asp-action="SifreDegistir">
+    <input type="hidden" name="KullaniciId" value="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value" />
+
+    <div class="mb-3">
+        <label>Eski Şifre</label>
+        <input type="password" name="EskiSifre" class="form-control" required />
+    </div>
+    <div class="mb-3">
+        <label>Yeni Şifre</label>
+        <input type="password" name="YeniSifre" class="form-control" required />
+    </div>
+    <div class="mb-3">
+        <label>Yeni Şifre (Tekrar)</label>
+        <input type="password" name="YeniSifreTekrar" class="form-control" required />
+    </div>
+
+    <button type="submit" class="btn btn-warning">Şifremi Güncelle</button>
+</form>

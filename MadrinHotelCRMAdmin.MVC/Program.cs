@@ -58,8 +58,8 @@ namespace MadrinHotelCRMAdmin.MVC
                     client.BaseAddress = new Uri("https://localhost:7225/");
                     client.DefaultRequestHeaders.Accept.Add(
                         new MediaTypeWithQualityHeaderValue("application/json"));
-                })
-                .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false });
+                });
+                //.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false });
 
             // 6) AutoMapper ve DI’lar
             builder.Services.AddAutoMapper(typeof(MapProfiles));

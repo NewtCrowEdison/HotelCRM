@@ -44,12 +44,13 @@ namespace MadrinHotelCRM.MVC.Controllers
             // API'den kullanıcı rolü dönmesini beklenir
             var responseContent = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
             var role = responseContent?["role"] ?? "Personel";
-
+            var kullaniciId = responseContent?["kullaniciId"];
             // Kullanıcıyı kimliklendir
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, model.Email),
-                new Claim(ClaimTypes.Role, role)
+                new Claim(ClaimTypes.Role, role),
+                new Claim(ClaimTypes.NameIdentifier, kullaniciId)
             };
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
@@ -61,6 +62,7 @@ namespace MadrinHotelCRM.MVC.Controllers
                 {
                     IsPersistent = model.RememberMe
                 });
+           
 
             // Session'a kaydet
             HttpContext.Session.SetString("UserEmail", model.Email);
