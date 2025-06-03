@@ -7,20 +7,25 @@ namespace MadrinHotelCRM.API
     {
         public static void Main(string[] args)
         {
+
             var builder = WebApplication.CreateBuilder(args);
+            builder.Configuration
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            var jwtSecret = builder.Configuration["AppSettings:Secret"];
 
             // Serilog Extension
             builder.Host.AddSerilogExtension();
 
             // Extension Methods
             builder.Services
-                .AddDbContextExtension(builder.Configuration)
-                .AddIdentityExtension()
-                .AddJwtExtension(builder.Configuration)
-                .AddAutoMapperExtension()
-                .AddRepositoryServices()
-                .AddServiceCollectionExtension()
-                .AddSwaggerExtension();
+           .AddJwtExtension(jwtSecret)
+           .AddDbContextExtension(builder.Configuration)
+           .AddIdentityExtension()
+           .AddAutoMapperExtension()
+           .AddRepositoryServices()
+           .AddServiceCollectionExtension()
+           .AddSwaggerExtension();
 
             // MVC + Razor + Controllers
             builder.Services.AddControllers();

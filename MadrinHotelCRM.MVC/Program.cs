@@ -19,6 +19,11 @@ namespace MadrinHotelCRM.MVC
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Configuration
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+            var jwtSecret = builder.Configuration["AppSettings:Secret"];
             // Serilog Logging
             builder.Host.AddSerilogExtension();
 
@@ -27,8 +32,8 @@ namespace MadrinHotelCRM.MVC
 
             // Identity & JWT Authentication
             builder.Services
-                .AddIdentityExtension()
-                .AddJwtExtension(builder.Configuration);
+                 .AddIdentityExtension()
+                 .AddJwtExtension(jwtSecret);
 
             // AutoMapper, Repositories, Custom Services
             builder.Services

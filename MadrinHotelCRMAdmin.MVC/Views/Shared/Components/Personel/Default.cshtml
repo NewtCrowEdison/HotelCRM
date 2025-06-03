@@ -1,8 +1,9 @@
 ﻿@model MadrinHotelCRM.DTO.DTOModels.PersonelEkleViewModel
+@using System.Text.Json
 
-<!-- JS'e taşımak için liste serialize  -->
+<!-- Personel listesini JS'e başarılı bir şekilde aktarmak için  -->
 <script>
-    var personeller = @Html.Raw(Json.Serialize(Model.PersonelListesi));
+    var personeller = @Html.Raw(JsonSerializer.Serialize(Model.PersonelListesi));
 </script>
 
 <div class="row">
@@ -28,7 +29,8 @@
             <input name="PasaportNo" class="form-control" placeholder="Pasaport No (Varsa)" />
             <input name="TcKimlik" class="form-control" placeholder="TC Kimlik (Varsa)" />
 
-            <button type="submit" class="btn btn-success mt-2">Kaydet</button>
+            <button id="kaydetBtn" type="submit" class="btn btn-success mt-2">Kaydet</button>
+
         </form>
     </div>
 

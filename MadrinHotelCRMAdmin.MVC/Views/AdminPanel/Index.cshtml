@@ -54,15 +54,15 @@
             });
         }
 
-        function bindPersonelEvents() {
+           function bindPersonelEvents() {
             try {
-                window.personeller = JSON.parse($("#personel-data").val());
+                window.personeller = personeller; // JSON zaten script içinde tanımlı
             } catch (err) {
                 console.error("Personel verisi alınamadı:", err);
                 window.personeller = [];
             }
 
-            // Ekle / Güncelle
+            // Form submit (ekle/güncelle)
             $("#kayitForm").submit(function (e) {
                 e.preventDefault();
                 const form = new FormData(this);
@@ -78,12 +78,15 @@
                     data: form,
                     contentType: false,
                     processData: false,
-                    success: () => loadComponent('Personel'),
+                    success: () => {
+                        loadComponent('Personel');         // Sayfayı tazele
+                        $("#kaydetBtn").text("Kaydet");    // Buton yazısını sıfırla
+                    },
                     error: (xhr) => alert("Hata: " + xhr.responseText)
                 });
             });
 
-            // Sil
+            // Silme işlemi
             $(".sil-btn").click(function () {
                 const id = $(this).data("id");
                 $.post("/AdminPanel/PersonelSil", { id })
@@ -91,11 +94,15 @@
                     .fail(() => alert("Personel silinemedi."));
             });
 
-            // Güncelle (çalışmıyor şuan)
+            // Düzenleme işlemi
             $(".duzenle-btn").click(function () {
-                const id = $(this).data("id");
+                const id = parseInt($(this).data("id")); // string → int
                 const p = personeller.find(x => x.PersonelId === id);
-                if (!p) return;
+
+                if (!p) {
+                    alert("Kayıt bulunamadı!");
+                    return;
+                }
 
                 $("input[name='PersonelId']").val(p.PersonelId);
                 $("input[name='Ad']").val(p.Ad);
@@ -105,6 +112,9 @@
                 $("input[name='TcKimlik']").val(p.TcKimlik || "");
                 $("input[name='PasaportNo']").val(p.PasaportNo || "");
                 $("input[name='YabanciUyrukluMu']").prop("checked", p.YabanciUyrukluMu);
+
+                // Buton metnini değiştir
+                $("#kaydetBtn").text("Güncelle");
             });
         }
     </script>

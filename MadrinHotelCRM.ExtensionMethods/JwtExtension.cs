@@ -8,9 +8,12 @@ namespace MadrinHotelCRM.ExtensionMethods
 {
     public static class JwtExtensions
     {
-        public static IServiceCollection AddJwtExtension(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddJwtExtension(this IServiceCollection services, string secret)
         {
-            var key = Encoding.ASCII.GetBytes(configuration["AppSettings:Secret"] ?? "");
+            if (string.IsNullOrWhiteSpace(secret))
+                throw new InvalidOperationException("JWT secret boş geldi. Lütfen kontrol et.");
+
+            var key = Encoding.ASCII.GetBytes(secret);
 
             services.AddAuthentication(x =>
             {
