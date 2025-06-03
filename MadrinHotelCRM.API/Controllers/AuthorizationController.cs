@@ -37,7 +37,12 @@ namespace MadrinHotelCRM.API.Controllers
             var roles = await _authSvc.GetRolesAsync(user); // bunu interface'e ekleyeceğiz
             var userRole = roles.FirstOrDefault() ?? "Personel";
 
-            return Ok(new { message = "Hoş geldin!", role = userRole });
+            return Ok(new
+            {
+                message = "Hoş geldin!",
+                role = userRole,
+                kullaniciId = user.Id 
+            });
         }
 
         // POST: /api/authorization/kayit

@@ -61,5 +61,25 @@ namespace MadrinHotelCRM.API.Controllers
             if (!ok) return NotFound();
             return NoContent();
         }
+        //personel şifre değiştirme işemi için
+        [HttpPut("sifre")]
+        [Authorize] // Şifre işlemine sadece giriş yapan erişebilsin
+        public async Task<IActionResult> SifreDegistir([FromBody] ChangePasswordDTO dto)
+        {
+            try
+            {
+                var result = await _personelSvc.ChangePasswordAsync(dto);
+                return Ok("Şifre başarıyla değiştirildi.");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound("Kullanıcı bulunamadı.");
+            }
+        }
+
     }
 }

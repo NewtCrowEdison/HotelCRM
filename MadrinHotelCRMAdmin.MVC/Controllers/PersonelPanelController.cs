@@ -93,6 +93,36 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
             return res.IsSuccessStatusCode ? Ok("İptal edildi") : BadRequest("İptal başarısız");
         }
 
+        //personel profil bilgileri
+        [HttpPost]
+        public async Task<IActionResult> ProfilGuncelle(PersonelDTO dto)
+        {
+            var response = await _api.PutAsJsonAsync("api/personel", dto);
+            if (response.IsSuccessStatusCode)
+                return RedirectToAction("Personel_Bilgilerim");
+
+            return BadRequest("Güncelleme başarısız.");
+        }
+        //şifre değiştir
+        [HttpPost]
+        public async Task<IActionResult> SifreDegistir(ChangePasswordDTO dto)
+        {
+            if (dto.YeniSifre != dto.YeniSifreTekrar)
+            {
+                ModelState.AddModelError("", "Yeni şifreler eşleşmiyor.");
+                return RedirectToAction("Personel_Bilgilerim");
+            }
+
+            var response = await _api.PutAsJsonAsync("api/personel/sifre", dto);
+            if (response.IsSuccessStatusCode)
+                return RedirectToAction("Personel_Bilgilerim");
+
+            ModelState.AddModelError("", "Şifre güncelleme başarısız.");
+            return RedirectToAction("Personel_Bilgilerim");
+        }
+
+
+
 
         // Aynı şekilde: Rezervasyon ekle/güncelle işlemleri de buraya gelecek
     }

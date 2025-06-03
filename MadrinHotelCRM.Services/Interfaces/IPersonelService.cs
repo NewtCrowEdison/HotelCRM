@@ -15,5 +15,10 @@ namespace MadrinHotelCRM.Services.Interfaces
         Task<PersonelDTO> CreateAsync(PersonelDTO dto);
         Task<PersonelDTO> UpdateAsync(PersonelDTO dto);
         Task<bool> DeleteAsync(int id);
+        //şifre değişimi
+        Task<PersonelDTO> GetByKullaniciIdAsync(string kullaniciId);
+        Task<bool> ChangePasswordAsync(ChangePasswordDTO dto);
+        
+
     }
 }

@@ -82,5 +82,40 @@ namespace MadrinHotelCRM.Services.Services
 
             return true;
         }
+        //şifre değşiştirme işlemi için
+        public async Task<bool> ChangePasswordAsync(ChangePasswordDTO dto)
+        {
+            var repo = _uow.Read<Personel>();
+            var list = await repo.FindAsync(p => p.KullaniciId == dto.KullaniciId);
+            var entity = list.FirstOrDefault();
+
+            if (entity == null)
+                throw new KeyNotFoundException("Kullanıcı bulunamadı.");
+
+            if (entity.PasswordHash != dto.EskiSifre) //  HASH ile karşılaştırılmalı
+                throw new InvalidOperationException("Eski şifre yanlış.");
+
+            if (dto.YeniSifre != dto.YeniSifreTekrar)
+                throw new InvalidOperationException("Yeni şifreler eşleşmiyor.");
+
+            entity.PasswordHash = dto.YeniSifre; //  HASH ile kaydedilmeli
+            var updRepo = _uow.Update<Personel>();
+            updRepo.Update(entity);
+            await _uow.CommitAsync();
+            return true;
+        }
+        public async Task<PersonelDTO> GetByKullaniciIdAsync(string kullaniciId)
+        {
+            var repo = _uow.Read<Personel>();
+            var list = await repo.FindAsync(p => p.KullaniciId == kullaniciId);
+            var entity = list.FirstOrDefault();
+
+            if (entity == null)
+                throw new KeyNotFoundException("Kullanıcı bulunamadı.");
+
+            return _mapper.Map<PersonelDTO>(entity);
+        }
+
+
     }
 }
