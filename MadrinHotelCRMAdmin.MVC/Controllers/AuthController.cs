@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using MadrinHotelCRM.DTO.DTOModels;
+using System.Text.Json;
 
 namespace MadrinHotelCRM.MVC.Controllers
 {
@@ -36,16 +37,27 @@ namespace MadrinHotelCRM.MVC.Controllers
             var response = await _api.PostAsJsonAsync("api/authorization/giris", model);
             if (!response.IsSuccessStatusCode)
             {
-                var err = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
-                ModelState.AddModelError(string.Empty, err?["message"] ?? "Giriş başarısız.");
+                string hataMesaji = await response.Content.ReadAsStringAsync();
+
+                try
+                {
+                    var errDict = JsonSerializer.Deserialize<Dictionary<string, string>>(hataMesaji);
+                    ModelState.AddModelError(string.Empty, errDict?["message"] ?? "Giriş başarısız.");
+                }
+                catch
+                {
+                    ModelState.AddModelError(string.Empty, hataMesaji);
+                }
+
                 return View(model);
             }
 
-            // API'den kullanıcı rolü dönmesini beklenir
+            // API'den kullanıcı rolü ve ID bilgilerini al
             var responseContent = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
             var role = responseContent?["role"] ?? "Personel";
             var kullaniciId = responseContent?["kullaniciId"];
-            // Kullanıcıyı kimliklendir
+
+            // Claims ile kimlik doğrulama
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, model.Email),
@@ -62,13 +74,12 @@ namespace MadrinHotelCRM.MVC.Controllers
                 {
                     IsPersistent = model.RememberMe
                 });
-           
 
-            // Session'a kaydet
+            // Session’a kayıt
             HttpContext.Session.SetString("UserEmail", model.Email);
             HttpContext.Session.SetString("UserRole", role);
 
-            // Role'a göre yönlendir
+            // Role’a göre yönlendirme
             return role switch
             {
                 "Admin" => RedirectToAction("Index", "AdminPanel"),
