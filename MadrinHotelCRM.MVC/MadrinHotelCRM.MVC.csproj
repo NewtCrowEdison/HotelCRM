@@ -24,8 +24,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\MadrinHotelCRM.API\MadrinHotelCRM.API.csproj" />
 		<ProjectReference Include="..\MadrinHotelCRM.DataAccess\MadrinHotelCRM.DataAccess.csproj" />
 		<ProjectReference Include="..\MadrinHotelCRM.Entities\MadrinHotelCRM.Entities.csproj" />
+		<ProjectReference Include="..\MadrinHotelCRM.ExtensionMethods\MadrinHotelCRM.ExtensionMethods.csproj" />
 		<ProjectReference Include="..\MadrinHotelCRM.Repositories\MadrinHotelCRM.Repositories.csproj" />
 	</ItemGroup>
 	<ItemGroup>

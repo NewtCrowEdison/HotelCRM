@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MadrinHotelCRM.Business\MadrinHotelCRM.Business.csproj" />
     <ProjectReference Include="..\MadrinHotelCRM.DTO\MadrinHotelCRM.DTO.csproj" />
+    <ProjectReference Include="..\MadrinHotelCRM.ExtensionMethods\MadrinHotelCRM.ExtensionMethods.csproj" />
     <ProjectReference Include="..\MadrinHotelCRM.Services\MadrinHotelCRM.Services.csproj" />
   </ItemGroup>
 

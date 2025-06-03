@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MadrinHotelCRM.Entities.Helpers
+namespace MadrinHotelCRM.ExtensionMethods
 {
     public static class EnumExtensions
     {

@@ -1,3 +1,5 @@
+using MadrinHotelCRM.API.Middlewares;
+using MadrinHotelCRM.ExtensionMethods;
 using MadrinHotelCRM.DataAccess;
 using MadrinHotelCRM.DataAccess.Context;
 using MadrinHotelCRM.Repositories.Repositories.Concrete;
@@ -7,7 +9,6 @@ using Microsoft.AspNetCore.Identity;
 using MadrinHotelCRM.Entities.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Drawing;
 using System.Text;
 
 namespace MadrinHotelCRM.MVC
@@ -16,29 +17,44 @@ namespace MadrinHotelCRM.MVC
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine("Madrin Hotel CRM MVC Başlatılıyor...");
             var builder = WebApplication.CreateBuilder(args);
 
-            //  DbContext 
-            builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            // Serilog Logging
+            builder.Host.AddSerilogExtension();
 
+            // DbContext
+            builder.Services.AddDbContextExtension(builder.Configuration);
 
-           
+            // Identity & JWT Authentication
+            builder.Services
+                .AddIdentityExtension()
+                .AddJwtExtension(builder.Configuration);
 
-            //  UnitOfWork ve Repositoryleri 
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            // AutoMapper, Repositories, Custom Services
+            builder.Services
+                .AddAutoMapperExtension()
+                .AddRepositoryServices()
+                .AddServiceCollectionExtension();
 
-            // MVC Controllerları 
+            // Swagger (Dev ortamında)
+            builder.Services.AddSwaggerExtension();
+
+            // MVC & Razor
             builder.Services.AddControllersWithViews();
+            builder.Services.AddRazorPages();
 
-            // API den gelen Controllerlar için servis
+            // HttpClient (API'lerden veri almak için)
             builder.Services.AddHttpClient();
 
             var app = builder.Build();
 
-            //  Exception Handling
-            if (!app.Environment.IsDevelopment())
+            // Hata Yakalama
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+            else
             {
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
@@ -49,16 +65,22 @@ namespace MadrinHotelCRM.MVC
 
             app.UseRouting();
 
-            //app.MapRazorPages();
-            //app.UseAuthentication();
+            app.UseAuthentication();
             app.UseAuthorization();
+
+            // Custom Middleware (örn: Kullanıcı takibi)
+            app.UseMiddleware<TrackingMiddleware>();
+
+            // Razor Pages & Controllerlar
+            app.MapRazorPages();
             app.MapControllers();
 
-            //  MVC Routing
+            // Area Routing
             app.MapControllerRoute(
-            name: "areas",
-            pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+                name: "areas",
+                pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
+            // Default Route
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
