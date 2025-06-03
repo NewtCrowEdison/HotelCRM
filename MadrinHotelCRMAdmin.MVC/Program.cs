@@ -1,4 +1,3 @@
-// Program.cs (MadrinHotelCRMAdmin.MVC)
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;

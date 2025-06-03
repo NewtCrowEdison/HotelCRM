@@ -1,7 +1,7 @@
 ﻿@model List<OdaDTO>
 @using MadrinHotelCRM.DTO.DTOModels
 @using MadrinHotelCRM.Entities.Enums
-@using MadrinHotelCRM.Entities.Helpers
+@using MadrinHotelCRM.ExtensionMethods
 
 @{
     Func<OdaDurum, string> renkGetir = durum => durum switch
