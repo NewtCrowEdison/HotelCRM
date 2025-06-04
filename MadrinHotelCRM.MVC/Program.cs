@@ -39,6 +39,7 @@ namespace MadrinHotelCRM.MVC
             builder.Services
                 .AddAutoMapperExtension()
                 .AddRepositoryServices()
+                .AddHttpClientExtension(builder.Configuration)
                 .AddServiceCollectionExtension();
 
             // Swagger (Dev ortamında)

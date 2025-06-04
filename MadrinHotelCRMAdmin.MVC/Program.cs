@@ -1,21 +1,20 @@
-using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
-
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-
 using MadrinHotelCRM.Business.Mapp;
 using MadrinHotelCRM.DataAccess.Context;
+using MadrinHotelCRM.Entities.Models;
+using MadrinHotelCRM.ExtensionMethods;
 using MadrinHotelCRM.Repositories.Repositories.Concrete;
 using MadrinHotelCRM.Repositories.Repositories.Interfaces;
 using MadrinHotelCRM.Services.Interfaces;
 using MadrinHotelCRM.Services.Services;
-using MadrinHotelCRM.Entities.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace MadrinHotelCRMAdmin.MVC
 {
@@ -51,14 +50,16 @@ namespace MadrinHotelCRMAdmin.MVC
             builder.Services.AddAuthorization(); // [Authorize] kullanacaksan eklemekte fayda var
 
             // 5) HttpClient
-            builder.Services
-                .AddHttpClient("ApiClient", client =>
-                {
-                    client.BaseAddress = new Uri("https://localhost:7225/");
-                    client.DefaultRequestHeaders.Accept.Add(
-                        new MediaTypeWithQualityHeaderValue("application/json"));
-                });
-                //.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false });
+            //builder.Services
+            //    .AddHttpClient("ApiClient", client =>
+            //    {
+            //        client.BaseAddress = new Uri("https://localhost:7225/");
+            //        client.DefaultRequestHeaders.Accept.Add(
+            //            new MediaTypeWithQualityHeaderValue("application/json"));
+            //    });
+            //.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false });
+
+            builder.Services.AddHttpClientExtension(builder.Configuration);
 
             // 6) AutoMapper ve DI’lar
             builder.Services.AddAutoMapper(typeof(MapProfiles));
