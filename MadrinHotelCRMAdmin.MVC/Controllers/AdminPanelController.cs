@@ -21,31 +21,42 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
             return View();
         }
 
+        // Personel Kayıt
         [HttpPost]
         public async Task<IActionResult> PersonelKayit(KullaniciOlusturDTO model)
         {
             if (!ModelState.IsValid)
             {
-                var errors = ModelState.Values.SelectMany(v => v.Errors)
-                                              .Select(e => e.ErrorMessage)
-                                              .ToList();
-                return BadRequest("Hatalar: " + string.Join(" | ", errors));
+                var errors = ModelState.Values
+                    .SelectMany(x => x.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                return BadRequest("Model hatası: " + string.Join(" | ", errors));
             }
 
             var response = await _api.PostAsJsonAsync("api/authorization/kayit", model);
 
             if (response.IsSuccessStatusCode)
-                return Ok(" Personel kaydı ve kullanıcı oluşturma başarılı.");
+                return Ok("Personel kaydı ve kullanıcı oluşturma başarılı.");
 
             var apiError = await response.Content.ReadAsStringAsync();
-            return BadRequest(" API Hatası: " + apiError);
+            return BadRequest("API Hatası: " + apiError);
         }
 
+        // Personel Güncelle
         [HttpPost]
         public async Task<IActionResult> PersonelGuncelle(PersonelDTO dto)
         {
             if (!ModelState.IsValid)
-                return BadRequest("Model geçersiz!");
+            {
+                var errors = ModelState.Values
+                    .SelectMany(x => x.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                return BadRequest("Model hatası: " + string.Join(" | ", errors));
+            }
 
             var response = await _api.PutAsJsonAsync("api/personel", dto);
 
@@ -53,9 +64,10 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
                 return Ok("Güncelleme başarılı!");
 
             var hata = await response.Content.ReadAsStringAsync();
-            return BadRequest(" API Hatası: " + hata);
+            return BadRequest("API Hatası: " + hata);
         }
 
+        // Personel Sil
         [HttpPost]
         public async Task<IActionResult> PersonelSil(int id)
         {
@@ -65,7 +77,7 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
                 return Ok("Personel silindi.");
 
             var apiError = await response.Content.ReadAsStringAsync();
-            return BadRequest(" Silme hatası: " + apiError);
+            return BadRequest("Silme hatası: " + apiError);
         }
     }
 }

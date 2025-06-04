@@ -26,7 +26,7 @@ namespace MadrinHotelCRM.Entities.Models
         public ICollection<GenelTakip> GenelTakipler { get; set; }
         public ICollection<PersonelRezervasyon> PersonelRezervasyonlar { get; set; }
         public Departman? Departman { get; set; } //sadece id sini saklamayarak iliþkiyi doðrudan nesne olarakta kullanabilmek için 
-
+        [StringLength(450)]
         public string KullaniciId { get; set; } // Identity ile bað kurmak için
         public string PasswordHash { get; set; } // Plain password deðil
 

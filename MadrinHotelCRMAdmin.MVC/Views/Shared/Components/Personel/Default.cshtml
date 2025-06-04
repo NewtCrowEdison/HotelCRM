@@ -7,18 +7,18 @@
 </script>
 
 <div class="row">
-
     <!-- Personel Ekleme / Güncelleme Formu -->
     <div class="col-md-6">
-        <h4 class="text-success"> Personel Ekle / Güncelle</h4>
+        <h4 class="text-success">Personel Ekle / Güncelle</h4>
         <form id="kayitForm" class="row g-2">
             <input type="hidden" name="PersonelId" value="0" />
+            <input type="hidden" name="KullaniciId" value="" />
             <input type="hidden" name="Rol" value="Personel" />
 
             <input name="Ad" class="form-control" placeholder="Ad" required />
             <input name="Soyad" class="form-control" placeholder="Soyad" required />
             <input name="Email" class="form-control" placeholder="Email" required />
-            <input name="Sifre" type="password" class="form-control" placeholder="Şifre" />
+            <input id="sifreInput" name="Sifre" type="password" class="form-control" placeholder="Şifre" required />
             <input name="Telefon" class="form-control" placeholder="Telefon" required />
 
             <div class="form-check">
@@ -30,7 +30,6 @@
             <input name="TcKimlik" class="form-control" placeholder="TC Kimlik (Varsa)" />
 
             <button id="kaydetBtn" type="submit" class="btn btn-success mt-2">Kaydet</button>
-
         </form>
     </div>
 

@@ -11,10 +11,15 @@ namespace MadrinHotelCRM.Services.Interfaces
 {
     public interface IAuthorizationService
     {
-        Task<SignInResult> LoginAsync(GirisDTO model);
-        Task LogoutAsync();
-        Task<IdentityResult> CreateUserAsync(KullaniciOlusturDTO model);
+        //Task<SignInResult> LoginAsync(GirisDTO model);
+        //Task LogoutAsync();
+        //Task<IdentityResult> CreateUserAsync(KullaniciOlusturDTO model);
+        //Task<AppUser> GetUserByEmailAsync(string email);
+        //Task<IList<string>> GetRolesAsync(AppUser user);
+        Task<AppUser> CreateUserAsync(KullaniciOlusturDTO dto);
+        Task<SignInResult> LoginAsync(GirisDTO dto);
         Task<AppUser> GetUserByEmailAsync(string email);
         Task<IList<string>> GetRolesAsync(AppUser user);
+        Task LogoutAsync();
     }
 }

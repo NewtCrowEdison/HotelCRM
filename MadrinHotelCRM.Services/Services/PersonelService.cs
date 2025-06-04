@@ -1,6 +1,6 @@
-﻿// Services/Services/PersonelService.cs
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -26,6 +26,10 @@ namespace MadrinHotelCRM.Services.Services
         {
             var repo = _uow.Create<Personel>();
             var entity = _mapper.Map<Personel>(dto);
+
+            // Eğer şifre geliyorsa hashlemek istersen burada yapabilirsin
+            if (!string.IsNullOrEmpty(dto.Password))
+                entity.PasswordHash = dto.Password; // TODO: SHA256, BCrypt gibi hash işlemi uygulanmalı
 
             await repo.AddAsync(entity);
             await _uow.CommitAsync();
@@ -54,14 +58,23 @@ namespace MadrinHotelCRM.Services.Services
             var list = await repo.FindAsync(predicate);
             return _mapper.Map<IEnumerable<PersonelDTO>>(list);
         }
-
+        // Burası detaylı incelenmeli
         public async Task<PersonelDTO> UpdateAsync(PersonelDTO dto)
         {
             var readRepo = _uow.Read<Personel>();
             var entity = await readRepo.GetByIdAsync(dto.PersonelId)
-                            ?? throw new KeyNotFoundException($"Personel {dto.PersonelId} bulunamadı.");
+                ?? throw new KeyNotFoundException($"Personel {dto.PersonelId} bulunamadı.");
+
+            // Şifre gelmediyse Password ve PasswordHash alanlarını sıfırlama
+            var mevcutPasswordHash = entity.PasswordHash;
 
             _mapper.Map(dto, entity);
+
+            // Eğer şifre girilmişse hashle ve güncelle
+            if (!string.IsNullOrEmpty(dto.Password))
+                entity.PasswordHash = dto.Password; // production'da hashle
+            else
+                entity.PasswordHash = mevcutPasswordHash; // Şifre gönderilmemişse eskiyi koru
 
             var updRepo = _uow.Update<Personel>();
             updRepo.Update(entity);
@@ -82,7 +95,7 @@ namespace MadrinHotelCRM.Services.Services
 
             return true;
         }
-        //şifre değşiştirme işlemi için
+
         public async Task<bool> ChangePasswordAsync(ChangePasswordDTO dto)
         {
             var repo = _uow.Read<Personel>();
@@ -92,18 +105,19 @@ namespace MadrinHotelCRM.Services.Services
             if (entity == null)
                 throw new KeyNotFoundException("Kullanıcı bulunamadı.");
 
-            if (entity.PasswordHash != dto.EskiSifre) //  HASH ile karşılaştırılmalı
+            if (entity.PasswordHash != dto.EskiSifre) // Bu örnekte hash kontrolü basit yapılmış. Geliştirilmeli.
                 throw new InvalidOperationException("Eski şifre yanlış.");
 
             if (dto.YeniSifre != dto.YeniSifreTekrar)
                 throw new InvalidOperationException("Yeni şifreler eşleşmiyor.");
 
-            entity.PasswordHash = dto.YeniSifre; //  HASH ile kaydedilmeli
+            entity.PasswordHash = dto.YeniSifre; // Burada da hashlenmiş şifre kullanılmalı
             var updRepo = _uow.Update<Personel>();
             updRepo.Update(entity);
             await _uow.CommitAsync();
             return true;
         }
+
         public async Task<PersonelDTO> GetByKullaniciIdAsync(string kullaniciId)
         {
             var repo = _uow.Read<Personel>();
@@ -115,7 +129,5 @@ namespace MadrinHotelCRM.Services.Services
 
             return _mapper.Map<PersonelDTO>(entity);
         }
-
-
     }
 }

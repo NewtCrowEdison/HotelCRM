@@ -40,22 +40,38 @@ namespace MadrinHotelCRM.Services.Services
             return result;
         }
 
-        public async Task<IdentityResult> CreateUserAsync(KullaniciOlusturDTO dto)
+        //public async Task<IdentityResult> CreateUserAsync(KullaniciOlusturDTO dto)
+        //{
+        //    var user = new AppUser
+        //    {
+        //        Email = dto.Email,
+        //        UserName = dto.Email,        // Giriş için gerekli
+        //        EmailConfirmed = true        // Şartlı kontrol varsa login engelini kaldırır
+        //    };
+
+        //    var res = await _userManager.CreateAsync(user, dto.Sifre);
+
+        //    if (!res.Succeeded)
+        //        return res;
+
+        //    await _userManager.AddToRoleAsync(user, dto.Rol);
+        //    return res;
+        //}
+        public async Task<AppUser> CreateUserAsync(KullaniciOlusturDTO dto)
         {
             var user = new AppUser
             {
-                Email = dto.Email,
-                UserName = dto.Email,        // Giriş için gerekli
-                EmailConfirmed = true        // Şartlı kontrol varsa login engelini kaldırır
+                UserName = dto.Email,
+                Email = dto.Email
             };
 
-            var res = await _userManager.CreateAsync(user, dto.Sifre);
+            var result = await _userManager.CreateAsync(user, dto.Sifre);
 
-            if (!res.Succeeded)
-                return res;
+            if (!result.Succeeded)
+                return null;
 
             await _userManager.AddToRoleAsync(user, dto.Rol);
-            return res;
+            return user;
         }
 
         public async Task<AppUser> GetUserByEmailAsync(string email)
