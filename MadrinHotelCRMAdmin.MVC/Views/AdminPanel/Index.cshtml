@@ -43,7 +43,6 @@
                 success: function (html) {
                     $("#panelContent").html(html);
 
-                    // Sadece personel için eventleri yeniden bağlamayı sağlıyor
                     if (componentName === "Personel") {
                         setTimeout(bindPersonelEvents, 100);
                     }
@@ -78,33 +77,52 @@
                     data: form,
                     contentType: false,
                     processData: false,
-                    success: () => loadComponent('Personel'),
+                    success: () => {
+                        loadComponent("Personel");
+                        $("#kaydetBtn").text("Kaydet");
+                        $("#kayitForm")[0].reset();
+                        $("input[name='PersonelId']").val(0);
+                        $("input[name='KullaniciId']").val("");
+                        $("#sifreInput").attr("required", "required"); 
+                    },
                     error: (xhr) => alert("Hata: " + xhr.responseText)
                 });
             });
 
-            // Sil
+            //  Silme işlemi
             $(".sil-btn").click(function () {
                 const id = $(this).data("id");
+                if (!confirm("Bu personeli silmek istediğinize emin misiniz?")) return;
+
                 $.post("/AdminPanel/PersonelSil", { id })
                     .done(() => loadComponent('Personel'))
                     .fail(() => alert("Personel silinemedi."));
             });
 
-            // Güncelle (çalışmıyor şuan)
+            //  Düzenleme işlemi
             $(".duzenle-btn").click(function () {
-                const id = $(this).data("id");
+                const id = parseInt($(this).data("id"));
                 const p = personeller.find(x => x.PersonelId === id);
-                if (!p) return;
+
+                if (!p) {
+                    alert("Kayıt bulunamadı!");
+                    return;
+                $("input[name='KullaniciId']").val(p.KullaniciId || "");
 
                 $("input[name='PersonelId']").val(p.PersonelId);
+                $("input[name='KullaniciId']").val(p.KullaniciId || "");
                 $("input[name='Ad']").val(p.Ad);
                 $("input[name='Soyad']").val(p.Soyad);
                 $("input[name='Email']").val(p.Email);
                 $("input[name='Telefon']").val(p.Telefon);
-                $("input[name='TcKimlik']").val(p.TcKimlik || "");
-                $("input[name='PasaportNo']").val(p.PasaportNo || "");
-                $("input[name='YabanciUyrukluMu']").prop("checked", p.YabanciUyrukluMu);
+
+                $("#kaydetBtn").text("Güncelle");
+
+                // GÜNCELLEME ise: şifre alanı zorunlu olmasın
+                $("#sifreInput").removeAttr("required");
+
+                // GÜNCELLEME ise: şifre alanı zorunlu olmasın
+                $("#sifreInput").removeAttr("required");
             });
         }
     </script>

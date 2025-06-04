@@ -50,9 +50,10 @@ namespace MadrinHotelCRM.API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Kayit([FromBody] KullaniciOlusturDTO dto)
         {
-            var result = await _authSvc.CreateUserAsync(dto);
-            if (!result.Succeeded)
-                return BadRequest(result.Errors);
+            var user = await _authSvc.CreateUserAsync(dto);
+
+            if (user == null)
+                return BadRequest(new { message = "Kullanıcı oluşturulamadı." });
 
             if (dto.Rol == "Personel")
             {
@@ -62,10 +63,11 @@ namespace MadrinHotelCRM.API.Controllers
                     Soyad = dto.Soyad,
                     Email = dto.Email,
                     Telefon = dto.Telefon,
-                    // DepartmanId = dto.DepartmanId,
                     YabanciUyrukluMu = dto.YabanciUyrukluMu,
                     PasaportNo = dto.PasaportNo,
-                    TcKimlik = dto.TcKimlik
+                    TcKimlik = dto.TcKimlik,
+                    KullaniciId = user.Id, // ✅ Artık boş değil!
+                    PasswordHash = dto.Sifre
                 };
 
                 try
@@ -74,12 +76,17 @@ namespace MadrinHotelCRM.API.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return BadRequest(new { message = "Kullanıcı oluşturuldu ancak personel kaydı başarısız: " + ex.Message });
+                    var fullMessage = ex.InnerException?.Message ?? ex.Message;
+                    Console.WriteLine("🔥 INNER EXCEPTION 🔥");
+                    Console.WriteLine(ex.ToString()); // Detaylı istisna
+
+                    return BadRequest(new { message = "Kullanıcı oluşturuldu ancak personel kaydı başarısız: " + fullMessage });
                 }
             }
 
             return Ok(new { message = $"{dto.Rol} rolünde kullanıcı başarıyla oluşturuldu." });
         }
+
 
         // POST: /api/authorization/cikis
         [HttpPost("cikis")]

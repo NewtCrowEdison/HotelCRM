@@ -28,7 +28,10 @@ namespace MadrinHotelCRM.DTO.DTOModels
         [MaxLength(11)]
         public string? TcKimlik { get; set; }
         public int? DepartmanId { get; set; }
-        public string Password { get; set; }
+        public string? Password { get; set; }
+
+        public string KullaniciId { get; set; }
+        public string? PasswordHash { get; set; }
 
     }
 }

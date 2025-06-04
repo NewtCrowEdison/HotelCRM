@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MadrinHotelCRM.DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250530210645_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250603225457_mg3")]
+    partial class mg3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -579,9 +579,16 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("KullaniciId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PasaportNo")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Soyad")
                         .IsRequired()

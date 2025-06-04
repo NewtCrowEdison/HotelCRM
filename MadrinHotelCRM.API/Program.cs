@@ -1,4 +1,5 @@
 using MadrinHotelCRM.API.Middlewares;
+using MadrinHotelCRM.Business.Mapp;
 using MadrinHotelCRM.ExtensionMethods;
 
 namespace MadrinHotelCRM.API

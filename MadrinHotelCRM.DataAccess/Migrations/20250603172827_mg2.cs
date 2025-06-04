@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MadrinHotelCRM.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class mg2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -288,7 +288,9 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                     DepartmanId = table.Column<int>(type: "int", nullable: true),
                     YabanciUyrukluMu = table.Column<bool>(type: "bit", nullable: false),
                     PasaportNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    TcKimlik = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: true)
+                    TcKimlik = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: true),
+                    KullaniciId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
