@@ -15,11 +15,11 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
             _api = httpFactory.CreateClient("ApiClient");
         }
 
-      
         [HttpGet]
-        public IActionResult Index() => View(); // Index.cshtml
-
-
+        public IActionResult Index()
+        {
+            return View();
+        }
 
         // Personel Kayıt
         [HttpPost]

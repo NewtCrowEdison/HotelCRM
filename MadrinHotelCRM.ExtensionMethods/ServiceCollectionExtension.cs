@@ -33,6 +33,7 @@ namespace MadrinHotelCRM.ExtensionMethods
             services.AddScoped<IOdaTarifeService, OdaTarifeService>();
             services.AddScoped<IMusteriRezervasyonService, MusteriRezervasyonService>();
             services.AddScoped<IDepartmanService, DepartmanService>();
+            services.AddScoped<IAuthorizationService, AuthorizationService>();
 
             return services;
         }

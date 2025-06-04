@@ -53,15 +53,15 @@
             });
         }
 
-        function bindPersonelEvents() {
+           function bindPersonelEvents() {
             try {
-                window.personeller = JSON.parse($("#personel-data").val());
+                window.personeller = personeller; // JSON zaten script içinde tanımlı
             } catch (err) {
                 console.error("Personel verisi alınamadı:", err);
                 window.personeller = [];
             }
 
-            // Ekle / Güncelle
+            // Form submit (ekle/güncelle)
             $("#kayitForm").submit(function (e) {
                 e.preventDefault();
                 const form = new FormData(this);
@@ -107,7 +107,7 @@
                 if (!p) {
                     alert("Kayıt bulunamadı!");
                     return;
-                $("input[name='KullaniciId']").val(p.KullaniciId || "");
+                }
 
                 $("input[name='PersonelId']").val(p.PersonelId);
                 $("input[name='KullaniciId']").val(p.KullaniciId || "");
@@ -115,14 +115,14 @@
                 $("input[name='Soyad']").val(p.Soyad);
                 $("input[name='Email']").val(p.Email);
                 $("input[name='Telefon']").val(p.Telefon);
-
+              
+                $("input[name='TcKimlik']").val(p.TcKimlik || "");
+                $("input[name='PasaportNo']").val(p.PasaportNo || "");
+                $("input[name='YabanciUyrukluMu']").prop("checked", p.YabanciUyrukluMu);
+              
+                $("#sifreInput").removeAttr("required");
+                // Buton metnini değiştir
                 $("#kaydetBtn").text("Güncelle");
-
-                // GÜNCELLEME ise: şifre alanı zorunlu olmasın
-                $("#sifreInput").removeAttr("required");
-
-                // GÜNCELLEME ise: şifre alanı zorunlu olmasın
-                $("#sifreInput").removeAttr("required");
             });
         }
     </script>

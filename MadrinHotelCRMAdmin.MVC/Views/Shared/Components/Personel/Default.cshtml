@@ -1,8 +1,9 @@
 ﻿@model MadrinHotelCRM.DTO.DTOModels.PersonelEkleViewModel
+@using System.Text.Json
 
-<!-- JS'e taşımak için liste serialize  -->
+<!-- Personel listesini JS'e başarılı bir şekilde aktarmak için  -->
 <script>
-    var personeller = @Html.Raw(Json.Serialize(Model.PersonelListesi));
+    var personeller = @Html.Raw(JsonSerializer.Serialize(Model.PersonelListesi));
 </script>
 
 <div class="row">

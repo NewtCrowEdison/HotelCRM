@@ -1,5 +1,4 @@
-﻿// API/Controllers/PersonelController.cs
-using MadrinHotelCRM.DTO.DTOModels;
+﻿using MadrinHotelCRM.DTO.DTOModels;
 using MadrinHotelCRM.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,36 +9,43 @@ namespace MadrinHotelCRM.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Admin")]    // opsiyonel: sadece Admin görebilir
+    [Authorize(Roles = "Admin")]
     public class PersonelController : ControllerBase
     {
         private readonly IPersonelService _personelSvc;
 
         public PersonelController(IPersonelService personelSvc)
-            => _personelSvc = personelSvc;
+        {
+            _personelSvc = personelSvc;
+        }
 
-        // GET: /api/personel
-        [HttpGet, AllowAnonymous]
+        //GET: /api/personel
+        [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<List<PersonelDTO>>> GetAll()
-            => Ok(await _personelSvc.GetAllAsync());
+        {
+            var list = await _personelSvc.GetAllAsync();
+            return Ok(list);
+        }
 
-        // POST: /api/personel
+        //POST: /api/personel
         [HttpPost]
-        public async Task<IActionResult> Create([FromForm] PersonelDTO dto)
+        public async Task<IActionResult> Create([FromBody] PersonelDTO dto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest("Model doğrulaması başarısız.");
 
             await _personelSvc.CreateAsync(dto);
             return CreatedAtAction(nameof(GetAll), null);
         }
 
-        // PUT: /api/personel
+        //PUT: /api/personel
         [HttpPut]
-        public async Task<IActionResult> Update([FromForm] PersonelDTO dto)
+        [AllowAnonymous] // bu kısım test amaçlıdır kalkacak token sonrasında !!!!!
+        public async Task<IActionResult> Update([FromBody] PersonelDTO dto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest("Model doğrulaması başarısız.");
 
             try
             {
@@ -48,38 +54,20 @@ namespace MadrinHotelCRM.API.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                return NotFound(ex.Message);
+                return NotFound($"Personel bulunamadı: {ex.Message}");
             }
         }
 
-        // DELETE: /api/personel/{id}
+        //DELETE: /api/personel/{id}
         [HttpDelete("{id}")]
-        [AllowAnonymous]
         public async Task<IActionResult> Delete(int id)
         {
-            var ok = await _personelSvc.DeleteAsync(id);
-            if (!ok) return NotFound();
-            return NoContent();
-        }
-        //personel şifre değiştirme işemi için
-        [HttpPut("sifre")]
-        [Authorize] // Şifre işlemine sadece giriş yapan erişebilsin
-        public async Task<IActionResult> SifreDegistir([FromBody] ChangePasswordDTO dto)
-        {
-            try
-            {
-                var result = await _personelSvc.ChangePasswordAsync(dto);
-                return Ok("Şifre başarıyla değiştirildi.");
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound("Kullanıcı bulunamadı.");
-            }
-        }
+            var result = await _personelSvc.DeleteAsync(id);
 
+            if (!result)
+                return NotFound($"ID {id} ile personel bulunamadı.");
+
+            return NoContent(); // 204
+        }
     }
 }
