@@ -60,6 +60,7 @@ namespace MadrinHotelCRM.API.Controllers
 
         //DELETE: /api/personel/{id}
         [HttpDelete("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _personelSvc.DeleteAsync(id);

@@ -50,16 +50,16 @@ namespace MadrinHotelCRMAdmin.MVC
             builder.Services.AddAuthorization(); // [Authorize] kullanacaksan eklemekte fayda var
 
             // 5) HttpClient
-            //builder.Services
-            //    .AddHttpClient("ApiClient", client =>
-            //    {
-            //        client.BaseAddress = new Uri("https://localhost:7225/");
-            //        client.DefaultRequestHeaders.Accept.Add(
-            //            new MediaTypeWithQualityHeaderValue("application/json"));
-            //    });
-            //.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false });
+            builder.Services
+                .AddHttpClient("ApiClient", client =>
+                {
+                    client.BaseAddress = new Uri("https://localhost:7225/");
+                    client.DefaultRequestHeaders.Accept.Add(
+                        new MediaTypeWithQualityHeaderValue("application/json"));
+                })
+            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false });
 
-            builder.Services.AddHttpClientExtension(builder.Configuration);
+            // builder.Services.AddHttpClientExtension(builder.Configuration);
 
             // 6) AutoMapper ve DI’lar
             builder.Services.AddAutoMapper(typeof(MapProfiles));
