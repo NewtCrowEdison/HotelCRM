@@ -100,6 +100,41 @@
 			#galleryContainer img:hover {
 				transform: scale(1.05);
 			}
+
+		/*menü çubuğu style*/
+		.offcanvas-custom-bg {
+			background-color: #e7e9e2 !important; /* Yumuşak yeşil/gri ton */
+			color: #000;
+		}
+
+			.offcanvas-custom-bg a.nav-link {
+				color: #2c2c2c;
+				font-weight: 500;
+			}
+
+				.offcanvas-custom-bg a.nav-link:hover {
+					color: #000;
+					text-decoration: underline;
+				}
+		/*bize ulaşın modal kutucuğu*/
+		.modal-content {
+			background-color: #fff;
+			box-shadow: 0 0 20px rgba(0,0,0,0.1);
+			border-radius: 12px;
+		}
+
+		.modal-body a {
+			color: #000;
+			font-style: italic;
+		}
+
+			.modal-body a:hover {
+				color: #3f554a;
+			}
+
+		.modal-title {
+			color: #000 !important;
+		}
 	</style>
 </head>
 <body>
@@ -107,14 +142,30 @@
 	<!-- Navbar -->
 	<nav class="navbar navbar-expand-lg navbar-dark navbar-custom px-4">
 		<div class="container-fluid">
-			<a class="navbar-brand" href="#">☰ MENÜ</a>
+			<a class="navbar-brand" href="#" data-bs-toggle="offcanvas" data-bs-target="#solMenu">☰ MENÜ</a>
 			<div class="mx-auto text-white fw-bold fs-4">Madrin Hotel</div>
 			<div>
-				<button class="btn btn-outline-light me-2">BİZE ULAŞIN</button>
+				<button class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#iletisimModal">
+					BİZE ULAŞIN
+				</button>
 				<button class="btn btn-light">REZERVASYON</button>
 			</div>
 		</div>
 	</nav>
+	<!-- YAN MENÜ  -->
+	<div class="offcanvas offcanvas-start offcanvas-custom-bg" tabindex="-1" id="solMenu">
+		<div class="offcanvas-header justify-content-end">
+			<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+		</div>
+		<div class="offcanvas-body">
+			<ul class="list-unstyled">
+				<li><a href="/" class="nav-link">Anasayfa</a></li>
+				<li><a href="/Home/Hakkimizda" class="nav-link">Hakkımızda</a></li>
+				<li><a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#iletisimModal">İletişim</a></li>
+			</ul>
+		</div>
+	</div>
+
 
 	<!-- Video Carousel -->
 	<div id="videoCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
@@ -253,7 +304,7 @@
 						<li><a href="/Home/Hakkimizda" class="text-white text-decoration-none">Hakkımızda</a></li>
 						<li><a href="#" class="text-white text-decoration-none">Odalar</a></li>
 						<li><a href="#" class="text-white text-decoration-none">Rezervasyon</a></li>
-						<li><a href="#" class="text-white text-decoration-none">İletişim</a></li>
+						<li><a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#iletisimModal">İletişim</a></li>
 					</ul>
 				</div>
 
@@ -266,9 +317,8 @@
 
 					<!-- Sosyal ikonlar -->
 					<div class="d-flex gap-3 mt-2">
-						<a href="#" class="text-white fs-5"><i class="bi bi-facebook"></i></a>
-						<a href="#" class="text-white fs-5"><i class="bi bi-instagram"></i></a>
-						<a href="#" class="text-white fs-5"><i class="bi bi-twitter-x"></i></a>
+						<a href="https://www.facebook.com/" target="_blank" class="text-white fs-5"><i class="bi bi-facebook"></i></a>
+						<a href="https://www.instagram.com/" target="_blank"class="text-white fs-5"><i class="bi bi-instagram"></i></a>
 					</div>
 				</div>
 			</div>
@@ -276,8 +326,33 @@
 			<hr class="border-light opacity-25">
 			<div class="text-center small">© 2025 Madrin Hotel. Tüm hakları saklıdır.</div>
 		</div>
-	</footer>
+		<!-- MODAL: Bize Ulaşın -->
+		<div class="modal fade" id="iletisimModal" tabindex="-1" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content px-4 py-4 rounded-3" style="border: none;">
+					<div class="modal-header border-0 position-relative">
+						<h5 class="modal-title text-center w-100 fst-italic" style="color:#000;">Bize Ulaşın</h5>
+						<button type="button" class="btn-close position-absolute top-0 end-0 mt-2 me-2" data-bs-dismiss="modal" aria-label="Kapat"></button>
+					</div>
 
+					<div class="modal-body text-center">
+						<div class="mb-4">
+							<div class="fw-bold text-secondary">MADRIN HOTEL:</div>
+							<a href="tel:+902120000000" class="d-block mb-1 text-decoration-underline">444 62 99</a>
+							<a href="mailto:book@madrinhotel.com" class="d-block text-decoration-underline">book@madrinhotel.com</a>
+						</div>
+
+						<hr style="border-top: 1px solid #ccc;" />
+
+						<div class="text-uppercase small text-muted mb-3 mt-3">Diğer Sorularınız:</div>
+						<button class="btn btn-outline-dark px-4" onclick="window.location.href='/Iletisim/Index'">
+							İLETİŞİM →
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</footer>
 
 	<script>
 		function scrollGallery(direction) {

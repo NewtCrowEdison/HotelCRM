@@ -1,0 +1,240 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İletişim - Madrin Hotel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+	<style>
+		html, body {
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			height: 100%;
+			overflow-x: hidden;
+			font-family: 'Segoe UI', sans-serif;
+            background-color: #f3f5f0; /* Soft yeşilimsi */
+		}
+
+		.navbar-custom {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100vw;
+			z-index: 20;
+			background: rgba(0, 0, 0, 0.3);
+			backdrop-filter: blur(6px);
+		}
+        /*menü çubuğu style*/
+        .offcanvas-custom-bg {
+            background-color: #e7e9e2 !important; /* Yumuşak yeşil/gri ton */
+            color: #000;
+        }
+
+            .offcanvas-custom-bg a.nav-link {
+                color: #2c2c2c;
+                font-weight: 500;
+            }
+
+                .offcanvas-custom-bg a.nav-link:hover {
+                    color: #000;
+                    text-decoration: underline;
+                }
+        /*bize ulaşın modal kutucuğu*/
+        .modal-content {
+            background-color: #fff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 12px;
+        }
+
+        .modal-body a {
+            color: #000;
+            font-style: italic;
+        }
+
+            .modal-body a:hover {
+                color: #3f554a;
+            }
+
+        .modal-title {
+            color: #000 !important;
+        }
+
+        .form-control, .form-select {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: none;
+        }
+
+        label, .form-check-label {
+            color: #333;
+        }
+        /*iletişim formunun*/
+
+        .form-control:focus, .form-select:focus {
+            box-shadow: 0 0 0 0.2rem rgba(63, 85, 74, 0.2);
+            border-color: #3f554a;
+        }
+
+        .btn-dark {
+            background-color: #3f554a;
+            border-color: #3f554a;
+        }
+
+            .btn-dark:hover {
+                background-color: #2f443a;
+                border-color: #2f443a;
+            }
+	</style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom px-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#" data-bs-toggle="offcanvas" data-bs-target="#solMenu">☰ MENÜ</a>
+            <div class="mx-auto text-white fw-bold fs-4">Madrin Hotel</div>
+            <div>
+                <button class="btn btn-light">REZERVASYON</button>
+            </div>
+        </div>
+    </nav>
+    <!-- YAN MENÜ  -->
+    <div class="offcanvas offcanvas-start offcanvas-custom-bg" tabindex="-1" id="solMenu">
+        <div class="offcanvas-header justify-content-end">
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="list-unstyled">
+                <li><a href="/" class="nav-link">Anasayfa</a></li>
+                <li><a href="/Home/Hakkimizda" class="nav-link">Hakkımızda</a></li>
+                <li><a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#iletisimModal">İletişim</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Video Banner -->
+    <section style="position: relative; min-height: 100vh; height: 100dvh; overflow: hidden; padding: 0; margin: 0;">
+        <video autoplay muted loop playsinline style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
+            <source src="~/videos/iletisimVideo.mp4" type="video/mp4">
+        </video>
+        <div class="position-absolute bottom-0 start-50 translate-middle-x text-white text-center mb-5">
+            <div class="text-uppercase small opacity-75" style="letter-spacing: 1px;">MADRIN HOTEL</div>
+            <h1 class="display-5 fst-italic mt-2">İletişim</h1>
+        </div>
+    </section>
+
+    <!-- Adres + Harita -->
+    <section class="py-5"> <!--padding-y dikey boşluk-->
+        <div class="container d-md-flex align-items-center gap-5">
+            <div class="col-md-6 mb-4 mb-md-0">
+                <!--iframe google maps eklemek için -->
+                <iframe src="https://maps.google.com/maps?q=bodrum&t=&z=13&ie=UTF8&iwloc=&output=embed" width="100%" height="300" style="border:0;" allowfullscreen loading="lazy"></iframe>
+            </div>
+            <div class="col-md-6">
+                <h5 class="fw-bold">MADRIN HOTEL BODRUM</h5>
+                <p class="mb-1">Göktürk Mah. 123 Sk. No:1</p>
+                <p class="mb-1">Bodrum / Muğla</p>
+                <a href="https://maps.google.com" target="_blank" class="text-decoration-underline d-block mb-2">Google Haritalar’da Aç</a>
+                <p class="mb-1"><i class="bi bi-telephone-fill me-2"></i> 0252 123 45 67</p>
+                <p><i class="bi bi-envelope-fill me-2"></i> info@madrinhotel.com</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- İletişim Formu -->
+    <section class="py-5" style="background-color: #e7e9e2;">
+        <div class="container">
+            <form asp-action="Index" method="post" class="row g-4">
+                <div class="col-md-6">
+                    <label class="form-label">Adınız*</label>
+                    <input name="Ad" class="form-control" required />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Soyadınız*</label>
+                    <input name="Soyad" class="form-control" required />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Telefon*</label>
+                    <input name="Telefon" class="form-control" required />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">E-Posta*</label>
+                    <input name="Email" class="form-control" required />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">İletişim Tercihiniz :</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="IletisimTuru" value="Telefon">
+                        <label class="form-check-label">Telefon</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="IletisimTuru" value="Email">
+                        <label class="form-check-label">Email</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Tercih Edilen Arama Zamanı</label>
+                    <select name="AramaZamani" class="form-select">
+                        <option value="">Zaman Seçiniz</option>
+                        <option>09:00 - 12:00</option>
+                        <option>12:00 - 15:00</option>
+                        <option>15:00 - 18:00</option>
+                        <option>18:00 - 21:00</option>
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Mesajınız</label>
+                    <textarea name="Mesaj" class="form-control" rows="5"></textarea>
+                </div>
+                <div class="col-12 text-center">
+                    <button class="btn btn-dark px-5">Gönder</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="text-white pt-5 pb-3" style="background-color: #2c2c2c;">
+        <div class="container">
+            <div class="row">
+                <!-- Logo / Otel adı -->
+                <div class="col-md-4 mb-4">
+                    <h4 class="fw-bold">Madrin Hotel</h4>
+                    <p class="small">Lüksü, konforu ve huzuru bir araya getiriyoruz. Tatilinizi unutulmaz kılmak için buradayız.</p>
+                </div>
+
+                <!-- Menü -->
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-semibold">Hızlı Erişim</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/Home/Hakkimizda" class="text-white text-decoration-none">Hakkımızda</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Odalar</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Rezervasyon</a></li>
+                    </ul>
+                </div>
+
+                <!-- İletişim -->
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-semibold">İletişim</h5>
+                    <p class="mb-1"><i class="bi bi-telephone-fill me-2"></i> +90 212 000 00 00</p>
+                    <p class="mb-1"><i class="bi bi-envelope-fill me-2"></i> info@madrinhotel.com</p>
+                    <p><i class="bi bi-geo-alt-fill me-2"></i> Bodrum, Muğla / Türkiye</p>
+
+                    <!-- Sosyal ikonlar -->
+                    <div class="d-flex gap-3 mt-2">
+                        <a href="https://www.facebook.com/" target="_blank" class="text-white fs-5"><i class="bi bi-facebook"></i></a>
+                        <a href="https://www.instagram.com/" target="_blank" class="text-white fs-5"><i class="bi bi-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="border-light opacity-25">
+            <div class="text-center small">© 2025 Madrin Hotel. Tüm hakları saklıdır.</div>
+        </div>
+</footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
