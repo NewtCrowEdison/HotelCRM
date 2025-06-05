@@ -49,7 +49,11 @@ namespace MadrinHotelCRM.MVC
             builder.Services.AddRazorPages();
 
             // HttpClient (API'lerden veri almak için)
-            builder.Services.AddHttpClient();
+            builder.Services.AddHttpClient("ApiClient", client =>
+            {
+                client.BaseAddress = new Uri("http://localhost:5062/"); 
+            });
+
 
             var app = builder.Build();
 
