@@ -5,10 +5,10 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
     public class ViewComponentController : Controller
     {
         // Oda Yönetimi
-        public IActionResult Odalar() => ViewComponent("OdaListesi");
-        public IActionResult OdaEkle() => ViewComponent("OdaEkleFormu");
-        public IActionResult OdaTipleri() => ViewComponent("OdaTipleri");
-        public IActionResult OdaTarifeleri() => ViewComponent("OdaTarifeleri");
+        public IActionResult Odalar() => ViewComponent("Odalar");
+        //public IActionResult OdaEkle() => ViewComponent("OdaEkleFormu");
+        //public IActionResult OdaTipleri() => ViewComponent("OdaTipleri");
+        //public IActionResult OdaTarifeleri() => ViewComponent("OdaTarifeleri");
 
         // Personel Yönetimi
         public IActionResult Personel() => ViewComponent("Personel"); // listeleme işlemimiz

@@ -11,7 +11,7 @@ namespace MadrinHotelCRM.ExtensionMethods
         {
             services.AddDefaultIdentity<AppUser>(options =>
             {
-                options.SignIn.RequireConfirmedAccount = true;
+                options.SignIn.RequireConfirmedAccount = false;
             })
             .AddRoles<IdentityRole<string>>()
             .AddEntityFrameworkStores<AppDbContext>()
