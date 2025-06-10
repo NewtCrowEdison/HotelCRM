@@ -1,20 +1,102 @@
-﻿@using MadrinHotelCRM.DTO.DTOModels
-@model List<OdaDTO>
+﻿@model List<MadrinHotelCRM.DTO.DTOModels.OdaDTO>
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using System.Text.Json
+@using Microsoft.OpenApi.Attributes
 
-<h3>Odalar Listesi</h3>
-<table class="table">
+@* JSON olarak modeli JS tarafına aktarıyoruz *@
+<script>
+    window.odalar = @Html.Raw(JsonSerializer.Serialize(Model));
+</script>
+
+<!-- EKLE/GÜNCELLE FORM -->
+<form id="odaForm">
+    <input type="hidden" name="OdaId" value="0" />
+
+    <div class="form-group">
+        <label for="OdaNumarasi">Oda Numarası</label>
+        <input id="OdaNumarasi" name="OdaNumarasi" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label for="OdaTipiId">Oda Tipi</label>
+        <select id="OdaTipiId" name="OdaTipiId" class="form-control" required>
+            <option value="">-- Seçiniz --</option>
+            @if (ViewBag.OdaTipiList is List<SelectListItem> tipiList)
+            {
+                foreach (var tip in tipiList)
+                {
+                    <option value="@tip.Value">@tip.Text</option>
+                }
+            }
+            else
+            {
+                <option disabled>Oda tipi yüklenemedi</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="Durum">Durum</label>
+        <select id="Durum" name="Durum" class="form-control" required>
+            <option value="">-- Seçiniz --</option>
+            @if (ViewBag.Durumlar is List<SelectListItem> durumList)
+            {
+                foreach (var d in durumList)
+                {
+                    <option value="@d.Value">@d.Text</option>
+                }
+            }
+            else
+            {
+                <option disabled>Durum yüklenemedi</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="odaKaydetBtn">Kaydet</button>
+</form>
+
+<!-- MEVCUT LİSTE -->
+<table class="table table-striped mt-4">
     <thead>
         <tr>
             <th>Oda No</th>
+            <th>Oda Tipi</th>
             <th>Durum</th>
+            <th>İşlemler</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var oda in Model)
+        @if (Model != null && Model.Any())
+        {
+            foreach (var oda in Model)
+            {
+                <tr>
+                    <td>@oda.OdaNumarasi</td>
+                    <td>@oda.OdaTipiAdi</td>
+                    <td>
+                        @{
+                            var display = oda.Durum
+                            .GetType()
+                            .GetField(oda.Durum.ToString())?
+                            .GetCustomAttributes(typeof(DisplayAttribute), false)
+                            .Cast<DisplayAttribute>()
+                            .FirstOrDefault()?.Name
+                            ?? oda.Durum.ToString();
+                        }
+                        @display
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-primary oda-duzenle" data-id="@oda.OdaId">Düzenle</button>
+                        <button class="btn btn-sm btn-danger oda-sil" data-id="@oda.OdaId">Sil</button>
+                    </td>
+                </tr>
+            }
+        }
+        else
         {
             <tr>
-                <td>@oda.OdaNumarasi</td>
-                <td>@oda.Durum</td>
+                <td colspan="4" class="text-center">Herhangi bir oda bulunamadı.</td>
             </tr>
         }
     </tbody>

@@ -34,96 +34,106 @@
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
     <script>
-        function loadComponent(componentName) {
-            $.ajax({
-                url: `/ViewComponent/${componentName}`,
-                type: 'GET',
-                success: function (html) {
-                    $("#panelContent").html(html);
-
-                    if (componentName === "Personel") {
-                        setTimeout(bindPersonelEvents, 100);
-                    }
-                },
-                error: function () {
-                    $("#panelContent").html("<div class='alert alert-danger'>İçerik yüklenirken hata oluştu.</div>");
-                }
-            });
-        }
-
-           function bindPersonelEvents() {
-            try {
-                window.personeller = personeller; // JSON zaten script içinde tanımlı
-            } catch (err) {
-                console.error("Personel verisi alınamadı:", err);
-                window.personeller = [];
-            }
-
-            // Form submit (ekle/güncelle)
-            $("#kayitForm").submit(function (e) {
-                e.preventDefault();
-                const form = new FormData(this);
-                const id = form.get("PersonelId");
-
-                const url = id && id !== "0"
-                    ? "/AdminPanel/PersonelGuncelle"
-                    : "/AdminPanel/PersonelKayit";
-
-                $.ajax({
-                    url: url,
-                    type: "POST",
-                    data: form,
-                    contentType: false,
-                    processData: false,
-                    success: () => {
-                        loadComponent("Personel");
-                        $("#kaydetBtn").text("Kaydet");
-                        $("#kayitForm")[0].reset();
-                        $("input[name='PersonelId']").val(0);
-                        $("input[name='KullaniciId']").val("");
-                        $("#sifreInput").attr("required", "required"); 
-                    },
-                    error: (xhr) => alert("Hata: " + xhr.responseText)
-                });
-            });
-
-            //  Silme işlemi
-            $(".sil-btn").click(function () {
-                const id = $(this).data("id");
-                if (!confirm("Bu personeli silmek istediğinize emin misiniz?")) return;
-
-                $.post("/AdminPanel/PersonelSil", { id })
-                    .done(() => loadComponent('Personel'))
-                    .fail(() => alert("Personel silinemedi."));
-            });
-
-            //  Düzenleme işlemi
-            $(".duzenle-btn").click(function () {
-                const id = parseInt($(this).data("id"));
-                const p = personeller.find(x => x.PersonelId === id);
-
-                if (!p) {
-                    alert("Kayıt bulunamadı!");
-                    return;
+                function loadComponent(componentName) {
+                    $.ajax({
+                        url: `/ViewComponent/${componentName}`,
+                        type: 'GET',
+                        success: function (html) {
+                            $('#panelContent').html(html);
+                            if (componentName === 'Personel') {
+                                setTimeout(bindPersonelEvents, 100);
+                            } else if (componentName === 'Odalar') {
+                                setTimeout(bindOdaEvents, 100);
+                            }
+                        },
+                        error: function () {
+                            $('#panelContent').html("<div class='alert alert-danger'>İçerik yüklenirken hata oluştu.</div>");
+                        }
+                    });
                 }
 
-                $("input[name='PersonelId']").val(p.PersonelId);
-                $("input[name='KullaniciId']").val(p.KullaniciId || "");
-                $("input[name='Ad']").val(p.Ad);
-                $("input[name='Soyad']").val(p.Soyad);
-                $("input[name='Email']").val(p.Email);
-                $("input[name='Telefon']").val(p.Telefon);
-              
-                $("input[name='TcKimlik']").val(p.TcKimlik || "");
-                $("input[name='PasaportNo']").val(p.PasaportNo || "");
-                $("input[name='YabanciUyrukluMu']").prop("checked", p.YabanciUyrukluMu);
-              
-                $("#sifreInput").removeAttr("required");
-                // Buton metnini değiştir
-                $("#kaydetBtn").text("Güncelle");
-            });
-        }
+                function bindPersonelEvents() {
+                    try { window.personeller = personeller; } catch { window.personeller = []; }
+                    const token = $('input[name="__RequestVerificationToken"]').val();
+
+                    $('#kayitForm').off('submit').on('submit', function (e) {
+                        e.preventDefault();
+                        const form = new FormData(this);
+                        const id = form.get('PersonelId');
+                        const url = id && id !== '0' ? '/AdminPanel/PersonelGuncelle' : '/AdminPanel/PersonelKayit';
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            headers: { 'RequestVerificationToken': token },
+                            data: form,
+                            contentType: false,
+                            processData: false,
+                            success: () => loadComponent('Personel'),
+                            error: xhr => alert('Hata: ' + xhr.responseText)
+                        });
+                    });
+
+                    $('.sil-btn').off('click').on('click', function () {
+                        if (!confirm('Silmek istediğinize emin misiniz?')) return;
+                        $.post('/AdminPanel/PersonelSil', { id: +$(this).data('id') })
+                            .done(() => loadComponent('Personel'))
+                            .fail(() => alert('Silme hatası'));
+                    });
+
+                    $('.duzenle-btn').off('click').on('click', function () {
+                            const p = personeller.find(x => x.PersonelId === +$(this).data('id'));
+                            if (!p) return alert('Kayıt bulunamadı!');
+                            ['PersonelId','KullaniciId','Ad','Soyad','Email','Telefon','TcKimlik','PasaportNo']
+                                .forEach(k => $(`input[name='${k}']`).val(p[k] || ''));
+                            $('input[name="YabanciUyrukluMu"]').prop('checked', p.YabanciUyrukluMu);
+                            // Şifre alanını temizle ve optional yap!!
+                            $('#sifreInput').val('');
+                            $('#sifreInput').removeAttr('required');
+                            $('#kaydetBtn').text('Güncelle');
+                        });
+                }
+
+                function bindOdaEvents() {
+                    try { window.odalar = odalar; } catch { window.odalar = []; }
+                    const token = $('input[name="__RequestVerificationToken"]').val();
+
+                    $('#odaForm').off('submit').on('submit', function (e) {
+                        e.preventDefault();
+                        const formData = new FormData(this);
+                        const id = formData.get('OdaId');
+                        const url = id && id !== '0' ? '/AdminPanel/OdaGuncelle' : '/AdminPanel/OdaEkle';
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            headers: { 'RequestVerificationToken': token },
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            success: () => loadComponent('Odalar'),
+                            error: xhr => alert('Hata: ' + xhr.responseText)
+                        });
+                    });
+
+                    $('.oda-sil').off('click').on('click', function () {
+                        if (!confirm('Odayı silmek istiyor musunuz?')) return;
+                        $.post('/AdminPanel/OdaSil', { id: +$(this).data('id') })
+                            .done(() => loadComponent('Odalar'))
+                            .fail(() => alert('Silme hatası'));
+                    });
+
+                    $('.oda-duzenle').off('click').on('click', function () {
+                        const o = odalar.find(o => o.OdaId === +$(this).data('id'));
+                        if (!o) return;
+                        ['OdaId','OdaNumarasi'].forEach(k => $(`input[name='${k}']`).val(o[k]));
+                        $('select[name="OdaTipiId"]').val(o.OdaTipiId);
+                        $('select[name="Durum"]').val(o.Durum);
+                        $('#odaKaydetBtn').text('Güncelle');
+                    });
+                }
+
+                $(function () { loadComponent('Odalar'); });
     </script>
 }
+
+

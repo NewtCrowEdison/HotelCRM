@@ -64,14 +64,24 @@ namespace MadrinHotelCRMAdmin.MVC
             // 6) AutoMapper ve DI’lar
             builder.Services.AddAutoMapper(typeof(MapProfiles));
             builder.Services.AddScoped<IEkPaketService, EkPaketService>();
+            builder.Services.AddServiceCollectionExtension();
+        
+
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-           // Giriş yapan kullanıcının ad ve soyad bilgilerini gösterebilmek için 
+            // Giriş yapan kullanıcının ad ve soyad bilgilerini gösterebilmek için 
             builder.Services.AddIdentity<AppUser, IdentityRole>()
               .AddEntityFrameworkStores<AppDbContext>()
               .AddDefaultTokenProviders();
 
+            //builder.Services.AddDbContext<AppDbContext>(options =>
+            //    options.UseSqlServer("Server=.;Database=MadrinHotelCRMDb;Trusted_Connection=True;"));
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer("Server=.;Database=MadrinHotelCRMDb;Trusted_Connection=True;"));
+                options.UseSqlServer(connectionString, opt =>
+                {
+                    opt.EnableRetryOnFailure();
+                }));
 
             var app = builder.Build();
 
