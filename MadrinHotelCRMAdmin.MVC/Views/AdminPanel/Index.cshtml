@@ -46,6 +46,9 @@
                             } else if (componentName === 'Odalar') {
                                 setTimeout(bindOdaEvents, 100);
                             }
+                        else if (componentName === 'EkPaketler') {
+                               setTimeout(bindEkPaketEvents, 100);
+                            }
                         },
                         error: function () {
                             $('#panelContent').html("<div class='alert alert-danger'>İçerik yüklenirken hata oluştu.</div>");
@@ -131,8 +134,50 @@
                         $('#odaKaydetBtn').text('Güncelle');
                     });
                 }
+                 function bindEkPaketEvents() {
+                        try { window.ekPaketler = ekPaketler; } catch { window.ekPaketler = []; }
+                        const token = $('input[name="__RequestVerificationToken"]').val();
 
-                $(function () { loadComponent('Odalar'); });
+                        // Kaydet / Güncelle
+                        $('#ekPaketForm').off('submit').on('submit', function (e) {
+                            e.preventDefault();
+                            const form = new FormData(this);
+                            const id = form.get('EkPaketId');
+                            const url = id && id !== '0'
+                                ? '/AdminPanel/EkPaketGuncelle'
+                                : '/AdminPanel/EkPaketOlustur';
+
+                            $.ajax({
+                                url,
+                                type: 'POST',
+                                headers: { 'RequestVerificationToken': token },
+                                data: form,
+                                contentType: false,
+                                processData: false,
+                            })
+                            .done(() => loadComponent('EkPaketler'))
+                            .fail(xhr => alert('Hata: ' + xhr.responseText));
+                        });
+
+                        // Sil
+                        $('.paket-sil').off('click').on('click', function () {
+                            if (!confirm('Silmek istediğine emin misin?')) return;
+                            $.post('/AdminPanel/EkPaketSil', { id: +$(this).data('id') })
+                                .done(() => loadComponent('EkPaketler'))
+                                .fail(() => alert('Silme hatası'));
+                        });
+
+                        // Düzenle
+                        $('.paket-duzenle').off('click').on('click', function () {
+                            const p = ekPaketler.find(x => x.EkPaketId === +$(this).data('id'));
+                            if (!p) return alert('Kayıt bulunamadı!');
+                            ['EkPaketId','PaketAdi','PaketAciklama','Fiyat']
+                                .forEach(k => $(`input[name="${k}"]`).val(p[k] || ''));
+                            $('#paketKaydetBtn').text('Güncelle');
+                        });
+                    }
+
+                // $(function () { loadComponent('Odalar'); });
     </script>
 }
 
