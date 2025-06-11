@@ -68,17 +68,6 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
             return BadRequest(new { message = "API hatası", details = content });
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> PersonelSil(int id)
-        //{
-        //    var response = await _api.DeleteAsync($"api/personel/{id}");
-        //    if (response.IsSuccessStatusCode)
-        //        return Ok(new { message = "Personel silindi." });
-
-        //    var error = await response.Content.ReadAsStringAsync();
-        //    return BadRequest(new { message = "Silme hatası", details = error });
-        //}
-
         [HttpPost]
         public async Task<IActionResult> PersonelSil(int id)
         {
@@ -142,6 +131,38 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
 
             var error = await response.Content.ReadAsStringAsync();
             return BadRequest(new { message = "Silme hatası", details = error });
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> EkPaketOlustur(EkPaketDTO dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var response = await _api.PostAsJsonAsync("api/paket", dto);
+            return response.IsSuccessStatusCode
+                ? Ok()
+                : BadRequest(await response.Content.ReadAsStringAsync());
+        }
+
+        // POST: /AdminPanel/EkPaketGuncelle
+        [HttpPost]
+        public async Task<IActionResult> EkPaketGuncelle(EkPaketDTO dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var response = await _api.PutAsJsonAsync($"api/paket/{dto.EkPaketId}", dto);
+            return response.IsSuccessStatusCode
+                ? Ok()
+                : BadRequest(await response.Content.ReadAsStringAsync());
+        }
+
+        // POST: /AdminPanel/EkPaketSil
+        [HttpPost]
+        public async Task<IActionResult> EkPaketSil(int id)
+        {
+            var response = await _api.DeleteAsync($"api/paket/{id}");
+            return response.IsSuccessStatusCode
+                ? Ok()
+                : BadRequest(await response.Content.ReadAsStringAsync());
         }
     }
 }
