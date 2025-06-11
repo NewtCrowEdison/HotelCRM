@@ -3,16 +3,48 @@
 @{
     ViewData["Title"] = "Personel Panel - Yönetim Ekranı";
 
-    // Claim'lerden giriş yapan kişinin bilgilerini çekiyoruz
     var kullaniciAd = User.Identity?.Name ?? "Personel";
     var kullaniciId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "Bilinmiyor";
 }
 
+<style>
+    .top-navbar {
+        background-color: #198754;
+        color: white;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+        .top-navbar .btn {
+            color: white;
+        }
+
+    #solMenu {
+        transition: all 0.3s ease;
+    }
+
+        #solMenu.gizle {
+            display: none !important;
+        }
+</style>
+
+<!-- NAVBAR -->
+<div class="top-navbar">
+    <button class="btn btn-outline-light" id="menuToggle">☰ MENÜ</button>
+    <h5 class="m-0 fw-bold">Personel Panel</h5>
+    <form asp-controller="Auth" asp-action="Cikis" method="post" class="d-inline">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-outline-light">Çıkış Yap</button>
+    </form>
+</div>
+
+<!-- SAYFA İSKELETİ -->
 <div class="container-fluid">
     <div class="row">
-
         <!-- SOL MENÜ -->
-        <div class="col-md-3 bg-light vh-100 shadow-sm">
+        <div id="solMenu" class="col-md-3 bg-light vh-100 shadow-sm">
             <h4 class="mt-4 text-center text-primary">Personel Panel</h4>
             <ul class="list-group list-group-flush mt-4">
                 <li class="list-group-item list-group-item-action" onclick="loadComponent('Personel_Musteriler')">👥 Müşteri Yönetimi</li>
@@ -34,6 +66,7 @@
             <p><strong>Kullanıcı ID:</strong> @kullaniciId</p>
             <p>Sol menüden bir işlem seçerek yönetim ekranını kullanabilirsin.</p>
         </div>
+
         <div class="mt-3">
             <h6 class="text-secondary">Claim Bilgileri</h6>
             <ul class="text-muted">
@@ -43,14 +76,17 @@
                 }
             </ul>
         </div>
-
-
     </div>
 </div>
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+        // Sol menüyü aç/kapa
+        $('#menuToggle').click(function () {
+            $('#solMenu').toggleClass('gizle');
+        });
+
         function loadComponent(componentName) {
             $.ajax({
                 url: `/ViewComponent/${componentName}`,
