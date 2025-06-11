@@ -88,6 +88,24 @@
                 background-color: #2f443a;
                 border-color: #2f443a;
             }
+
+        .rezervasyon-panel {
+            position: fixed;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(47, 79, 79, 0.95);
+            z-index: 9999;
+            transition: top 0.5s ease-in-out;
+            color: white;
+            padding: 20px;
+        }
+
+            .rezervasyon-panel.active {
+                top: 0;
+            }
+
 	</style>
 </head>
 
@@ -98,7 +116,7 @@
             <a class="navbar-brand" href="#" data-bs-toggle="offcanvas" data-bs-target="#solMenu">☰ MENÜ</a>
             <div class="mx-auto text-white fw-bold fs-4">Madrin Hotel</div>
             <div>
-                <button class="btn btn-light">REZERVASYON</button>
+                <button id="rezervasyonBtn" class="btn btn-light">REZERVASYON</button>
             </div>
         </div>
     </nav>
@@ -235,6 +253,51 @@
             <div class="text-center small">© 2025 Madrin Hotel. Tüm hakları saklıdır.</div>
         </div>
 </footer>
+    <!-- REZERVASYON PANELİ -->
+    <div id="rezervasyonPanel" class="rezervasyon-panel">
+        <button id="kapatBtn" class="btn btn-light float-end">X</button>
+        <h2 class="text-center mt-4 fst-italic">Müsaitlik Arayın</h2>
+        <div class="container mt-5">
+            <div class="row justify-content-center g-3">
+
+                <div class="col-md-3 text-start text-white">
+                    <label for="girisTarihi" class="form-label">Giriş Tarihi</label>
+                    <input type="date" id="girisTarihi" class="form-control" placeholder="Giriş Tarihi">
+                </div>
+
+                <div class="col-md-3 text-start text-white">
+                    <label for="cikisTarihi" class="form-label">Çıkış Tarihi</label>
+                    <input type="date" id="cikisTarihi" class="form-control" placeholder="Çıkış Tarihi">
+                </div>
+
+                <div class="col-md-3 text-start text-white">
+                    <label for="kisiSayisi" class="form-label">Kişi Sayısı</label>
+                    <select id="kisiSayisi" class="form-select">
+                        <option>1 Yetişkin, 0 Çocuk</option>
+                        <option>2 Yetişkin, 0 Çocuk</option>
+                        <option>2 Yetişkin, 1 Çocuk</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="text-center mt-4">
+                <button class="btn btn-outline-light">MÜSAİTLİK ARAYIN</button>
+                <button onclick="window.location='/Odalar'" class="btn btn-light ms-2">ODALARIMIZ</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById("rezervasyonBtn").onclick = () => {
+            document.getElementById("rezervasyonPanel").classList.add("active");
+        };
+
+        document.getElementById("kapatBtn").onclick = () => {
+            document.getElementById("rezervasyonPanel").classList.remove("active");
+        };
+    </script>
+
 </body>
 </html>

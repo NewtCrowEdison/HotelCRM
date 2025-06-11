@@ -41,10 +41,7 @@ namespace MadrinHotelCRM.MVC.Controllers
             return View(tarife);
         }
 
-        public IActionResult Create()
-        {
-            return View();
-        }
+        public IActionResult Create() => View();
 
         [HttpPost]
         public async Task<IActionResult> Create(TarifeDTO dto)

@@ -13,11 +13,8 @@ namespace MadrinHotelCRM.MVC.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
-        {
-            return View();
-        }
-
+        public IActionResult Index() => View();
+      
         [HttpPost]
         public async Task<IActionResult> Index(IletisimFormViewModel model)
         {

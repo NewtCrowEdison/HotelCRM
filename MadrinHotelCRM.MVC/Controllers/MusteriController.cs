@@ -42,10 +42,7 @@ namespace MadrinHotelCRM.MVC.Controllers
             return View(musteri);
         }
 
-        public IActionResult Create()
-        {
-            return View();
-        }
+        public IActionResult Create() => View();
 
         [HttpPost]
         public async Task<IActionResult> Create(MusteriDTO dto)

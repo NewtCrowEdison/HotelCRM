@@ -40,11 +40,8 @@ namespace MadrinHotelCRM.MVC.Controllers
         }
 
         // GET: /OdaTipi/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
+        public IActionResult Create() => View();
+       
         // POST: /OdaTipi/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
