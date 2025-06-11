@@ -480,7 +480,7 @@
 					<ul class="list-unstyled">
 						<li><a href="/Home/Hakkimizda" class="text-white text-decoration-none">Hakkımızda</a></li>
 						<li><a href="#" class="text-white text-decoration-none">Odalar</a></li>
-						<li><a href="#" class="text-white text-decoration-none">Rezervasyon</a></li>
+						<li><a href="#" id="footerRezervasyonLink" class="text-white text-decoration-none">Rezervasyon</a></li>
 						<li><a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#iletisimModal">İletişim</a></li>
 					</ul>
 				</div>
@@ -573,6 +573,10 @@
 
 		document.getElementById("kapatBtn").onclick = () => {
 			document.getElementById("rezervasyonPanel").classList.remove("active");
+		};
+				document.getElementById("footerRezervasyonLink").onclick = (e) => {
+			e.preventDefault(); // sayfanın yukarı gitmesini engeller
+			document.getElementById("rezervasyonPanel").classList.add("active");
 		};
 	</script>
 
