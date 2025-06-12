@@ -50,6 +50,7 @@
                 <li class="list-group-item list-group-item-action" onclick="loadComponent('EkPaketler')">📦 Ek Paketler</li>
                 <li class="list-group-item list-group-item-action" onclick="loadComponent('Faturalar')">🧾 Faturalar</li>
                 <li class="list-group-item list-group-item-action" onclick="loadComponent('Raporlar')">📊 Raporlar</li>
+                <li class="list-group-item list-group-item-action" onclick="loadComponent('OdaTipleri')">📊 Oda Tipi</li>
             </ul>
 
             <!-- Çıkış Butonu -->
@@ -82,12 +83,17 @@
                             $('#panelContent').html(html);
                             if (componentName === 'Personel') {
                                 setTimeout(bindPersonelEvents, 100);
-                            } else if (componentName === 'Odalar') {
+                            } 
+                            else if (componentName === 'Odalar') {
                                 setTimeout(bindOdaEvents, 100);
                             }
-                        else if (componentName === 'EkPaketler') {
+                            else if (componentName === 'EkPaketler') {
                                setTimeout(bindEkPaketEvents, 100);
                             }
+                         else if (componentName === 'OdaTipleri') {
+                                setTimeout(bindOdaTipiEvents, 100);
+                            }
+
                         },
                         error: function () {
                             $('#panelContent').html("<div class='alert alert-danger'>İçerik yüklenirken hata oluştu.</div>");
@@ -215,6 +221,47 @@
                             $('#paketKaydetBtn').text('Güncelle');
                         });
                     }
+
+                  function bindOdaTipiEvents() {
+                            try { window.odaTipileri = odaTipileri; } catch { window.odaTipileri = []; }
+                            const token = $('input[name="__RequestVerificationToken"]').val();
+
+                            $('#odaTipiForm').off('submit').on('submit', function(e) {
+                                e.preventDefault();
+                                const form = new FormData(this);
+                                const id   = form.get('OdaTipiId');
+                                const url  = id && id !== '0'
+                                    ? '/AdminPanel/OdaTipiGuncelle'
+                                    : '/AdminPanel/OdaTipiOlustur';
+
+                                $.ajax({
+                                    url: url,
+                                    type: 'POST',
+                                    headers: { 'RequestVerificationToken': token },
+                                    data: form,
+                                    contentType: false,
+                                    processData: false
+                                })
+                                .done(() => loadComponent('OdaTipleri'))
+                                .fail(xhr => alert('Hata: ' + xhr.responseText));
+                            });
+
+                            $('.tip-sil').off('click').on('click', function() {
+                                if (!confirm('Bu oda tipini silmek istediğine emin misin?')) return;
+                                const id = +$(this).data('id');
+                                $.post('/AdminPanel/OdaTipiSil', { id })
+                                    .done(() => loadComponent('OdaTipleri'))
+                                    .fail(() => alert('Silme hatası'));
+                            });
+
+                               $('.tip-duzenle').off('click').on('click', function() {
+                                const tip = window.odaTipileri.find(t => t.OdaTipiId === +$(this).data('id'));
+                                if (!tip) return alert('Tip bulunamadı!');
+                                ['OdaTipiId','OdaTurAd','Kapasite','Fiyat','OdaAciklama']
+                                  .forEach(k => $(`input[name="${k}"]`).val(tip[k] || ''));
+                                $('#odaTipiKaydetBtn').text('Güncelle');
+                            });
+                        }
 
                 // $(function () { loadComponent('Odalar'); });
     </script>
