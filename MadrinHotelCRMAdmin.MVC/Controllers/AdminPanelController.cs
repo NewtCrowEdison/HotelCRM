@@ -164,5 +164,50 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
                 ? Ok()
                 : BadRequest(await response.Content.ReadAsStringAsync());
         }
+
+
+        // POST: /AdminPanel/OdaTipiOlustur
+        [HttpPost]
+        public async Task<IActionResult> OdaTipiOlustur(OdaTipiDTO dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var response = await _api.PostAsJsonAsync("api/OdaTipi", dto);
+            var content = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+                return Ok(new { message = "Oda tipi eklendi." });
+
+            return BadRequest(new { message = "Ekleme hatası", details = content });
+        }
+
+        // POST: /AdminPanel/OdaTipiGuncelle
+        [HttpPost]
+        public async Task<IActionResult> OdaTipiGuncelle(OdaTipiDTO dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var response = await _api.PutAsJsonAsync($"api/OdaTipi/{dto.OdaTipiId}", dto);
+            var content = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+                return Ok(new { message = "Oda tipi güncellendi." });
+
+            return BadRequest(new { message = "Güncelleme hatası", details = content });
+        }
+
+        // POST: /AdminPanel/OdaTipiSil
+        [HttpPost]
+        public async Task<IActionResult> OdaTipiSil(int id)
+        {
+            var response = await _api.DeleteAsync($"api/OdaTipi/{id}");
+            if (response.IsSuccessStatusCode)
+                return Ok(new { message = "Oda tipi silindi." });
+
+            var error = await response.Content.ReadAsStringAsync();
+            return BadRequest(new { message = "Silme hatası", details = error });
+        }
     }
 }

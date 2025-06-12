@@ -1,22 +1,58 @@
-﻿@using MadrinHotelCRM.DTO.DTOModels
-@model List<OdaTipiDTO>
+﻿@model List<OdaTipiDTO>
+@using System.Text.Json
+@using MadrinHotelCRM.DTO.DTOModels
+
+
+<script>
+    window.odaTipileri = @Html.Raw(JsonSerializer.Serialize(Model));
+</script>
 
 <h4>Oda Tipleri</h4>
+
+<form id="odaTipiForm" class="mb-4">
+    <input type="hidden" name="OdaTipiId" value="0" />
+    <div class="form-row row gx-2">
+        <div class="col">
+            <input name="OdaTurAd" class="form-control" placeholder="Oda Türü" required />
+        </div>
+        <div class="col">
+            <input name="Kapasite" type="number" class="form-control" placeholder="Kapasite" required />
+        </div>
+        <div class="col">
+            <input name="Fiyat" type="number" step="0.01" class="form-control" placeholder="Fiyat (₺)" required />
+        </div>
+        <div class="col">
+            <input name="OdaAciklama" class="form-control" placeholder="Açıklama" />
+        </div>
+        <div class="col-auto">
+            <button id="odaTipiKaydetBtn" class="btn btn-success">Kaydet</button>
+        </div>
+    </div>
+</form>
+
+
 <table class="table table-bordered">
     <thead>
         <tr>
             <th>Oda Türü</th>
             <th>Kapasite</th>
             <th>Fiyat</th>
+            <th>Açıklama</th>
+            <th style="width:120px">İşlemler</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var tip in Model)
         {
             <tr>
-                <td>@item.OdaTurAd</td>
-                <td>@item.Kapasite</td>
-                <td>@item.Fiyat ₺</td>
+                <td>@tip.OdaTurAd</td>
+                <td>@tip.Kapasite</td>
+                <td>@tip.Fiyat ₺</td>
+                <td>@tip.OdaAciklama</td>
+                <td>
+                    <button class="btn btn-sm btn-primary tip-duzenle" data-id="@tip.OdaTipiId">Güncelle</button>
+                    <button class="btn btn-sm btn-danger    tip-sil" data-id="@tip.OdaTipiId">Sil</button>
+                </td>
             </tr>
         }
     </tbody>
