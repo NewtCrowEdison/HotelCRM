@@ -1,0 +1,44 @@
+﻿@* @using MadrinHotelCRM.DTO.DTOModels
+@model OdaDTO
+
+@{
+    ViewData["Title"] = "Oda Detayı";
+}
+
+<div class="container py-5">
+    <h2 class="text-center display-5">@Model.OdaTipiAdi</h2>
+    <p class="text-center text-muted">@Model.OdaTipi?.OdaAciklama</p>
+
+    <div class="row mt-4">
+        <!-- Ana Görsel -->
+        <div class="col-md-8">
+            <img src="@Model.GorselUrl" class="img-fluid rounded shadow-sm" alt="Oda Görseli" />
+        </div>
+
+        <!-- Galeri -->
+        <div class="col-md-4">
+            @foreach (var url in Model.FotografGaleriListesi)
+            {
+                <img src="@url" class="img-thumbnail mb-2" style="height: 120px; object-fit: cover;" />
+            }
+        </div>
+    </div>
+
+    <div class="mt-5">
+        <h5>Oda Bilgileri</h5>
+        <p>
+            <strong>Boyut:</strong> @Model.OdaBoyutu m² |
+            <strong>Yatak:</strong> @Model.YatakSayisi |
+            <strong>Kapasite:</strong> @Model.OdaTipi?.Kapasite kişi
+        </p>
+
+        <h6 class="mt-3">Oda Özellikleri</h6>
+        <ul class="row list-unstyled">
+            @foreach (var ozellik in Model.Ozellikler)
+            {
+                <li class="col-md-4">• @ozellik</li>
+            }
+        </ul>
+    </div>
+</div>
+ *@

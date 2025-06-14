@@ -1,0 +1,18 @@
+﻿@* @model List<MadrinHotelCRM.DTO.DTOModels.OdaDTO>
+
+<h2>Odalar</h2>
+
+@if (Model != null && Model.Any())
+{
+    <ul>
+        @foreach (var oda in Model)
+        {
+            <li>@oda.OdaTipiAdi - @oda.GorselUrl</li>
+        }
+    </ul>
+}
+else
+{
+    <p class="text-danger">Hiç oda bulunamadı ya da veri gelmedi 😢</p>
+}
+ *@

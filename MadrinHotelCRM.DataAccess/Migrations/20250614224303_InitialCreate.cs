@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MadrinHotelCRM.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class mg1 : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -289,7 +289,7 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                     YabanciUyrukluMu = table.Column<bool>(type: "bit", nullable: false),
                     PasaportNo = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     TcKimlik = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: true),
-                    KullaniciId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    KullaniciId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
@@ -663,6 +663,18 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                     { 3, new DateTime(2025, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 2, 16, 0, 0, 0, 0, DateTimeKind.Unspecified), 2200.00m, 15, "Sevgililer Günü Paketi" },
                     { 4, new DateTime(2025, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 4, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), 3200.00m, 10, "Bayram Özel Tarife" },
                     { 5, new DateTime(2025, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2025, 11, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), 2000.00m, 25, "Sonbahar Erken Rezervasyon" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Odalar",
+                columns: new[] { "OdaId", "Durum", "OdaNumarasi", "OdaTipiId" },
+                values: new object[,]
+                {
+                    { 1, 1, "101", 1 },
+                    { 2, 2, "102", 2 },
+                    { 3, 4, "201", 3 },
+                    { 4, 5, "301", 4 },
+                    { 5, 1, "401", 5 }
                 });
 
             migrationBuilder.CreateIndex(

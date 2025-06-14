@@ -401,7 +401,7 @@
 
 			<div class="text-center mt-4">
 				<button class="btn btn-outline-light">MÜSAİTLİK ARAYIN</button>
-				<button onclick="window.location='/Odalar'" class="btn btn-light ms-2">ODALARIMIZ</button>
+				<button id="odalarimizBtn" class="btn btn-light ms-2">ODALARIMIZ</button>
 			</div>
 		</div>
 	</div>
@@ -425,6 +425,12 @@
 				document.getElementById("footerRezervasyonLink").onclick = (e) => {
 			e.preventDefault(); // sayfanın yukarı gitmesini engeller
 			document.getElementById("rezervasyonPanel").classList.add("active");
+		};
+			document.getElementById("odalarimizBtn").onclick = () => {
+			document.getElementById("rezervasyonPanel").classList.remove("active"); // paneli kapat
+			setTimeout(() => {
+				window.location.href = "/Odalar"; // sonra yönlendir
+			}, 300); // animasyon bitince yönlendir
 		};
 
 	</script>
