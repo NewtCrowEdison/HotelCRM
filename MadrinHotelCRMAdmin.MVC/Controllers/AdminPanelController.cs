@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MadrinHotelCRMAdmin.MVC.Controllers
 {
-    //[AutoValidateAntiforgeryToken]
     [Route("[controller]/[action]")]
     public class AdminPanelController : Controller
     {
@@ -19,9 +18,16 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
             _api = httpFactory.CreateClient("ApiClient");
         }
 
+        // ---------- Sayfa yüklenirken API Base adresini ViewBag'e ekliyoruz ----------
         [HttpGet]
-        public IActionResult Index() => View();
+        public IActionResult Index()
+        {
+            // Örneğin "https://localhost:7225"
+            ViewBag.ApiBase = _api.BaseAddress.ToString().TrimEnd('/');
+            return View();
+        }
 
+        // ---------- PERSONEL CRUD ----------
         [HttpPost]
         public async Task<IActionResult> PersonelKayit(KullaniciOlusturDTO model)
         {
@@ -54,14 +60,13 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
                 return BadRequest(new { message = "Model hatası", details = errors });
             }
 
-            // Eğer formda şifre boş geldiyse, null geçir:
+            // Şifre boş gelmişse null bırak
             if (string.IsNullOrWhiteSpace(dto.Password))
                 dto.Password = null;
 
-            var response = await _api.PutAsJsonAsync(
-                $"api/personel/{dto.PersonelId}", dto);
-
+            var response = await _api.PutAsJsonAsync($"api/personel/{dto.PersonelId}", dto);
             var content = await response.Content.ReadAsStringAsync();
+
             if (response.IsSuccessStatusCode)
                 return Ok(new { message = "Personel güncellendi." });
 
@@ -79,24 +84,13 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
             return BadRequest(new { message = "Silme hatası", details = error });
         }
 
+        // ---------- ODA CRUD (JSON + [IgnoreAntiforgeryToken] ile) ----------
         [HttpPost]
-        public async Task<IActionResult> OdaEkle(OdaDTO dto)
+        [IgnoreAntiforgeryToken]             // JSON post’larında antiforgery sorun çıkarmasın
+        public async Task<IActionResult> OdaEkle([FromBody] OdaDTO dto)
         {
             if (!ModelState.IsValid)
-            {
-                var errors = ModelState
-                    .Where(kvp => kvp.Value.Errors.Any())
-                    .Select(kvp => new {
-                        Field = kvp.Key,
-                        Messages = kvp.Value.Errors.Select(e => e.ErrorMessage).ToList()
-                    });
-
-                return BadRequest(new
-                {
-                    message = "Geçersiz form verisi.",
-                    details = errors
-                });
-            }
+                return BadRequest(new { message = "Geçersiz form verisi.", details = ModelState });
 
             var response = await _api.PostAsJsonAsync("api/oda", dto);
             var content = await response.Content.ReadAsStringAsync();
@@ -108,10 +102,11 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> OdaGuncelle(OdaDTO dto)
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> OdaGuncelle([FromBody] OdaDTO dto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(new { message = "Geçersiz form verisi." });
+                return BadRequest(new { message = "Geçersiz form verisi.", details = ModelState });
 
             var response = await _api.PutAsJsonAsync($"api/oda/{dto.OdaId}", dto);
             var content = await response.Content.ReadAsStringAsync();
@@ -133,7 +128,7 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
             return BadRequest(new { message = "Silme hatası", details = error });
         }
 
-
+        // ---------- EK PAKET CRUD ----------
         [HttpPost]
         public async Task<IActionResult> EkPaketOlustur(EkPaketDTO dto)
         {
@@ -144,7 +139,6 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
                 : BadRequest(await response.Content.ReadAsStringAsync());
         }
 
-        // POST: /AdminPanel/EkPaketGuncelle
         [HttpPost]
         public async Task<IActionResult> EkPaketGuncelle(EkPaketDTO dto)
         {
@@ -155,7 +149,6 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
                 : BadRequest(await response.Content.ReadAsStringAsync());
         }
 
-        // POST: /AdminPanel/EkPaketSil
         [HttpPost]
         public async Task<IActionResult> EkPaketSil(int id)
         {
@@ -165,15 +158,14 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
                 : BadRequest(await response.Content.ReadAsStringAsync());
         }
 
-
-        // POST: /AdminPanel/OdaTipiOlustur
+        // ---------- ODA TİPİ CRUD ----------
         [HttpPost]
         public async Task<IActionResult> OdaTipiOlustur(OdaTipiDTO dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var response = await _api.PostAsJsonAsync("api/OdaTipi", dto);
+            var response = await _api.PostAsJsonAsync("api/odaTipi", dto);
             var content = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
@@ -182,14 +174,13 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
             return BadRequest(new { message = "Ekleme hatası", details = content });
         }
 
-        // POST: /AdminPanel/OdaTipiGuncelle
         [HttpPost]
         public async Task<IActionResult> OdaTipiGuncelle(OdaTipiDTO dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var response = await _api.PutAsJsonAsync($"api/OdaTipi/{dto.OdaTipiId}", dto);
+            var response = await _api.PutAsJsonAsync($"api/odaTipi/{dto.OdaTipiId}", dto);
             var content = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
@@ -198,11 +189,10 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
             return BadRequest(new { message = "Güncelleme hatası", details = content });
         }
 
-        // POST: /AdminPanel/OdaTipiSil
         [HttpPost]
         public async Task<IActionResult> OdaTipiSil(int id)
         {
-            var response = await _api.DeleteAsync($"api/OdaTipi/{id}");
+            var response = await _api.DeleteAsync($"api/odaTipi/{id}");
             if (response.IsSuccessStatusCode)
                 return Ok(new { message = "Oda tipi silindi." });
 

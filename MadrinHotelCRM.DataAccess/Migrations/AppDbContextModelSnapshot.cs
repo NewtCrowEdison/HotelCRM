@@ -429,11 +429,29 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                     b.Property<int>("Durum")
                         .HasColumnType("int");
 
+                    b.Property<string>("FotografGaleriListesiJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GorselUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OdaAdi")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("OdaBoyutu")
+                        .HasColumnType("int");
+
                     b.Property<string>("OdaNumarasi")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("OdaTipiId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Ozellikler")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("YatakSayisi")
                         .HasColumnType("int");
 
                     b.HasKey("OdaId");
