@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MadrinHotelCRM.Entities.Models;
+using MadrinHotelCRM.Entities.Enums;
 
 
 namespace MadrinHotelCRM.DataAccess.Context
@@ -499,6 +500,47 @@ namespace MadrinHotelCRM.DataAccess.Context
                     Fiyat = 4000.00m,
                     OdaAciklama = "Romantik dekorasyon, jakuzili banyo, özel teras, sürpriz ikramlar."
                 });
+            modelBuilder.Entity<Oda>().HasData(
+               new Oda
+               {
+                   OdaId = 1,
+                   OdaNumarasi = "101",
+                   OdaTipiId = 1, // Standart Tek Kişilik
+                   Durum = (OdaDurum)1 // Bos
+               },
+               new Oda
+                 {
+                     OdaId = 2,
+                     OdaNumarasi = "102",
+                     OdaTipiId = 2, // Standart Çift Kişilik
+                     Durum = (OdaDurum)2 // Dolu
+                 },
+              new Oda
+              {
+                  OdaId = 3,
+                  OdaNumarasi = "201",
+                  OdaTipiId = 3, // Deluxe Oda
+                  Durum = (OdaDurum)4 // Temizlikte
+              },
+              new Oda
+              {
+                  OdaId = 4,
+                  OdaNumarasi = "301",
+                  OdaTipiId = 4, // Aile Odası
+                  Durum = (OdaDurum)5 // Rezervasyonlu
+              },
+             new Oda
+             {
+                 OdaId = 5,
+                 OdaNumarasi = "401",
+                 OdaTipiId = 5, // Balayı Süiti
+                 Durum = (OdaDurum)1 // Bos
+             });
+
+
+
+
+
         }
     }
 }

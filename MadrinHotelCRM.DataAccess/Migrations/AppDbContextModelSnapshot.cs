@@ -441,6 +441,43 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                     b.HasIndex("OdaTipiId");
 
                     b.ToTable("Odalar");
+
+                    b.HasData(
+                        new
+                        {
+                            OdaId = 1,
+                            Durum = 1,
+                            OdaNumarasi = "101",
+                            OdaTipiId = 1
+                        },
+                        new
+                        {
+                            OdaId = 2,
+                            Durum = 2,
+                            OdaNumarasi = "102",
+                            OdaTipiId = 2
+                        },
+                        new
+                        {
+                            OdaId = 3,
+                            Durum = 4,
+                            OdaNumarasi = "201",
+                            OdaTipiId = 3
+                        },
+                        new
+                        {
+                            OdaId = 4,
+                            Durum = 5,
+                            OdaNumarasi = "301",
+                            OdaTipiId = 4
+                        },
+                        new
+                        {
+                            OdaId = 5,
+                            Durum = 1,
+                            OdaNumarasi = "401",
+                            OdaTipiId = 5
+                        });
                 });
 
             modelBuilder.Entity("MadrinHotelCRM.Entities.Models.OdaTarife", b =>

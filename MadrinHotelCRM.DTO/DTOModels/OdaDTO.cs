@@ -17,6 +17,16 @@ namespace MadrinHotelCRM.DTO.DTOModels
         public string OdaNumarasi { get; set; }
         public OdaDurum Durum { get; set; }
 
+        //bunlar eklenecek
+
+        //public string GorselUrl { get; set; }
+        //public List<string> FotografGaleriListesi { get; set; } = new();
+        //public List<string> Ozellikler { get; set; } = new();
+        ////  Oda bilgileri
+        //public int OdaBoyutu { get; set; } // m² cinsinden
+        //public int YatakSayisi { get; set; }
+        //public string OdaAdi { get; set; } = string.Empty;
+
         // NAV PROP
         [BindNever]               // MVC binder burayı es geçsin istiyorum
         [JsonIgnore]              // API’ye JSON’da da gelmesin
