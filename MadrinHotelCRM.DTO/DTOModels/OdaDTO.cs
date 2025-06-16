@@ -83,8 +83,8 @@ namespace MadrinHotelCRM.DTO.DTOModels
         [JsonIgnore]
         public OdaTipiDTO? OdaTipi { get; set; }
 
-        // Ekranda kullanmak üzere tipin adı
-        public string OdaTipiAdi => OdaTipi?.OdaTurAd ?? "Tanımsız";
+        public string? OdaTipiAdi { get; set; } //  set edilebilir
+
     }
 }
 

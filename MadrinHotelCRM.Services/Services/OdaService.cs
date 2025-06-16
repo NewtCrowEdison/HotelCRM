@@ -23,24 +23,41 @@ namespace MadrinHotelCRM.Services.Services
 
         public async Task<IEnumerable<OdaDTO>> GetAllAsync()
         {
-            //  Tüm odaları çekerim
-            var odalar = (await _uow.Read<Oda>().GetAllAsync()).ToList();
-
-            //  Her oda için OdaTipi’ni ayrı yükleyip, DTO’ya aktarırım
-            var result = new List<OdaDTO>(odalar.Count);
-            foreach (var oda in odalar)
+            try
             {
-                var dto = _mapper.Map<OdaDTO>(oda);
+                var odalar = (await _uow.Read<Oda>().GetAllAsync()).ToList();
 
-                var tipiEntity = await _uow.Read<OdaTipi>()
-                                          .GetByIdAsync(oda.OdaTipiId);
-                dto.OdaTipi = _mapper.Map<OdaTipiDTO>(tipiEntity);
+                var result = new List<OdaDTO>(odalar.Count);
+                foreach (var oda in odalar)
+                {
+                    var dto = _mapper.Map<OdaDTO>(oda);
 
-                result.Add(dto);
+                    var tipiEntity = await _uow.Read<OdaTipi>()
+                                               .GetByIdAsync(oda.OdaTipiId);
+
+                    if (tipiEntity != null)
+                    {
+                        dto.OdaTipi = _mapper.Map<OdaTipiDTO>(tipiEntity);
+                        dto.OdaTipiAdi = tipiEntity.OdaTurAd; //  DTO’ya adı burada veriliyor
+                    }
+                    else
+                    {
+                        dto.OdaTipiAdi = "Tanımsız";
+                    }
+
+                    result.Add(dto);
+                }
+
+                return result;
             }
-
-            return result;
+            catch (Exception ex)
+            {
+                Console.WriteLine("💥 GetAllAsync patladı: " + ex.Message);
+                throw;
+            }
         }
+
+
 
         public async Task<OdaDTO> GetByIdAsync(int id)
         {

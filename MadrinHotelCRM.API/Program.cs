@@ -46,11 +46,12 @@ namespace MadrinHotelCRM.API
 
             // 3) JSON enum converter ile Controllers
             builder.Services
-                .AddControllers()
-                .AddJsonOptions(opts =>
-                {
-                    opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                });
+                .AddControllers();
+            //durum string geldiði için program patlýyor o nedenle yorum satýrýna aldým boþ olmasý için aldýðýmda durum artýk enum yani int olarak geldi.
+                //.AddJsonOptions(opts =>
+                //{
+                //    opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                //});
 
             // 4) Eðer Razor Pages da var ise
             builder.Services.AddRazorPages();
