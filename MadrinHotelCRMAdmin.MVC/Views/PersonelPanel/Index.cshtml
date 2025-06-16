@@ -2,7 +2,6 @@
 
 @{
     ViewData["Title"] = "Personel Panel - Yönetim Ekranı";
-
     var kullaniciAd = User.Identity?.Name ?? "Personel";
     var kullaniciId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "Bilinmiyor";
 }
@@ -52,13 +51,16 @@
         <div id="solMenu" class="col-md-3 bg-light vh-100 shadow-sm">
             <h4 class="mt-4 text-center text-primary">Personel Panel</h4>
             <ul class="list-group list-group-flush mt-4">
-                <li class="list-group-item list-group-item-action" onclick="loadComponent('Personel_Musteriler')">👥 Müşteri Yönetimi</li>
-                <li class="list-group-item list-group-item-action" onclick="loadComponent('Personel_Rezervasyon')">📝 Rezervasyonlar</li>
-                <li class="list-group-item list-group-item-action" onclick="loadComponent('Personel_OdaDurumlari')">🛏️ Oda Durumları</li>
-                <li class="list-group-item list-group-item-action" onclick="loadComponent('Personel_Bilgilerim')">🙋‍♂️ Bilgilerim</li>
+                <li class="list-group-item list-group-item-action"
+                    onclick="loadComponent('Personel_Musteriler')">👥 Müşteri Yönetimi</li>
+                <li class="list-group-item list-group-item-action"
+                    onclick="loadComponent('Personel_Rezervasyon')">📝 Rezervasyonlar</li>
+                <li class="list-group-item list-group-item-action"
+                    onclick="loadComponent('Personel_OdaDurumlari')">🛏️ Oda Durumları</li>
+                <li class="list-group-item list-group-item-action"
+                    onclick="loadComponent('Personel_Bilgilerim')">🙋‍♂️ Bilgilerim</li>
             </ul>
 
-            <!-- Çıkış Butonu -->
             <form asp-controller="Auth" asp-action="Cikis" method="post" class="mt-4 text-center">
                 @Html.AntiForgeryToken()
                 <button type="submit" class="btn btn-outline-danger">Çıkış Yap</button>
@@ -87,44 +89,69 @@
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // Sol menüyü aç/kapa
-        $('#menuToggle').click(function () {
-            $('#solMenu').toggleClass('gizle');
+        $(function() {
+            // Menü aç/kapa
+            $('#menuToggle').click(() => $('#solMenu').toggleClass('gizle'));
+
+            // Durum filtresi
+            $(document).on('change', '#durumFilter', function() {
+                var secilen = $(this).val();
+                $('.oda-card').each(function() {
+                    var durum = $(this).data('durum').toString();
+                    if (!secilen || durum === secilen) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
         });
 
-        function loadComponent(componentName) {
+            function loadComponent(componentName) {
+             var url = componentName === 'Personel_OdaDurumlari'
+            ? '/PersonelPanel/OdaDurumlari'
+            : '/ViewComponent/' + componentName;
             $.ajax({
-                url: `/ViewComponent/${componentName}`,
+                url: url,
                 type: 'GET',
-                success: function (html) {
-                    $("#panelContent").html(html);
-                    if (componentName === "Personel_Musteriler") {
+                success: function(html) {
+                    $('#panelContent').html(html);
+
+                    if (componentName === 'Personel_Musteriler') {
                         setTimeout(bindMusteriEvents, 100);
                     }
+                    else if (componentName === 'Personel_OdaDurumlari') {
+                    
+                        setTimeout(() => {
+                            $('#durumFilter').val('').trigger('change');
+                        }, 100);
+                    }
                 },
-                error: function () {
-                    $("#panelContent").html("<div class='alert alert-danger'>İçerik yüklenirken hata oluştu.</div>");
+                error: function() {
+                    $('#panelContent').html(
+                        '<div class="alert alert-danger">İçerik yüklenirken hata oluştu.</div>'
+                    );
                 }
             });
         }
 
         function bindMusteriEvents() {
             try {
-                window.musteriler = JSON.parse($("#musteri-data").val());
+                window.musteriler = JSON.parse($('#musteri-data').val());
             } catch (err) {
-                console.error("Müşteri verileri yüklenemedi:", err);
+                console.error('Müşteri verileri yüklenemedi:', err);
                 window.musteriler = [];
             }
         }
 
-        $("#kayitForm").submit(function (e) {
+        // Müşteri form submit
+        $(document).on('submit', '#kayitForm', function(e) {
             e.preventDefault();
-            const form = new FormData(this);
-            const id = form.get("MusteriId");
-
-            const url = id && id !== "0"
-                ? `/PersonelPanel/MusteriGuncelle/${id}`
-                : "/PersonelPanel/MusteriKaydet";
+            var form = new FormData(this);
+            var id = form.get('MusteriId');
+            var url = id && id !== '0'
+                ? '/PersonelPanel/MusteriGuncelle/' + id
+                : '/PersonelPanel/MusteriKaydet';
 
             $.ajax({
                 url: url,
@@ -132,34 +159,37 @@
                 data: form,
                 processData: false,
                 contentType: false,
-                success: () => loadComponent("Personel_Musteriler"),
-                error: (xhr) => alert("Hata: " + xhr.responseText)
+                success: () => loadComponent('Personel_Musteriler'),
+                error: xhr => alert('Hata: ' + xhr.responseText)
             });
         });
 
-        $(".sil-btn").click(function () {
-            const id = $(this).data("id");
-            $.post("/PersonelPanel/MusteriSil", { id })
-                .done(() => loadComponent("Personel_Musteriler"))
-                .fail(() => alert("Müşteri silinemedi."));
+        // Sil ve Düzenle butonları
+        $(document).on('click', '.sil-btn', function() {
+            var id = $(this).data('id');
+            $.post('/PersonelPanel/MusteriSil', { id })
+                .done(() => loadComponent('Personel_Musteriler'))
+                .fail(() => alert('Müşteri silinemedi.'));
         });
 
-        $(".duzenle-btn").click(function () {
-            const id = $(this).data("id");
-            const m = musteriler.find(x => x.MusteriId === id);
+        $(document).on('click', '.duzenle-btn', function() {
+            var id = $(this).data('id');
+            var m = window.musteriler.find(x => x.MusteriId === id);
             if (!m) return;
 
-            $("input[name='MusteriId']").val(m.MusteriId);
-            $("input[name='Ad']").val(m.Ad);
-            $("input[name='Soyad']").val(m.Soyad);
-            $("input[name='Email']").val(m.Email);
-            $("input[name='TelNo']").val(m.TelNo);
-            $("input[name='TcNo']").val(m.TcNo || "");
-            $("input[name='PasaportNo']").val(m.PasaportNo || "");
-            $("input[name='DogumTarihi']").val(m.DogumTarihi?.split("T")[0]);
-            $("select[name='Cinsiyet']").val(m.Cinsiyet);
-            $("input[name='Adres']").val(m.Adres);
-            $("#YabanciUyrukluMu").prop("checked", m.YabanciUyrukluMu);
+            $('input[name="MusteriId"]').val(m.MusteriId);
+            $('input[name="Ad"]').val(m.Ad);
+            $('input[name="Soyad"]').val(m.Soyad);
+            $('input[name="Email"]').val(m.Email);
+            $('input[name="TelNo"]').val(m.TelNo);
+            $('input[name="TcNo"]').val(m.TcNo || '');
+            $('input[name="PasaportNo"]').val(m.PasaportNo || '');
+            $('input[name="DogumTarihi"]').val(
+                m.DogumTarihi ? m.DogumTarihi.split('T')[0] : ''
+            );
+            $('select[name="Cinsiyet"]').val(m.Cinsiyet);
+            $('input[name="Adres"]').val(m.Adres);
+            $('#YabanciUyrukluMu').prop('checked', m.YabanciUyrukluMu);
         });
     </script>
 }
