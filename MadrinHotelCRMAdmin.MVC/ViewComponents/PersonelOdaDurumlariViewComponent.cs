@@ -1,23 +1,34 @@
-﻿//using MadrinHotelCRM.DTO.DTOModels;
-//using MadrinHotelCRM.Entities.Enums;
-//using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using System.Net.Http;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using MadrinHotelCRM.DTO.DTOModels;
+using Microsoft.AspNetCore.Mvc;
 
-//namespace MadrinHotelCRMAdmin.MVC.ViewComponents
-//{
-//    public class PersonelOdaDurumlariViewComponent : ViewComponent
-//    {
-//        public async Task<IViewComponentResult> InvokeAsync()
-//        {
-//            // Şimdilik mock veri
-//            var odalar = new List<OdaDTO>
-//        {
-//            new() { OdaNumarasi = "101", OdaTipiAdi  = "Standart", Durum = OdaDurum.Bos },
-//            new() { OdaNumarasi = "102", OdaTipiAdi  = "Deluxe", Durum = OdaDurum.Dolu },
-//            new() { OdaNumarasi = "103", OdaTipiAdi  = "Suit", Durum =  OdaDurum.Bos }
-//        };
+public class PersonelOdaDurumlariViewComponent : ViewComponent
+{
+    private readonly HttpClient _api;
+    public PersonelOdaDurumlariViewComponent(IHttpClientFactory httpFactory)
+        => _api = httpFactory.CreateClient("ApiClient");
 
-//            return View(odalar);
-//        }
-    
-//    }
-//}
+    public async Task<IViewComponentResult> InvokeAsync()
+    {
+        var response = await _api.GetAsync("api/oda");
+        response.EnsureSuccessStatusCode();
+
+        var json = await response.Content.ReadAsStringAsync();
+
+        var opts = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+        // metinsel enum’ları da parse edebilsin diye:
+        opts.Converters.Add(new JsonStringEnumConverter());
+
+        var odalar = JsonSerializer.Deserialize<List<OdaDTO>>(json, opts)
+                    ?? new List<OdaDTO>();
+
+        return View(odalar);
+    }
+}

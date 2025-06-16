@@ -1,5 +1,4 @@
-﻿@model List<OdaDTO>
-@using MadrinHotelCRM.DTO.DTOModels
+﻿@model List<MadrinHotelCRM.DTO.DTOModels.OdaDTO>
 @using MadrinHotelCRM.Entities.Enums
 @using MadrinHotelCRM.ExtensionMethods
 
@@ -17,13 +16,24 @@
 }
 
 <h4 class="mb-3">Oda Durumları</h4>
-<div class="row">
+
+<div class="mb-4">
+    <label for="durumFilter" class="form-label">Durum Filtrele:</label>
+    <select id="durumFilter" class="form-select w-auto d-inline-block">
+        <option value="">— Hepsi —</option>
+        @foreach (OdaDurum d in Enum.GetValues(typeof(OdaDurum)))
+        {
+            <option value="@( (int)d )">@d.GetDisplayName()</option>
+        }
+    </select>
+</div>
+
+<div class="row" id="odaList">
     @foreach (var oda in Model)
     {
         var renk = renkGetir(oda.Durum);
-
-        <div class="col-md-4">
-            <div class="card mb-3 shadow-sm">
+        <div class="col-md-4 oda-card mb-3" data-durum="@((int)oda.Durum)">
+            <div class="card shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">Oda @oda.OdaNumarasi</h5>
                     <p class="card-text">Tip: @oda.OdaTipiAdi</p>
