@@ -35,10 +35,19 @@ namespace MadrinHotelCRM.API.Controllers
 
         // GET: api/Oda
         [HttpGet]
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var odalar = await _odaService.GetAllAsync();
-            return Ok(odalar);
+            try
+            {
+                var odalar = await _odaService.GetAllAsync();
+                return Ok(odalar);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("🔥 OdaController hatası: " + ex.Message);
+                return StatusCode(500, "Sunucu hatası: " + ex.Message);
+            }
         }
 
         // GET: api/Oda/5
