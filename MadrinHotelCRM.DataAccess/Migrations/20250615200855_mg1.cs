@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MadrinHotelCRM.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class mg1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -358,7 +358,13 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     OdaTipiId = table.Column<int>(type: "int", nullable: false),
                     OdaNumarasi = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Durum = table.Column<int>(type: "int", nullable: false)
+                    Durum = table.Column<int>(type: "int", nullable: false),
+                    GorselUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OdaAdi = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OdaBoyutu = table.Column<int>(type: "int", nullable: true),
+                    YatakSayisi = table.Column<int>(type: "int", nullable: true),
+                    Ozellikler = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FotografGaleriListesiJson = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -667,14 +673,14 @@ namespace MadrinHotelCRM.DataAccess.Migrations
 
             migrationBuilder.InsertData(
                 table: "Odalar",
-                columns: new[] { "OdaId", "Durum", "OdaNumarasi", "OdaTipiId" },
+                columns: new[] { "OdaId", "Durum", "FotografGaleriListesiJson", "GorselUrl", "OdaAdi", "OdaBoyutu", "OdaNumarasi", "OdaTipiId", "Ozellikler", "YatakSayisi" },
                 values: new object[,]
                 {
-                    { 1, 1, "101", 1 },
-                    { 2, 2, "102", 2 },
-                    { 3, 4, "201", 3 },
-                    { 4, 5, "301", 4 },
-                    { 5, 1, "401", 5 }
+                    { 1, 1, null, null, null, null, "101", 1, null, null },
+                    { 2, 2, null, null, null, null, "102", 2, null, null },
+                    { 3, 4, null, null, null, null, "201", 3, null, null },
+                    { 4, 5, null, null, null, null, "301", 4, null, null },
+                    { 5, 1, null, null, null, null, "401", 5, null, null }
                 });
 
             migrationBuilder.CreateIndex(

@@ -1,14 +1,23 @@
 ﻿@model List<MadrinHotelCRM.DTO.DTOModels.OdaDTO>
 @using Microsoft.AspNetCore.Mvc.Rendering
 @using System.Text.Json
-@using Microsoft.OpenApi.Attributes
+@using System.ComponentModel.DataAnnotations
 
-@* JSON olarak modeli JS tarafına aktarıyoruz *@
+@{
+    ViewData["Title"] = "Oda Yönetimi";
+    // AdminPanelController.Index() içinde:
+    // ViewBag.ApiBase = _api.BaseAddress.ToString().TrimEnd('/');
+    // var apiBase = (string)ViewBag.ApiBase ?? "";
+    
+
+}
+
 <script>
+    
     window.odalar = @Html.Raw(JsonSerializer.Serialize(Model));
 </script>
 
-<!-- EKLE/GÜNCELLE FORM -->
+<!-- EKLE / GÜNCELLE FORMU -->
 <form id="odaForm">
     <input type="hidden" name="OdaId" value="0" />
 
@@ -18,19 +27,17 @@
     </div>
 
     <div class="form-group">
+        <label for="OdaAdi">Oda Adı</label>
+        <input id="OdaAdi" name="OdaAdi" class="form-control" />
+    </div>
+
+    <div class="form-group">
         <label for="OdaTipiId">Oda Tipi</label>
         <select id="OdaTipiId" name="OdaTipiId" class="form-control" required>
             <option value="">-- Seçiniz --</option>
-            @if (ViewBag.OdaTipiList is List<SelectListItem> tipiList)
+            @foreach (var tip in (List<SelectListItem>)ViewBag.OdaTipiList)
             {
-                foreach (var tip in tipiList)
-                {
-                    <option value="@tip.Value">@tip.Text</option>
-                }
-            }
-            else
-            {
-                <option disabled>Oda tipi yüklenemedi</option>
+                <option value="@tip.Value">@tip.Text</option>
             }
         </select>
     </div>
@@ -39,56 +46,94 @@
         <label for="Durum">Durum</label>
         <select id="Durum" name="Durum" class="form-control" required>
             <option value="">-- Seçiniz --</option>
-            @if (ViewBag.Durumlar is List<SelectListItem> durumList)
+            @foreach (var d in (List<SelectListItem>)ViewBag.Durumlar)
             {
-                foreach (var d in durumList)
-                {
-                    <option value="@d.Value">@d.Text</option>
-                }
-            }
-            else
-            {
-                <option disabled>Durum yüklenemedi</option>
+                <option value="@d.Value">@d.Text</option>
             }
         </select>
     </div>
 
-    <button type="submit" class="btn btn-primary" id="odaKaydetBtn">Kaydet</button>
+    <div class="form-group">
+        <label for="OdaBoyutu">Boyut (m²)</label>
+        <input id="OdaBoyutu" name="OdaBoyutu" type="number" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="YatakSayisi">Yatak Sayısı</label>
+        <input id="YatakSayisi" name="YatakSayisi" type="number" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="Ozellikler">Özellikler</label>
+        <textarea id="Ozellikler" name="Ozellikler" class="form-control"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="Gorsel">Kapak Görseli</label>
+        <input id="Gorsel" name="Gorsel" type="file" accept="image/*" class="form-control-file" />
+    </div>
+
+    <button type="submit" id="odaKaydetBtn" class="btn btn-primary mt-3">Kaydet</button>
 </form>
 
 <!-- MEVCUT LİSTE -->
-<table class="table table-striped mt-4">
+<table class="table table-striped mt-4 align-middle">
     <thead>
         <tr>
+            <th>Görsel</th>
             <th>Oda No</th>
+            <th>Oda Adı</th>
             <th>Oda Tipi</th>
             <th>Durum</th>
+            <th>Boyut (m²)</th>
+            <th>Yatak Sayısı</th>
+            <th>Özellikler</th>
             <th>İşlemler</th>
         </tr>
     </thead>
     <tbody>
-        @if (Model != null && Model.Any())
+        @if (Model?.Any() == true)
         {
             foreach (var oda in Model)
             {
                 <tr>
+                    <td style="width:80px;">
+                        @if (!string.IsNullOrWhiteSpace(oda.GorselUrl))
+                        {
+                            <img src="@oda.GorselUrl"
+                                 class="img-thumbnail"
+                                 style="max-height:60px;" />
+                        }
+                        else
+                        {
+                            <span class="text-muted">Yok</span>
+                        }
+                    </td>
                     <td>@oda.OdaNumarasi</td>
+                    <td>@(string.IsNullOrEmpty(oda.OdaAdi) ? "-" : oda.OdaAdi)</td>
                     <td>@oda.OdaTipiAdi</td>
                     <td>
                         @{
-                            var display = oda.Durum
+                            var disp = oda.Durum
                             .GetType()
-                            .GetField(oda.Durum.ToString())?
-                            .GetCustomAttributes(typeof(DisplayAttribute), false)
+                            .GetField(oda.Durum.ToString())
+                            ?.GetCustomAttributes(typeof(DisplayAttribute), false)
                             .Cast<DisplayAttribute>()
                             .FirstOrDefault()?.Name
                             ?? oda.Durum.ToString();
                         }
-                        @display
+                        @disp
                     </td>
+                    <td>@(oda.OdaBoyutu?.ToString() ?? "-")</td>
+                    <td>@(oda.YatakSayisi?.ToString() ?? "-")</td>
+                    <td>@(!string.IsNullOrWhiteSpace(oda.Ozellikler) ? oda.Ozellikler : "-")</td>
                     <td>
-                        <button class="btn btn-sm btn-primary oda-duzenle" data-id="@oda.OdaId">Düzenle</button>
-                        <button class="btn btn-sm btn-danger oda-sil" data-id="@oda.OdaId">Sil</button>
+                        <button class="btn btn-sm btn-primary oda-duzenle" data-id="@oda.OdaId">
+                            Düzenle
+                        </button>
+                        <button class="btn btn-sm btn-danger oda-sil" data-id="@oda.OdaId">
+                            Sil
+                        </button>
                     </td>
                 </tr>
             }
@@ -96,7 +141,7 @@
         else
         {
             <tr>
-                <td colspan="4" class="text-center">Herhangi bir oda bulunamadı.</td>
+                <td colspan="9" class="text-center">Herhangi bir oda bulunamadı.</td>
             </tr>
         }
     </tbody>

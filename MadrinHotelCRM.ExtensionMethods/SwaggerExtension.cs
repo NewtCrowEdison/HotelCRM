@@ -12,3 +12,5 @@ namespace MadrinHotelCRM.ExtensionMethods
         }
     }
 }
+
+

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MadrinHotelCRM.DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250614224303_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250615200855_mg1")]
+    partial class mg1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -432,11 +432,29 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                     b.Property<int>("Durum")
                         .HasColumnType("int");
 
+                    b.Property<string>("FotografGaleriListesiJson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GorselUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OdaAdi")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("OdaBoyutu")
+                        .HasColumnType("int");
+
                     b.Property<string>("OdaNumarasi")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("OdaTipiId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Ozellikler")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("YatakSayisi")
                         .HasColumnType("int");
 
                     b.HasKey("OdaId");
