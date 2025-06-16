@@ -12,6 +12,12 @@
 
 }
 
+
+@{
+    ViewData["Title"] = "Oda Yönetimi";
+    var apiBase = (string)ViewBag.ApiBase ?? "";
+}
+
 <script>
     
     window.odalar = @Html.Raw(JsonSerializer.Serialize(Model));
@@ -26,12 +32,14 @@
         <input id="OdaNumarasi" name="OdaNumarasi" class="form-control" required />
     </div>
 
-    <div class="form-group">
+    <div class="form-group mt-2">
+
         <label for="OdaAdi">Oda Adı</label>
         <input id="OdaAdi" name="OdaAdi" class="form-control" />
     </div>
 
-    <div class="form-group">
+
+    <div class="form-group mt-2">
         <label for="OdaTipiId">Oda Tipi</label>
         <select id="OdaTipiId" name="OdaTipiId" class="form-control" required>
             <option value="">-- Seçiniz --</option>
@@ -42,7 +50,7 @@
         </select>
     </div>
 
-    <div class="form-group">
+    <div class="form-group mt-2">
         <label for="Durum">Durum</label>
         <select id="Durum" name="Durum" class="form-control" required>
             <option value="">-- Seçiniz --</option>
@@ -53,34 +61,52 @@
         </select>
     </div>
 
-    <div class="form-group">
+
+    <div class="form-group mt-2">
         <label for="OdaBoyutu">Boyut (m²)</label>
         <input id="OdaBoyutu" name="OdaBoyutu" type="number" class="form-control" />
     </div>
 
-    <div class="form-group">
+
+    <div class="form-group mt-2">
         <label for="YatakSayisi">Yatak Sayısı</label>
         <input id="YatakSayisi" name="YatakSayisi" type="number" class="form-control" />
     </div>
 
-    <div class="form-group">
+    <div class="form-group mt-2">
         <label for="Ozellikler">Özellikler</label>
         <textarea id="Ozellikler" name="Ozellikler" class="form-control"></textarea>
     </div>
 
-    <div class="form-group">
+
+    <!-- Kapak Görseli -->
+    <div class="form-group mt-3">
         <label for="Gorsel">Kapak Görseli</label>
         <input id="Gorsel" name="Gorsel" type="file" accept="image/*" class="form-control-file" />
+        <div id="gorselPreviewContainer" class="mt-2"></div>
     </div>
 
-    <button type="submit" id="odaKaydetBtn" class="btn btn-primary mt-3">Kaydet</button>
+    <!-- Fotoğraf Galerisi -->
+    <div class="form-group mt-3">
+        <label for="FotografDosyalari">Fotoğraf Galerisi</label>
+        <input id="FotografDosyalari"
+               name="FotografDosyalari"
+               type="file"
+               accept="image/*"
+               multiple
+               class="form-control-file" />
+        <div id="galeriPreviewContainer" class="mt-2 d-flex flex-wrap gap-2"></div>
+    </div>
+
+    <button type="submit" id="odaKaydetBtn" class="btn btn-primary mt-4">Kaydet</button>
 </form>
 
 <!-- MEVCUT LİSTE -->
-<table class="table table-striped mt-4 align-middle">
+<table class="table table-striped mt-5 align-middle">
     <thead>
         <tr>
-            <th>Görsel</th>
+            <th>Kapak</th>
+            <th>Galeri</th>
             <th>Oda No</th>
             <th>Oda Adı</th>
             <th>Oda Tipi</th>
@@ -109,6 +135,25 @@
                             <span class="text-muted">Yok</span>
                         }
                     </td>
+
+                    <td style="width:120px;">
+                        @if (oda.FotografGaleriListesi.Any())
+                        {
+                            <div class="d-flex flex-wrap gap-1">
+                                @foreach (var url in oda.FotografGaleriListesi)
+                                {
+                                    <img src="@url"
+                                         class="img-thumbnail"
+                                         style="max-height:40px;" />
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Yok</span>
+                        }
+                    </td>
+
                     <td>@oda.OdaNumarasi</td>
                     <td>@(string.IsNullOrEmpty(oda.OdaAdi) ? "-" : oda.OdaAdi)</td>
                     <td>@oda.OdaTipiAdi</td>
@@ -141,7 +186,7 @@
         else
         {
             <tr>
-                <td colspan="9" class="text-center">Herhangi bir oda bulunamadı.</td>
+                <td colspan="10" class="text-center">Herhangi bir oda bulunamadı.</td>
             </tr>
         }
     </tbody>
