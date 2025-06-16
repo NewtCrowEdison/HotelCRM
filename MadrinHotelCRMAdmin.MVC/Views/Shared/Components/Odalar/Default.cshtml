@@ -1,7 +1,17 @@
 ﻿@model List<MadrinHotelCRM.DTO.DTOModels.OdaDTO>
 @using Microsoft.AspNetCore.Mvc.Rendering
 @using System.Text.Json
-@using Microsoft.OpenApi.Attributes
+@using System.ComponentModel.DataAnnotations
+
+@{
+    ViewData["Title"] = "Oda Yönetimi";
+    // AdminPanelController.Index() içinde:
+    // ViewBag.ApiBase = _api.BaseAddress.ToString().TrimEnd('/');
+    // var apiBase = (string)ViewBag.ApiBase ?? "";
+    
+
+}
+
 
 @{
     ViewData["Title"] = "Oda Yönetimi";
@@ -9,10 +19,11 @@
 }
 
 <script>
+    
     window.odalar = @Html.Raw(JsonSerializer.Serialize(Model));
 </script>
 
-<!-- EKLE/GÜNCELLE FORM -->
+<!-- EKLE / GÜNCELLE FORMU -->
 <form id="odaForm">
     <input type="hidden" name="OdaId" value="0" />
 
@@ -22,24 +33,19 @@
     </div>
 
     <div class="form-group mt-2">
+
         <label for="OdaAdi">Oda Adı</label>
         <input id="OdaAdi" name="OdaAdi" class="form-control" />
     </div>
+
 
     <div class="form-group mt-2">
         <label for="OdaTipiId">Oda Tipi</label>
         <select id="OdaTipiId" name="OdaTipiId" class="form-control" required>
             <option value="">-- Seçiniz --</option>
-            @if (ViewBag.OdaTipiList is List<SelectListItem> tipiList)
+            @foreach (var tip in (List<SelectListItem>)ViewBag.OdaTipiList)
             {
-                foreach (var tip in tipiList)
-                {
-                    <option value="@tip.Value">@tip.Text</option>
-                }
-            }
-            else
-            {
-                <option disabled>Oda tipi yüklenemedi</option>
+                <option value="@tip.Value">@tip.Text</option>
             }
         </select>
     </div>
@@ -48,24 +54,19 @@
         <label for="Durum">Durum</label>
         <select id="Durum" name="Durum" class="form-control" required>
             <option value="">-- Seçiniz --</option>
-            @if (ViewBag.Durumlar is List<SelectListItem> durumList)
+            @foreach (var d in (List<SelectListItem>)ViewBag.Durumlar)
             {
-                foreach (var d in durumList)
-                {
-                    <option value="@d.Value">@d.Text</option>
-                }
-            }
-            else
-            {
-                <option disabled>Durum yüklenemedi</option>
+                <option value="@d.Value">@d.Text</option>
             }
         </select>
     </div>
+
 
     <div class="form-group mt-2">
         <label for="OdaBoyutu">Boyut (m²)</label>
         <input id="OdaBoyutu" name="OdaBoyutu" type="number" class="form-control" />
     </div>
+
 
     <div class="form-group mt-2">
         <label for="YatakSayisi">Yatak Sayısı</label>
@@ -76,6 +77,7 @@
         <label for="Ozellikler">Özellikler</label>
         <textarea id="Ozellikler" name="Ozellikler" class="form-control"></textarea>
     </div>
+
 
     <!-- Kapak Görseli -->
     <div class="form-group mt-3">
@@ -106,13 +108,17 @@
             <th>Kapak</th>
             <th>Galeri</th>
             <th>Oda No</th>
+            <th>Oda Adı</th>
             <th>Oda Tipi</th>
             <th>Durum</th>
+            <th>Boyut (m²)</th>
+            <th>Yatak Sayısı</th>
+            <th>Özellikler</th>
             <th>İşlemler</th>
         </tr>
     </thead>
     <tbody>
-        @if (Model != null && Model.Any())
+        @if (Model?.Any() == true)
         {
             foreach (var oda in Model)
             {
@@ -129,6 +135,7 @@
                             <span class="text-muted">Yok</span>
                         }
                     </td>
+
                     <td style="width:120px;">
                         @if (oda.FotografGaleriListesi.Any())
                         {
@@ -146,23 +153,32 @@
                             <span class="text-muted">Yok</span>
                         }
                     </td>
+
                     <td>@oda.OdaNumarasi</td>
+                    <td>@(string.IsNullOrEmpty(oda.OdaAdi) ? "-" : oda.OdaAdi)</td>
                     <td>@oda.OdaTipiAdi</td>
                     <td>
                         @{
-                            var display = oda.Durum
+                            var disp = oda.Durum
                             .GetType()
-                            .GetField(oda.Durum.ToString())?
-                            .GetCustomAttributes(typeof(DisplayAttribute), false)
+                            .GetField(oda.Durum.ToString())
+                            ?.GetCustomAttributes(typeof(DisplayAttribute), false)
                             .Cast<DisplayAttribute>()
                             .FirstOrDefault()?.Name
                             ?? oda.Durum.ToString();
                         }
-                        @display
+                        @disp
                     </td>
+                    <td>@(oda.OdaBoyutu?.ToString() ?? "-")</td>
+                    <td>@(oda.YatakSayisi?.ToString() ?? "-")</td>
+                    <td>@(!string.IsNullOrWhiteSpace(oda.Ozellikler) ? oda.Ozellikler : "-")</td>
                     <td>
-                        <button class="btn btn-sm btn-primary oda-duzenle" data-id="@oda.OdaId">Düzenle</button>
-                        <button class="btn btn-sm btn-danger oda-sil" data-id="@oda.OdaId">Sil</button>
+                        <button class="btn btn-sm btn-primary oda-duzenle" data-id="@oda.OdaId">
+                            Düzenle
+                        </button>
+                        <button class="btn btn-sm btn-danger oda-sil" data-id="@oda.OdaId">
+                            Sil
+                        </button>
                     </td>
                 </tr>
             }

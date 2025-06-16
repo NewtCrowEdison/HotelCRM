@@ -1,6 +1,11 @@
+using System;
+using System.IO;
+using System.Text.Json.Serialization;
 using MadrinHotelCRM.API.Middlewares;
 using MadrinHotelCRM.Business.Mapp;
 using MadrinHotelCRM.ExtensionMethods;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Hosting;
 
 namespace MadrinHotelCRM.API
 {
@@ -8,46 +13,72 @@ namespace MadrinHotelCRM.API
     {
         public static void Main(string[] args)
         {
-
             var builder = WebApplication.CreateBuilder(args);
+
+            // 1) CORS – sadece AdminPanel MVC’den gelen istekler
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAdminPanel", policy =>
+                {
+                    policy
+                      .WithOrigins("https://localhost:7196")
+                      .AllowAnyHeader()
+                      .AllowAnyMethod();
+                });
+            });
+
+            // 2) Ayarlar, Serilog, DbContext, Identity, AutoMapper, vs.
             builder.Configuration
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
             var jwtSecret = builder.Configuration["AppSettings:Secret"];
 
-            // Serilog Extension
             builder.Host.AddSerilogExtension();
 
-            // Extension Methods
             builder.Services
-           .AddJwtExtension(jwtSecret)
-           .AddDbContextExtension(builder.Configuration)
-           .AddIdentityExtension()
-           .AddAutoMapperExtension()
-           .AddRepositoryServices()
-           .AddServiceCollectionExtension()
-           .AddSwaggerExtension();
+               .AddJwtExtension(jwtSecret)
+               .AddDbContextExtension(builder.Configuration)
+               .AddIdentityExtension()
+               .AddAutoMapperExtension()
+               .AddRepositoryServices()
+               .AddServiceCollectionExtension()
+               .AddSwaggerExtension();
 
-            // MVC + Razor + Controllers
-            builder.Services.AddControllers();
+            // 3) JSON enum converter ile Controllers
+            builder.Services
+                .AddControllers()
+                .AddJsonOptions(opts =>
+                {
+                    opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
+
+            // 4) Eðer Razor Pages da var ise
             builder.Services.AddRazorPages();
 
             var app = builder.Build();
 
-            // Middleware & Pipeline
+            // 5) Swagger (Development)
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
+            // 6) Statik dosyalarý (wwwroot) servis et
+            app.UseStaticFiles();
+
             app.UseHttpsRedirection();
 
+            // 7) CORS
+            app.UseCors("AllowAdminPanel");
+
+            // 8) Güvenlik
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseMiddleware<TrackingMiddleware>();
 
+            // 9) Routing
             app.MapRazorPages();
             app.MapControllers();
             app.MapControllerRoute(
@@ -58,3 +89,4 @@ namespace MadrinHotelCRM.API
         }
     }
 }
+
