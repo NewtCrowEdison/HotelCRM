@@ -1,14 +1,18 @@
 ﻿@model MadrinHotelCRM.DTO.DTOModels.MusteriEkleViewModel
-<!--js e taşımak için seriliaze-->
-<script>
-    var musteriler = @Html.Raw(Json.Serialize(Model.MusteriListesi));
-</script>
-<!--müşteri ekleme formu ve güncelleme-->
+@using MadrinHotelCRM.Entities.Enums
+@using MadrinHotelCRM.ExtensionMethods
+@using System.Text.Json
+
+@* Müşteri listesini JS’e taşımak için gizli input *@
+<input type="hidden" id="musteri-data"
+       value='@Html.Raw(JsonSerializer.Serialize(Model.MusteriListesi))' />
+
 <div class="row">
     <div class="col-md-6">
         <h4 class="text-success">Müşteri Ekle / Güncelle</h4>
         <form id="kayitForm" class="row g-2">
             <input type="hidden" name="MusteriId" value="0" />
+
             <input name="Ad" class="form-control" placeholder="Ad" required />
             <input name="Soyad" class="form-control" placeholder="Soyad" required />
             <input name="Email" class="form-control" placeholder="Email" required />
@@ -16,26 +20,43 @@
             <input name="TcNo" class="form-control" placeholder="TC Kimlik" />
             <input name="PasaportNo" class="form-control" placeholder="Pasaport No" />
             <input name="DogumTarihi" type="date" class="form-control" />
-            <select name="Cinsiyet" class="form-control">
-                <option value="">Cinsiyet Seç</option>
-                <option value="0">Kadın</option>
-                <option value="1">Erkek</option>
-                <option value="2">Belirtmek istemiyor</option>
+
+            <select name="Cinsiyet" class="form-control" required>
+                <option value="">— Cinsiyet Seç —</option>
+                @foreach (Cinsiyet c in Enum.GetValues(typeof(Cinsiyet)))
+                {
+                    <option value="@((int)c)">
+                        @c.GetDisplayName()
+                    </option>
+                }
             </select>
+
             <input name="Adres" class="form-control" placeholder="Adres" />
+
             <div class="form-check">
-                <input name="YabanciUyrukluMu" type="checkbox" class="form-check-input" id="yabanciCheck" />
-                <label class="form-check-label" for="yabanciCheck">Yabancı Uyruklu?</label>
+                <input name="YabanciUyrukluMu"
+                       type="checkbox"
+                       class="form-check-input"
+                       id="yabanciCheck" />
+                <label class="form-check-label" for="yabanciCheck">
+                    Yabancı Uyruklu?
+                </label>
             </div>
+
             <button type="submit" class="btn btn-success mt-2">Kaydet</button>
         </form>
     </div>
-    <!--müşteri listesi-->
+
     <div class="col-md-6">
         <h4 class="text-primary">Kayıtlı Müşteriler</h4>
         <table class="table table-bordered">
             <thead>
-                <tr><th>Ad</th><th>Soyad</th><th>Email</th><th>İşlem</th></tr>
+                <tr>
+                    <th>Ad</th>
+                    <th>Soyad</th>
+                    <th>Email</th>
+                    <th>İşlem</th>
+                </tr>
             </thead>
             <tbody>
                 @foreach (var m in Model.MusteriListesi)
@@ -45,8 +66,14 @@
                         <td>@m.Soyad</td>
                         <td>@m.Email</td>
                         <td>
-                            <button class="btn btn-sm btn-warning duzenle-btn" data-id="@m.MusteriId">Düzenle</button>
-                            <button class="btn btn-sm btn-danger sil-btn" data-id="@m.MusteriId">Sil</button>
+                            <button class="btn btn-sm btn-warning duzenle-btn"
+                                    data-id="@m.MusteriId">
+                                Düzenle
+                            </button>
+                            <button class="btn btn-sm btn-danger sil-btn"
+                                    data-id="@m.MusteriId">
+                                Sil
+                            </button>
                         </td>
                     </tr>
                 }

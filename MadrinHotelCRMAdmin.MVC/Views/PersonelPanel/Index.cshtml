@@ -1,5 +1,4 @@
 ﻿@using System.Security.Claims
-
 @{
     ViewData["Title"] = "Personel Panel - Yönetim Ekranı";
     var kullaniciAd = User.Identity?.Name ?? "Personel";
@@ -15,10 +14,6 @@
         align-items: center;
         justify-content: space-between;
     }
-
-        .top-navbar .btn {
-            color: white;
-        }
 
     #solMenu {
         position: relative;
@@ -44,23 +39,18 @@
     </form>
 </div>
 
-<!-- SAYFA İSKELETİ -->
+<!-- SAYFA -->
 <div class="container-fluid">
     <div class="row">
         <!-- SOL MENÜ -->
         <div id="solMenu" class="col-md-3 bg-light vh-100 shadow-sm">
             <h4 class="mt-4 text-center text-primary">Personel Panel</h4>
             <ul class="list-group list-group-flush mt-4">
-                <li class="list-group-item list-group-item-action"
-                    onclick="loadComponent('Personel_Musteriler')">👥 Müşteri Yönetimi</li>
-                <li class="list-group-item list-group-item-action"
-                    onclick="loadComponent('Personel_Rezervasyon')">📝 Rezervasyonlar</li>
-                <li class="list-group-item list-group-item-action"
-                    onclick="loadComponent('Personel_OdaDurumlari')">🛏️ Oda Durumları</li>
-                <li class="list-group-item list-group-item-action"
-                    onclick="loadComponent('Personel_Bilgilerim')">🙋‍♂️ Bilgilerim</li>
+                <li class="list-group-item" onclick="loadComponent('Personel_Musteriler')">👥 Müşteri Yönetimi</li>
+                <li class="list-group-item" onclick="loadComponent('Personel_Rezervasyon')">📝 Rezervasyonlar</li>
+                <li class="list-group-item" onclick="loadComponent('Personel_OdaDurumlari')">🛏️ Oda Durumları</li>
+                <li class="list-group-item" onclick="loadComponent('Personel_Bilgilerim')">🙋‍♂️ Bilgilerim</li>
             </ul>
-
             <form asp-controller="Auth" asp-action="Cikis" method="post" class="mt-4 text-center">
                 @Html.AntiForgeryToken()
                 <button type="submit" class="btn btn-outline-danger">Çıkış Yap</button>
@@ -74,6 +64,7 @@
             <p>Sol menüden bir işlem seçerek yönetim ekranını kullanabilirsin.</p>
         </div>
 
+        <!-- CLAIM BİLGİLERİ -->
         <div class="mt-3">
             <h6 class="text-secondary">Claim Bilgileri</h6>
             <ul class="text-muted">
@@ -89,107 +80,133 @@
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(function() {
+        $(function(){
             // Menü aç/kapa
             $('#menuToggle').click(() => $('#solMenu').toggleClass('gizle'));
 
-            // Durum filtresi
-            $(document).on('change', '#durumFilter', function() {
-                var secilen = $(this).val();
-                $('.oda-card').each(function() {
-                    var durum = $(this).data('durum').toString();
-                    if (!secilen || durum === secilen) {
-                        $(this).show();
-                    } else {
-                        $(this).hide();
-                    }
-                });
+            // Boş oda kartındaki Rezervasyon Oluştur butonu
+            $(document).on('click', '.rezervasyon-btn', function(){
+                const odaId = $(this).closest('.oda-card').data('odaid');
+                loadComponentUrl(`/PersonelPanel/OdaRezervasyonForm?odaId=${odaId}`);
             });
         });
 
-            function loadComponent(componentName) {
-             var url = componentName === 'Personel_OdaDurumlari'
-            ? '/PersonelPanel/OdaDurumlari'
-            : '/ViewComponent/' + componentName;
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(html) {
-                    $('#panelContent').html(html);
+        // Genel component yükleyici
+        function loadComponent(name) {
+            const url = name === 'Personel_OdaDurumlari'
+                ? '/PersonelPanel/OdaDurumlari'
+                : '/ViewComponent/' + name;
+            $.get(url, html => {
+                $('#panelContent').html(html);
 
-                    if (componentName === 'Personel_Musteriler') {
-                        setTimeout(bindMusteriEvents, 100);
-                    }
-                    else if (componentName === 'Personel_OdaDurumlari') {
-                    
-                        setTimeout(() => {
-                            $('#durumFilter').val('').trigger('change');
-                        }, 100);
-                    }
-                },
-                error: function() {
-                    $('#panelContent').html(
-                        '<div class="alert alert-danger">İçerik yüklenirken hata oluştu.</div>'
-                    );
+                if (name === 'Personel_OdaDurumlari') {
+                    // Durum filtresini sıfırla ve çalıştır
+                    $('#durumFilter').val('').trigger('change');
                 }
+                if (name === 'Personel_Musteriler') {
+                    bindMusteriEvents();
+                    // Form butonunu varsayılan halline getir
+                    $('#kayitForm button[type=submit]').text('Kaydet');
+                }
+            }).fail(() => {
+                $('#panelContent').html('<div class="alert alert-danger">Yüklenirken hata oluştu.</div>');
             });
         }
 
-        function bindMusteriEvents() {
+        // URL’den partial view yükleme (rezervasyon formu vb.)
+        function loadComponentUrl(url) {
+            $.get(url, html => $('#panelContent').html(html))
+             .fail(() => $('#panelContent').html('<div class="alert alert-danger">Yüklenirken hata oluştu.</div>'));
+        }
+
+        // Oda Durumları filtresi
+        $(document).on('change', '#durumFilter', function() {
+            const secilen = $(this).val();
+            $('.oda-card').each(function() {
+                const durum = $(this).data('durum').toString();
+                (!secilen || durum === secilen) ? $(this).show() : $(this).hide();
+            });
+        });
+
+        // Müşteri listesini JS’e aktar
+        function bindMusteriEvents(){
             try {
                 window.musteriler = JSON.parse($('#musteri-data').val());
-            } catch (err) {
-                console.error('Müşteri verileri yüklenemedi:', err);
+            } catch {
                 window.musteriler = [];
             }
         }
 
-        // Müşteri form submit
-        $(document).on('submit', '#kayitForm', function(e) {
+        // — Ekle / Güncelle
+        $(document).on('submit', '#kayitForm', function(e){
             e.preventDefault();
-            var form = new FormData(this);
-            var id = form.get('MusteriId');
-            var url = id && id !== '0'
-                ? '/PersonelPanel/MusteriGuncelle/' + id
-                : '/PersonelPanel/MusteriKaydet';
+            const dto = {
+                MusteriId:        $('input[name=MusteriId]').val(),
+                Ad:               $('input[name=Ad]').val(),
+                Soyad:            $('input[name=Soyad]').val(),
+                Email:            $('input[name=Email]').val(),
+                TelNo:            $('input[name=TelNo]').val(),
+                TcNo:             $('input[name=TcNo]').val(),
+                PasaportNo:       $('input[name=PasaportNo]').val(),
+                DogumTarihi:      $('input[name=DogumTarihi]').val(),
+                Cinsiyet:         parseInt($('select[name=Cinsiyet]').val() || '0'),
+                Adres:            $('input[name=Adres]').val(),
+                YabanciUyrukluMu: $('#yabanciCheck').is(':checked')
+            };
+            const isUpdate = dto.MusteriId && dto.MusteriId !== "0";
+            const url      = isUpdate ? '/PersonelPanel/MusteriGuncelle' : '/PersonelPanel/MusteriKaydet';
 
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: form,
-                processData: false,
-                contentType: false,
-                success: () => loadComponent('Personel_Musteriler'),
-                error: xhr => alert('Hata: ' + xhr.responseText)
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dto)
+            })
+            .then(r => {
+                if (r.ok) {
+                    loadComponent('Personel_Musteriler');
+                    $('#kayitForm button[type=submit]').text('Kaydet');
+                } else {
+                    return r.text().then(t => alert('Hata: ' + t));
+                }
             });
         });
 
-        // Sil ve Düzenle butonları
-        $(document).on('click', '.sil-btn', function() {
-            var id = $(this).data('id');
-            $.post('/PersonelPanel/MusteriSil', { id })
-                .done(() => loadComponent('Personel_Musteriler'))
-                .fail(() => alert('Müşteri silinemedi.'));
+        // — Sil (POST)
+        $(document).on('click', '.sil-btn', function(){
+            const id = $(this).data('id');
+            if (!confirm("Silmek istediğine emin misin?")) return;
+            fetch('/PersonelPanel/MusteriSil', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(id)
+            })
+            .then(r => {
+                if (r.ok) loadComponent('Personel_Musteriler');
+                else return r.text().then(t => alert('Silme hatası: ' + t));
+            });
         });
 
-        $(document).on('click', '.duzenle-btn', function() {
-            var id = $(this).data('id');
-            var m = window.musteriler.find(x => x.MusteriId === id);
+        // — Düzenle: formu doldur + butonu Güncelle yap
+        $(document).on('click', '.duzenle-btn', function(){
+            const id = $(this).data('id');
+            const m  = window.musteriler.find(x => x.MusteriId === id);
             if (!m) return;
 
-            $('input[name="MusteriId"]').val(m.MusteriId);
-            $('input[name="Ad"]').val(m.Ad);
-            $('input[name="Soyad"]').val(m.Soyad);
-            $('input[name="Email"]').val(m.Email);
-            $('input[name="TelNo"]').val(m.TelNo);
-            $('input[name="TcNo"]').val(m.TcNo || '');
-            $('input[name="PasaportNo"]').val(m.PasaportNo || '');
-            $('input[name="DogumTarihi"]').val(
-                m.DogumTarihi ? m.DogumTarihi.split('T')[0] : ''
-            );
-            $('select[name="Cinsiyet"]').val(m.Cinsiyet);
-            $('input[name="Adres"]').val(m.Adres);
-            $('#YabanciUyrukluMu').prop('checked', m.YabanciUyrukluMu);
+            // Formu doldur
+            $('input[name=MusteriId]').val(m.MusteriId);
+            $('input[name=Ad]').val(m.Ad);
+            $('input[name=Soyad]').val(m.Soyad);
+            $('input[name=Email]').val(m.Email);
+            $('input[name=TelNo]').val(m.TelNo);
+            $('input[name=TcNo]').val(m.TcNo || '');
+            $('input[name=PasaportNo]').val(m.PasaportNo || '');
+            $('input[name=DogumTarihi]').val(m.DogumTarihi?.split('T')[0] || '');
+            $('select[name=Cinsiyet]').val(m.Cinsiyet);
+            $('input[name=Adres]').val(m.Adres);
+            $('#yabanciCheck').prop('checked', m.YabanciUyrukluMu);
+
+            // Buton metnini Güncelle yap
+            $('#kayitForm button[type=submit]').text('Güncelle');
         });
     </script>
 }
