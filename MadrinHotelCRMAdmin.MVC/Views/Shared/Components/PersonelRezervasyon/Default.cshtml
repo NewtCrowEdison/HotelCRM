@@ -1,156 +1,162 @@
-﻿@using MadrinHotelCRM.DTO
-@using MadrinHotelCRM.DTO.DTOModels
+﻿@using MadrinHotelCRM.DTO.DTOModels
 @model RezervasyonEkleViewModel
 
 <div class="row">
+    <!-- SOL: Rezervasyon Formu -->
+    <div class="col-md-6">
+        <h4 class="text-success">Yeni Rezervasyon</h4>
+        <form id="rezervasyonForm" class="p-3 border rounded bg-white">
+            <!-- 0) Oda bilgisi ve gizli OdaId -->
+            <div class="mb-2">
+                <label class="form-label">Oda</label>
+                <input type="text"
+                       class="form-control"
+                       readonly
+                       value="@( Model.OdaListesi.FirstOrDefault(o=>o.OdaId == Model.YeniRezervasyon.OdaId)?.OdaNumarasi.ToString() ?? "" )" />
+                <input type="hidden" name="OdaId" value="@Model.YeniRezervasyon.OdaId" />
+            </div>
 
-	<!-- SOL: Rezervasyon Formu -->
-	<div class="col-md-6">
-		<h4 class="text-success">Yeni Rezervasyon</h4>
-		<form id="rezervasyonForm" class="p-3 border rounded shadow-sm bg-white">
-			<input type="hidden" name="RezervasyonId" value="0" />
-			<div class="mb-2">
-				<label class="form-label">Müşteri</label>
-				<select name="MusteriId" class="form-control" required>
-					<option value="">Seçiniz</option>
-					@foreach (var m in Model.MusteriListesi)
-					{
-						<option value="@m.MusteriId">@m.Ad @m.Soyad</option>
-					}
-				</select>
-			</div>
-			<div class="mb-2">
-				<label class="form-label">Tarife</label>
-				<select name="TarifeId" class="form-control" required>
-					<option value="">Seçiniz</option>
-					@foreach (var t in Model.TarifeListesi)
-					{
-						<option value="@t.TarifeId">@t.TarifeAdi - @t.Fiyat ₺</option>
-					}
-				</select>
-			</div>
-			<div class="mb-2">
-				<label class="form-label">Başlangıç Tarihi</label>
-				<input type="date" name="BaslangicTarihi" class="form-control" required />
-			</div>
-			<div class="mb-2">
-				<label class="form-label">Bitiş Tarihi</label>
-				<input type="date" name="BitisTarihi" class="form-control" required />
-			</div>
-			<div class="mb-2">
-				<label class="form-label">Yetişkin</label>
-				<input type="number" name="YetiskinSayisi" class="form-control" required />
-			</div>
-			<div class="mb-2">
-				<label class="form-label">Çocuk</label>
-				<input type="number" name="CocukSayisi" class="form-control" required />
-			</div>
+            <!-- 1) Müşteri seç veya yeni ekle -->
+            <div class="mb-2">
+                <label class="form-label">Var Olan Müşteri</label>
+                <select name="MusteriId" class="form-control">
+                    <option value="">— Seçiniz —</option>
+                    @foreach (var m in Model.MusteriListesi)
+                    {
+                        <option value="@m.MusteriId">@m.Ad @m.Soyad</option>
+                    }
+                </select>
+            </div>
+            <p class="text-center text-muted">— veya yeni müşteri —</p>
+            <div class="mb-2"><input type="text" name="Ad" class="form-control" placeholder="Ad" /></div>
+            <div class="mb-2"><input type="text" name="Soyad" class="form-control" placeholder="Soyad" /></div>
+            <div class="mb-2"><input type="email" name="Email" class="form-control" placeholder="Email" /></div>
+            <div class="mb-2"><input type="tel" name="TelNo" class="form-control" placeholder="Telefon" /></div>
 
-			<button type="submit" class="btn btn-success mt-2">Rezervasyon Ekle</button>
-		</form>
-	</div>
+            <!-- 2) Tarife seçimi -->
+            <div class="mb-2">
+                <label class="form-label">Tarife</label>
+                <select name="TarifeId" class="form-control" required>
+                    <option value="">— Seçiniz —</option>
+                    @foreach (var t in Model.TarifeListesi)
+                    {
+                        <option value="@t.TarifeId">@t.TarifeAdi — @t.Fiyat ₺</option>
+                    }
+                </select>
+            </div>
 
+            <!-- 3) Tarihler & kişi sayıları -->
+            <div class="mb-2">
+                <label class="form-label">Başlangıç Tarihi</label>
+                <input type="date" name="BaslangicTarihi" class="form-control" required />
+            </div>
+            <div class="mb-2">
+                <label class="form-label">Bitiş Tarihi</label>
+                <input type="date" name="BitisTarihi" class="form-control" required />
+            </div>
+            <div class="mb-2"><input type="number" name="YetiskinSayisi" class="form-control" placeholder="Yetişkin" required /></div>
+            <div class="mb-2"><input type="number" name="CocukSayisi" class="form-control" placeholder="Çocuk" required /></div>
 
-	<!-- SAĞ: Listeleme -->
-	<div class="col-md-6">
-		<h4 class="text-primary">Rezervasyonlar</h4>
-		<table class="table table-striped table-bordered">
-			<thead class="table-light">
-				<tr>
-					<th>Müşteri</th>
-					<th>Başlangıç</th>
-					<th>Bitiş</th>
-					<th>Yetişkin</th>
-					<th>Çocuk</th>
-					<th>İşlem</th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var r in Model.RezervasyonListesi)
-				{
-					<tr>
-						<td>@r.Musteri</td>
-						<td>@r.BaslangicTarihi.ToShortDateString()</td>
-						<td>@r.BitisTarihi.ToShortDateString()</td>
-						<td>@r.YetiskinSayisi</td>
-						<td>@r.CocukSayisi</td>
-						<td>
-							<button class="btn btn-warning btn-sm rez-duzenle" data-id="@r.RezervasyonId">Düzenle</button>
-							<button class="btn btn-danger btn-sm rez-iptal" data-id="@r.RezervasyonId">İptal</button>
-						</td>
-					</tr>
-				}
-			</tbody>
-		</table>
-	</div>
+            <button type="submit" class="btn btn-success mt-2">Kaydet</button>
+        </form>
+    </div>
 
+    <!-- SAĞ: Mevcut Rezervasyonlar -->
+    <div class="col-md-6">
+        <h4 class="text-primary">Rezervasyonlar</h4>
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Oda</th>
+                    <th>Müşteri</th>
+                    <th>Başlangıç</th>
+                    <th>Bitiş</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in Model.RezervasyonListesi)
+                {
+                    <tr>
+                        <td>@r.RezervasyonId</td>
+                        <td>Oda @r.OdaId</td>
+                        <td>@r.Musteri.Ad @r.Musteri.Soyad</td>
+                        <td>@r.BaslangicTarihi.ToShortDateString()</td>
+                        <td>@r.BitisTarihi.ToShortDateString()</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger rez-iptal" data-id="@r.RezervasyonId">
+                                İptal
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 @section Scripts {
-	<script>
-		$(document).ready(function () {
-			$("#rezervasyonForm").submit(function (e) {
-				e.preventDefault();
+    <script>
+        $(function(){
+         
+          $('#rezervasyonForm').submit(async function(e){
+            e.preventDefault();
+            var f = $(this);
 
-				var formData = {
-					OdaId: $("select[name='OdaId']").val(),
-					MusteriId: $("select[name='MusteriId']").val(),
-					TarifeId: $("select[name='TarifeId']").val(),
-					BaslangicTarihi: $("input[name='BaslangicTarihi']").val(),
-					BitisTarihi: $("input[name='BitisTarihi']").val(),
-					YetiskinSayisi: $("input[name='YetiskinSayisi']").val(),
-					CocukSayisi: $("input[name='CocukSayisi']").val()
-				};
+            // Eğer var olan müşteri seçilmemişse "yeni müşteri" DTO
+            var musteriId = f.find('[name=MusteriId]').val();
+            if (!musteriId) {
+              var musteriDto = {
+                Ad:    f.find('[name=Ad]').val(),
+                Soyad: f.find('[name=Soyad]').val(),
+                Email: f.find('[name=Email]').val(),
+                TelNo: f.find('[name=TelNo]').val()
+              };
+              let res1 = await fetch('/PersonelPanel/MusteriKaydet', {
+                method:'POST',
+                headers:{ 'Content-Type':'application/json' },
+                body: JSON.stringify(musteriDto)
+              });
+              if (!res1.ok) {
+                return alert('Müşteri kaydı başarısız: '+await res1.text());
+              }
+              var created = await res1.json();
+              musteriId = created.MusteriId;
+            }
 
-					   $.ajax({
-						type: "POST",
-						url: "https://localhost:7225/api/rezervasyon", // senin port numarana göre
-						data: JSON.stringify(formData),
-						contentType: "application/json",
-						success: function (msg) {
-						alert("✔️ Rezervasyon başarıyla eklendi!");
-						location.reload();
-			},
-						error: function (xhr) {
-						alert("❌ Hata oluştu: " + xhr.responseText);
-			}
-				});
+            // rezervasyon DTO
+            var rezDto = {
+              OdaId:           parseInt(f.find('[name=OdaId]').val()),
+              MusteriId:       parseInt(musteriId),
+              TarifeId:        parseInt(f.find('[name=TarifeId]').val()),
+              BaslangicTarihi: f.find('[name=BaslangicTarihi]').val(),
+              BitisTarihi:     f.find('[name=BitisTarihi]').val(),
+              YetiskinSayisi:  parseInt(f.find('[name=YetiskinSayisi]').val()),
+              CocukSayisi:     parseInt(f.find('[name=CocukSayisi]').val())
+            };
 
-			});
-		});
+            let res2 = await fetch('/PersonelPanel/RezervasyonKaydet', {
+              method:'POST',
+              headers:{ 'Content-Type':'application/json' },
+              body: JSON.stringify(rezDto)
+            });
+            if (!res2.ok) {
+              return alert('Rezervasyon başarısız: '+await res2.text());
+            }
 
-		var rezervasyonlar = @Html.Raw(Json.Serialize(Model.RezervasyonListesi));
+            alert('Rezervasyon başarıyla oluşturuldu!');
+            location.reload();
+          });
 
-		// DÜZENLE
-		$(document).on("click", ".rez-duzenle", function () {
-			const id = $(this).data("id");
-			const rez = rezervasyonlar.find(r => r.RezervasyonId === id);
-			if (!rez) return;
-
-			$("input[name='RezervasyonId']").val(rez.RezervasyonId); // gizli input ekle form içine
-			$("select[name='MusteriId']").val(rez.MusteriId);
-			$("select[name='TarifeId']").val(rez.TarifeId);
-			$("input[name='BaslangicTarihi']").val(rez.BaslangicTarihi.split("T")[0]);
-			$("input[name='BitisTarihi']").val(rez.BitisTarihi.split("T")[0]);
-			$("input[name='YetiskinSayisi']").val(rez.YetiskinSayisi);
-			$("input[name='CocukSayisi']").val(rez.CocukSayisi);
-		});
-
-		// İPTAL
-		$(document).on("click", ".rez-iptal", function () {
-			const id = $(this).data("id");
-			if (!confirm("Bu rezervasyonu iptal etmek istediğine emin misin?")) return;
-
-			$.ajax({
-				type: "PUT",
-				url: `/PersonelPanel/RezervasyonIptal/${id}`,
-				success: () => location.reload(),
-				error: (xhr) => alert("İptal başarısız: " + xhr.responseText)
-			});
-		});
-
-	</script>
-
-
+          // Rezervasyon iptal
+          $(document).on('click','.rez-iptal', function(){
+            if(!confirm('Bu rezervasyonu iptal etmek istediğine emin misin?'))
+              return;
+            fetch(`/PersonelPanel/RezervasyonIptal/${$(this).data('id')}`,{ method:'PUT' })
+              .then(r=> r.ok ? location.reload() : r.text().then(t=>alert(t)));
+          });
+        });
+    </script>
 }
 

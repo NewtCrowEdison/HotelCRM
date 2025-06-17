@@ -55,6 +55,7 @@ namespace MadrinHotelCRM.DTO.DTOModels
         public string OdaNumarasi { get; set; } = string.Empty;
 
         [Required]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public OdaDurum Durum { get; set; }
 
         // Mevcut (kaydedilmiş) görsel URL’si

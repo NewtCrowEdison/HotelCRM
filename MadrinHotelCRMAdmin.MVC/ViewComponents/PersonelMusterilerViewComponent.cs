@@ -1,5 +1,8 @@
-﻿using MadrinHotelCRM.DTO.DTOModels;
-using MadrinHotelCRM.Services.Interfaces;
+﻿using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
+using MadrinHotelCRM.DTO.DTOModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MadrinHotelCRMAdmin.MVC.ViewComponents
@@ -8,27 +11,27 @@ namespace MadrinHotelCRMAdmin.MVC.ViewComponents
     {
         private readonly HttpClient _api;
 
-        public PersonelMusterilerViewComponent(IHttpClientFactory factory)
+        public PersonelMusterilerViewComponent(IHttpClientFactory httpFactory)
         {
-            _api = factory.CreateClient("ApiClient");
+            _api = httpFactory.CreateClient("ApiClient");
         }
+
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            List<MusteriDTO>? musteriListesi;
-
+            List<MusteriDTO> musteriler;
             try
             {
-                musteriListesi = await _api.GetFromJsonAsync<List<MusteriDTO>>("api/musteri");
+                musteriler = await _api.GetFromJsonAsync<List<MusteriDTO>>("api/musteri");
             }
             catch
             {
-                musteriListesi = new(); // Hata olursa boş liste
+                musteriler = new List<MusteriDTO>(); // API hatası durumunda boş liste
             }
 
             var model = new MusteriEkleViewModel
             {
-                MusteriListesi = musteriListesi ?? new List<MusteriDTO>(),
-               
+                MusteriListesi = musteriler,
+                // Gerekirse diğer ViewModel alanlarını da burada doldurun
             };
 
             return View(model);

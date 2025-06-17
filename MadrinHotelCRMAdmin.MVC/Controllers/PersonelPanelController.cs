@@ -21,18 +21,17 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
         [HttpGet]
         public IActionResult Index() => View();
 
-    
+        //Oda Durumları ViewComponent çağrısı
         [HttpGet]
         public IActionResult OdaDurumlari()
-        {
-           
-            return ViewComponent("PersonelOdaDurumlari");
-        }
+            => ViewComponent("PersonelOdaDurumlari");
 
 
         // --- MÜŞTERİ İŞLEMLERİ ---
+
+        // POST: /PersonelPanel/MusteriKaydet
         [HttpPost]
-        public async Task<IActionResult> MusteriKaydet(MusteriDTO dto)
+        public async Task<IActionResult> MusteriKaydet([FromBody] MusteriDTO dto)
         {
             if (!ModelState.IsValid)
             {
@@ -42,21 +41,26 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
                 return BadRequest($"Hatalar: {string.Join(" | ", errors)}");
             }
 
-            var response = await _api.PostAsJsonAsync("api/authorization/kayit", dto);
+            // doğrudan api/musteri endpoint’ine POST
+            var response = await _api.PostAsJsonAsync("api/musteri", dto);
             if (response.IsSuccessStatusCode)
-                return Ok("Müşteri kaydı başarılı.");
+            {
+                var created = await response.Content.ReadFromJsonAsync<MusteriDTO>();
+                return Ok(created);
+            }
 
             var apiError = await response.Content.ReadAsStringAsync();
             return BadRequest($"API Hatası: {apiError}");
         }
 
         [HttpPost]
-        public async Task<IActionResult> MusteriGuncelle(MusteriDTO dto)
+        public async Task<IActionResult> MusteriGuncelle([FromBody] MusteriDTO dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest("Model geçersiz!");
 
-            var response = await _api.PutAsJsonAsync("api/musteri", dto);
+            // PUT api/musteri/{id}
+            var response = await _api.PutAsJsonAsync($"api/musteri/{dto.MusteriId}", dto);
             if (response.IsSuccessStatusCode)
                 return Ok("Güncelleme başarılı!");
 
@@ -65,7 +69,7 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> MusteriSil(int id)
+        public async Task<IActionResult> MusteriSil([FromBody] int id)
         {
             var response = await _api.DeleteAsync($"api/musteri/{id}");
             if (response.IsSuccessStatusCode)
@@ -117,7 +121,6 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
             var response = await _api.PutAsJsonAsync("api/personel", dto);
             if (response.IsSuccessStatusCode)
                 return RedirectToAction("Personel_Bilgilerim");
-
             return BadRequest("Güncelleme başarısız.");
         }
 
@@ -136,6 +139,29 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
 
             ModelState.AddModelError("", "Şifre güncelleme başarısız.");
             return RedirectToAction("Personel_Bilgilerim");
+        }
+
+
+        // GET /PersonelPanel/OdaRezervasyonForm?odaId=123
+        [HttpGet]
+        public async Task<IActionResult> OdaRezervasyonForm(int odaId)
+        {
+            var tarifeler = await _api.GetFromJsonAsync<List<TarifeDTO>>("api/tarife");
+            var musteriler = await _api.GetFromJsonAsync<List<MusteriDTO>>("api/musteri");
+            var rezervasyonlar = await _api.GetFromJsonAsync<List<RezervasyonDTO>>("api/rezervasyon");
+            var odalar = await _api.GetFromJsonAsync<List<OdaDTO>>("api/oda");
+            var secilenOda = odalar.FirstOrDefault(o => o.OdaId == odaId);
+
+            var vm = new RezervasyonEkleViewModel
+            {
+                YeniRezervasyon = new RezervasyonDTO { OdaId = odaId },
+                TarifeListesi = tarifeler,
+                MusteriListesi = musteriler,
+                RezervasyonListesi = rezervasyonlar,
+                OdaListesi = new List<OdaDTO> { secilenOda }
+            };
+
+            return PartialView("PersonelRezervasyon", vm);
         }
     }
 }

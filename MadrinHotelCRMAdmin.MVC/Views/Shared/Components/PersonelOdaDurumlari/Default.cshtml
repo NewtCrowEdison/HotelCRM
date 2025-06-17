@@ -28,7 +28,7 @@
     </select>
 </div>
 
-<div class="row" id="odaList">
+@* <div class="row" id="odaList">
     @foreach (var oda in Model)
     {
         var renk = renkGetir(oda.Durum);
@@ -40,6 +40,32 @@
                     <p class="card-text">
                         Durum: <span class="@renk">@oda.Durum.GetDisplayName()</span>
                     </p>
+                </div>
+            </div>
+        </div>
+    }
+</div> *@
+
+<div class="row" id="odaList">
+    @foreach (var oda in Model)
+    {
+        var renk = renkGetir(oda.Durum);
+        <div class="col-md-4 oda-card mb-3" data-durum="@((int)oda.Durum)" data-odaid="@oda.OdaId">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Oda @oda.OdaNumarasi</h5>
+                    <p class="card-text">Tip: @oda.OdaTipiAdi</p>
+                    <p class="card-text">
+                        Durum: <span class="@renk">@oda.Durum.GetDisplayName()</span>
+                    </p>
+
+                    @* Eğer oda boşsa rezervasyon butonu göster *@
+                    @if (oda.Durum == OdaDurum.Bos)
+                    {
+                        <button class="btn btn-sm btn-success rezervasyon-btn">
+                            Rezervasyon Oluştur
+                        </button>
+                    }
                 </div>
             </div>
         </div>
