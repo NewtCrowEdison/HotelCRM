@@ -8,12 +8,6 @@
     var apiBase = (string)ViewBag.ApiBase ?? "";
 }
 
-
-@{
-    ViewData["Title"] = "Oda Yönetimi";
-    var apiBase = (string)ViewBag.ApiBase ?? "";
-}
-
 <script>
     // Global model
     window.odalar = @Html.Raw(JsonSerializer.Serialize(Model));
