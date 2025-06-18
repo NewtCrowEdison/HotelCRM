@@ -35,12 +35,29 @@ namespace MadrinHotelCRM.API.Controllers
 
         // GET: api/Oda
         [HttpGet]
-        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             try
             {
                 var odalar = await _odaService.GetAllAsync();
+
+                foreach (var oda in odalar)
+                {
+                    if (!string.IsNullOrWhiteSpace(oda.GorselUrl) && !oda.GorselUrl.StartsWith("http"))
+                        oda.GorselUrl = $"{_baseUrl}/uploads/{oda.GorselUrl}";
+
+                    // Galeri
+                    if (oda.FotografGaleriListesi != null)
+                    {
+                        for (int i = 0; i < oda.FotografGaleriListesi.Count; i++)
+                        {
+                            var galeriItem = oda.FotografGaleriListesi[i];
+                            if (!string.IsNullOrWhiteSpace(galeriItem) && !galeriItem.StartsWith("http"))
+                                oda.FotografGaleriListesi[i] = $"{_baseUrl}/uploads/{galeriItem}";
+                        }
+                    }
+                }
+
                 return Ok(odalar);
             }
             catch (Exception ex)
@@ -50,12 +67,29 @@ namespace MadrinHotelCRM.API.Controllers
             }
         }
 
+
         // GET: api/Oda/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             var oda = await _odaService.GetByIdAsync(id);
             if (oda == null) return NotFound();
+
+            // Kapak
+            if (!string.IsNullOrWhiteSpace(oda.GorselUrl) && !oda.GorselUrl.StartsWith("http"))
+                oda.GorselUrl = $"{_baseUrl}/uploads/{oda.GorselUrl}";
+
+            // Galeri
+            if (oda.FotografGaleriListesi != null)
+            {
+                for (int i = 0; i < oda.FotografGaleriListesi.Count; i++)
+                {
+                    var galeriItem = oda.FotografGaleriListesi[i];
+                    if (!string.IsNullOrWhiteSpace(galeriItem) && !galeriItem.StartsWith("http"))
+                        oda.FotografGaleriListesi[i] = $"{_baseUrl}/uploads/{galeriItem}";
+                }
+            }
+
             return Ok(oda);
         }
 
