@@ -1,8 +1,13 @@
-﻿@using System.Security.Claims
+﻿@model List<MadrinHotelCRM.DTO.DTOModels.OdaDTO>
+@using System.Security.Claims
+@using MadrinHotelCRM.Entities.Enums
+@using MadrinHotelCRM.ExtensionMethods
+
 @{
     ViewData["Title"] = "Personel Panel - Yönetim Ekranı";
     var kullaniciAd = User.Identity?.Name ?? "Personel";
     var kullaniciId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "Bilinmiyor";
+    var apiBase = ViewBag.ApiBase as string ?? "";
 }
 
 <style>
@@ -18,7 +23,7 @@
     #solMenu {
         position: relative;
         left: 0;
-        transition: left 0.9s ease, opacity 0.9s ease;
+        transition: left 0.3s ease, opacity 0.3s ease;
         opacity: 1;
         z-index: 100;
     }
@@ -39,17 +44,25 @@
     </form>
 </div>
 
-<!-- SAYFA -->
+<!-- SAYFA İÇERİĞİ -->
 <div class="container-fluid">
     <div class="row">
         <!-- SOL MENÜ -->
         <div id="solMenu" class="col-md-3 bg-light vh-100 shadow-sm">
             <h4 class="mt-4 text-center text-primary">Personel Panel</h4>
             <ul class="list-group list-group-flush mt-4">
-                <li class="list-group-item" onclick="loadComponent('Personel_Musteriler')">👥 Müşteri Yönetimi</li>
-                <li class="list-group-item" onclick="loadComponent('Personel_Rezervasyon')">📝 Rezervasyonlar</li>
-                <li class="list-group-item" onclick="loadComponent('Personel_OdaDurumlari')">🛏️ Oda Durumları</li>
-                <li class="list-group-item" onclick="loadComponent('Personel_Bilgilerim')">🙋‍♂️ Bilgilerim</li>
+                <li class="list-group-item" onclick="loadComponent('Personel_Musteriler')">
+                    👥 Müşteri Yönetimi
+                </li>
+                <li class="list-group-item" onclick="loadComponent('Personel_Rezervasyon')">
+                    📝 Rezervasyonlar
+                </li>
+                <li class="list-group-item" onclick="loadComponent('Personel_OdaDurumlari')">
+                    🛏️ Oda Durumları
+                </li>
+                <li class="list-group-item" onclick="loadComponent('Personel_Bilgilerim')">
+                    🙋‍♂️ Bilgilerim
+                </li>
             </ul>
             <form asp-controller="Auth" asp-action="Cikis" method="post" class="mt-4 text-center">
                 @Html.AntiForgeryToken()
@@ -57,124 +70,253 @@
             </form>
         </div>
 
-        <!-- SAĞ PANEL -->
+        <!-- ANA PANEL (ViewComponent içerikleri buraya yüklenecek) -->
         <div class="col-md-9 p-4" id="panelContent">
             <h5 class="text-muted">Hoş geldin @kullaniciAd 👋</h5>
             <p>Sol menüden bir işlem seçerek yönetim ekranını kullanabilirsin.</p>
         </div>
+    </div>
+</div>
+
+<!-- Rezervasyon Detay Modal (Index içinde sabit olmalı) -->
+<div class="modal fade" id="rezModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Rezervasyon Detayları</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <table class="table table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Müşteri</th>
+                            <th>Başlangıç</th>
+                            <th>Bitiş</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rezList">
+                        <!-- JavaScript ile doldurulacak -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-
+</div>
 @section Scripts {
+ @*    <!-- API kökünü doğru ayarlıyoruz -->
+    <script>
+        window.apiBaseUrl = ""; // fetch kullanılırken "/api/..." olarak çağrılacak
+    </script> *@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(function(){
-            $('#menuToggle').click(() => $('#solMenu').toggleClass('gizle'));
-            });
+        window.apiBaseUrl = '@apiBase';
+        $(function() {
+          // Menü butonu
+          $('#menuToggle').click(() => $('#solMenu').toggleClass('gizle'));
+        });
 
-        // Genel component yükleyici
+        // ViewComponent yükleyici
         function loadComponent(name) {
-            const url = name === 'Personel_OdaDurumlari'
-                ? '/PersonelPanel/OdaDurumlari'
-                : '/ViewComponent/' + name;
+          const url = (name === 'Personel_OdaDurumlari')
+            ? '/PersonelPanel/OdaDurumlari'
+            : '/ViewComponent/' + name;
 
-                if (name === 'Personel_OdaDurumlari') {
-                    $('#durumFilter').val('').trigger('change');
-                }
-                if (name === 'Personel_Musteriler') {
-                    bindMusteriEvents();
-                    $('#kayitForm button[type=submit]').text('Kaydet');
-                }
-            });
+          $('#panelContent').load(url, function(_, status) {
+            if (status === 'error') {
+              $('#panelContent').html(
+                '<div class="alert alert-danger">Yüklenirken hata oluştu.</div>'
+              );
+              return;
+            }
+            // Yükleme sonrası işlemler
+            if (name === 'Personel_OdaDurumlari') {
+              $('#durumFilter').val('').trigger('change');
+            }
+            if (name === 'Personel_Musteriler') {
+              bindMusteriEvents();
+              $('#kayitForm button[type=submit]').text('Kaydet');
+            }
+          });
         }
 
         // Oda Durumları filtresi
         $(document).on('change', '#durumFilter', function() {
-            const secilen = $(this).val();
-            $('.oda-card').each(function() {
-                const durum = $(this).data('durum').toString();
-                (!secilen || durum === secilen) ? $(this).show() : $(this).hide();
-            });
+          const secilen = $(this).val();
+          $('.oda-card').each(function() {
+            const durum = $(this).data('durum').toString();
+            if (!secilen || durum === secilen) {
+              $(this).show();
+            } else {
+              $(this).hide();
+            }
+          });
         });
 
-        // Müşteri listesini JS’e aktar
-        function bindMusteriEvents(){
-            try {
-                window.musteriler = JSON.parse($('#musteri-data').val());
-            } catch {
-                window.musteriler = [];
-            }
+        // Müşteri Event Bağlama
+        function bindMusteriEvents() {
+          try {
+            window.musteriler = JSON.parse($('#musteri-data').val());
+          } catch {
+            window.musteriler = [];
+          }
         }
 
-        // — Ekle / Güncelle
-        $(document).on('submit', '#kayitForm', function(e){
-            e.preventDefault();
-            const dto = {
-                MusteriId:        $('input[name=MusteriId]').val(),
-                Ad:               $('input[name=Ad]').val(),
-                Soyad:            $('input[name=Soyad]').val(),
-                Email:            $('input[name=Email]').val(),
-                TelNo:            $('input[name=TelNo]').val(),
-                TcNo:             $('input[name=TcNo]').val(),
-                PasaportNo:       $('input[name=PasaportNo]').val(),
-                DogumTarihi:      $('input[name=DogumTarihi]').val(),
-                Cinsiyet:         parseInt($('select[name=Cinsiyet]').val() || '0'),
-                Adres:            $('input[name=Adres]').val(),
-                YabanciUyrukluMu: $('#yabanciCheck').is(':checked')
-            };
-            const isUpdate = dto.MusteriId && dto.MusteriId !== "0";
-            const url      = isUpdate ? '/PersonelPanel/MusteriGuncelle' : '/PersonelPanel/MusteriKaydet';
+        // Müşteri Kaydet/Güncelle
+        $(document).on('submit', '#kayitForm', function(e) {
+          e.preventDefault();
+          const dto = {
+            MusteriId:  $('input[name=MusteriId]').val(),
+            Ad:         $('input[name=Ad]').val(),
+            Soyad:      $('input[name=Soyad]').val(),
+            Email:      $('input[name=Email]').val(),
+            TelNo:      $('input[name=TelNo]').val(),
+            TcNo:       $('input[name=TcNo]').val(),
+            PasaportNo: $('input[name=PasaportNo]').val(),
+            DogumTarihi:$('input[name=DogumTarihi]').val(),
+            Cinsiyet:   parseInt($('select[name=Cinsiyet]').val() || '0'),
+            Adres:      $('input[name=Adres]').val(),
+            YabanciUyrukluMu: $('#yabanciCheck').is(':checked')
+          };
+          const isUpdate = dto.MusteriId && dto.MusteriId !== "0";
+          const url = isUpdate
+            ? '/PersonelPanel/MusteriGuncelle'
+            : '/PersonelPanel/MusteriKaydet';
 
-            fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dto)
-            })
-            .then(r => {
-                if (r.ok) {
-                    loadComponent('Personel_Musteriler');
-                    $('#kayitForm button[type=submit]').text('Kaydet');
-                } else {
-                    return r.text().then(t => alert('Hata: ' + t));
-                }
-            });
+          fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dto)
+          })
+          .then(r => {
+            if (r.ok) {
+              loadComponent('Personel_Musteriler');
+              $('#kayitForm button[type=submit]').text('Kaydet');
+            } else {
+              return r.text().then(t => alert('Hata: ' + t));
+            }
+          });
         });
 
-        // — Sil (POST)
-        $(document).on('click', '.sil-btn', function(){
-            const id = $(this).data('id');
-            if (!confirm("Silmek istediğine emin misin?")) return;
-            fetch('/PersonelPanel/MusteriSil', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(id)
-            })
-            .then(r => {
-                if (r.ok) loadComponent('Personel_Musteriler');
-                else return r.text().then(t => alert('Silme hatası: ' + t));
-            });
+        // Müşteri Sil
+        $(document).on('click', '.sil-btn', function() {
+          const id = $(this).data('id');
+          if (!confirm("Silmek istediğine emin misin?")) return;
+          fetch('/PersonelPanel/MusteriSil', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(id)
+          })
+          .then(r => {
+            if (r.ok) loadComponent('Personel_Musteriler');
+            else return r.text().then(t => alert('Silme hatası: ' + t));
+          });
         });
 
-        // — Düzenle: formu doldur + butonu Güncelle yap
-        $(document).on('click', '.duzenle-btn', function(){
-            const id = $(this).data('id');
-            const m  = window.musteriler.find(x => x.MusteriId === id);
-            if (!m) return;
-            // Formu doldur
-            $('input[name=MusteriId]').val(m.MusteriId);
-            $('input[name=Ad]').val(m.Ad);
-            $('input[name=Soyad]').val(m.Soyad);
-            $('input[name=Email]').val(m.Email);
-            $('input[name=TelNo]').val(m.TelNo);
-            $('input[name=TcNo]').val(m.TcNo || '');
-            $('input[name=PasaportNo]').val(m.PasaportNo || '');
-            $('input[name=DogumTarihi]').val(m.DogumTarihi?.split('T')[0] || '');
-            $('select[name=Cinsiyet]').val(m.Cinsiyet);
-            $('input[name=Adres]').val(m.Adres);
-            $('#yabanciCheck').prop('checked', m.YabanciUyrukluMu);
+        // Müşteri Düzenle
+        $(document).on('click', '.duzenle-btn', function() {
+          const id = $(this).data('id');
+          const m = window.musteriler.find(x => x.MusteriId === id);
+          if (!m) return;
+          $('input[name=MusteriId]').val(m.MusteriId);
+          $('input[name=Ad]').val(m.Ad);
+          $('input[name=Soyad]').val(m.Soyad);
+          $('input[name=Email]').val(m.Email);
+          $('input[name=TelNo]').val(m.TelNo);
+          $('input[name=TcNo]').val(m.TcNo || '');
+          $('input[name=PasaportNo]').val(m.PasaportNo || '');
+          $('input[name=DogumTarihi]').val(m.DogumTarihi ? m.DogumTarihi.split('T')[0] : '');
+          $('select[name=Cinsiyet]').val(m.Cinsiyet);
+          $('input[name=Adres]').val(m.Adres);
+          $('#yabanciCheck').prop('checked', m.YabanciUyrukluMu);
+          $('#kayitForm button[type=submit]').text('Güncelle');
+        });
 
-            // Buton metnini Güncelle yap
-            $('#kayitForm button[type=submit]').text('Güncelle');
+        // Rezervasyon Kaydet
+        $(document).on('submit', '#rezervasyonForm', async function(e) {
+          e.preventDefault();
+          const f = $(this);
+          const bas = new Date(f.find('[name=BaslangicTarihi]').val()).toISOString();
+          const bit = new Date(f.find('[name=BitisTarihi]').val()).toISOString();
+          const rezDto = {
+            OdaId: Number(f.find('[name=OdaId]').val()),
+            MusteriId: Number(f.find('[name=MusteriId]').val()),
+            TarifeId: Number(f.find('[name=TarifeId]').val()),
+            BaslangicTarihi: bas,
+            BitisTarihi: bit,
+            YetiskinSayisi:  Number(f.find('[name=YetiskinSayisi]').val()),
+            CocukSayisi:     Number(f.find('[name=CocukSayisi]').val())
+          };
+
+          const res = await fetch('/PersonelPanel/RezervasyonKaydet', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(rezDto)
+          });
+          if (!res.ok) {
+            const msg = await res.text();
+            alert('Rezervasyon başarısız: ' + msg);
+            return;
+          }
+          alert('Rezervasyon başarıyla oluşturuldu!');
+          location.reload();
+        });
+
+        // Rezervasyon İptal
+        $(document).on('click', '.rez-iptal', async function() {
+          const id = $(this).data('id');
+          const reason = prompt("Lütfen iptal nedenini girin:");
+          if (!reason) return;
+          const res = await fetch(`/PersonelPanel/RezervasyonIptal/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(reason)
+          });
+          if (!res.ok) {
+            alert('İptal başarısız: ' + await res.text());
+          } else {
+            loadComponent('Personel_Rezervasyon');
+          }
+        });
+
+            // ───────────── Detay Butonu ─────────────
+        // Delegated binding ile dinleme
+        $(document).on('click', '.btn-detay', function() {
+          const odaId = $(this).data('id');
+          console.log('Detay tıklandı, odaId=', odaId);
+
+          // Önce listeyi temizle
+          $('#rezList').empty();
+
+          fetch(`${window.apiBaseUrl}/api/oda/${odaId}/reservations`)
+            .then(response => {
+              if (!response.ok) throw new Error(`Status ${response.status}`);
+              return response.json();
+            })
+            .then(list => {
+              if (!list.length) {
+                $('#rezList').append('<tr><td colspan="5" class="text-center">Rezervasyon bulunamadı.</td></tr>');
+              } else {
+                list.forEach(r => {
+                  $('#rezList').append(`
+                    <tr>
+                      <td>${r.rezervasyonId}</td>
+                      <td>${r.musteri?.ad ?? r.musteriId}</td>
+                      <td>${new Date(r.baslangicTarihi).toLocaleDateString()}</td>
+                      <td>${new Date(r.bitisTarihi).toLocaleDateString()}</td>
+                      <td>${r.durum}</td>
+                    </tr>
+                  `);
+                });
+              }
+              $('#rezModal').modal('show');
+            })
+            .catch(err => {
+              console.error('Rezervasyon yüklenirken hata:', err);
+              alert('Rezervasyonlar yüklenemedi. Konsolu kontrol et!');
+            });
         });
     </script>
 }

@@ -1,33 +1,99 @@
-﻿@using MadrinHotelCRM.DTO.DTOModels
+﻿@using System.Text.Json
+@using MadrinHotelCRM.DTO.DTOModels
+@using MadrinHotelCRM.Entities.Enums
+@using MadrinHotelCRM.ExtensionMethods
 @model RezervasyonEkleViewModel
 
+@*  JS’e aktaracağımız veriler *@
+<script>
+    const odalar = @Html.Raw(JsonSerializer.Serialize(Model.OdaListesi));
+    const rezervasyonListesi = @Html.Raw(JsonSerializer.Serialize(Model.RezervasyonListesi));
+
+    // İki tarih aralığının çakışıp çakışmadığını döner
+    function tarihCakisiyor(b1, e1, b2, e2) {
+      return b1 <= e2 && b2 <= e1;
+    }
+
+    // Seçilen tarihlere göre dropdown’u yeniden doldur
+    function filtreOdaListesi() {
+      const bas = new Date($('[name=BaslangicTarihi]').val());
+      const bit = new Date($('[name=BitisTarihi]').val());
+      const $sel = $('#odaSelect').empty();
+      $sel.append('<option value="">— Bir Oda Seçin —</option>');
+
+      // Tarihler geçersizse tüm odaları göster
+      if (isNaN(bas) || isNaN(bit) || bas > bit) {
+        odalar.forEach(o => {
+          $sel.append(`<option value="${o.OdaId}">Oda ${o.OdaNumarasi}</option>`);
+        });
+        return;
+      }
+
+      // Aksi halde sadece çakışmayanları ekle (iptal edilmişleri atla)
+      odalar.forEach(o => {
+        const conflict = rezervasyonListesi.some(r =>
+          r.OdaId === o.OdaId
+          && r.IptalTarihi == null               // Sadece geçerli rezervasyonları kontrol et
+          && tarihCakisiyor(
+               new Date(r.BaslangicTarihi),
+               new Date(r.BitisTarihi),
+               bas, bit
+             )
+        );
+        if (!conflict) {
+          $sel.append(`<option value="${o.OdaId}">Oda ${o.OdaNumarasi}</option>`);
+        }
+      });
+    }
+
+    // Sayfa yüklendiğinde ve tarihler değiştiğinde filtreyi uygula
+    $(function() {
+      $('#rezervasyonForm')
+        .on('change', '[name=BaslangicTarihi], [name=BitisTarihi]', filtreOdaListesi);
+      filtreOdaListesi();
+    });
+</script>
+
 <div class="row">
+    <!-- SOL: Rezervasyon Formu -->
     <div class="col-md-6">
         <h4 class="text-success">Yeni Rezervasyon</h4>
         <form id="rezervasyonForm" class="p-3 border rounded bg-white">
-            <!-- 0) Oda bilgisi ve gizli OdaId -->
+            <!-- Başlangıç -->
+            <div class="mb-2">
+                <label class="form-label">Başlangıç Tarihi</label>
+                <input type="date" name="BaslangicTarihi" class="form-control" required />
+            </div>
+            <!-- Bitiş -->
+            <div class="mb-2">
+                <label class="form-label">Bitiş Tarihi</label>
+                <input type="date" name="BitisTarihi" class="form-control" required />
+            </div>
+            <!-- Oda -->
             <div class="mb-2">
                 <label class="form-label">Oda</label>
-                <input type="text"
-                       class="form-control"
-                       readonly
-                       value="@( Model.OdaListesi.FirstOrDefault(o=>o.OdaId == Model.YeniRezervasyon.OdaId)?.OdaNumarasi.ToString() ?? "" )" />
-                <input type="hidden" name="OdaId" value="@Model.YeniRezervasyon.OdaId" />
-            </div>
-
-            <!-- 1) Müşteri seç veya yeni ekle -->
-            <div class="mb-2">
-                <label class="form-label">Var Olan Müşteri</label>
-                <select name="MusteriId" class="form-control">
-                    <option value="">— Seçiniz —</option>
-                    @foreach (var m in Model.MusteriListesi)
-                    {
-                        <option value="@m.MusteriId">@m.Ad @m.Soyad</option>
-                    }
+                <select name="OdaId" id="odaSelect" class="form-control" required>
+                    <option value="">— Bir Oda Seçin —</option>
                 </select>
             </div>
-
-            <!-- 2) Tarife seçimi -->
+            <!-- Müşteri -->
+            <div class="mb-2">
+                <label class="form-label">Müşteri</label>
+                <div class="input-group">
+                    <select name="MusteriId" class="form-control" required>
+                        <option value="">— Var Olan Müşteriyi Seçin —</option>
+                        @foreach (var m in Model.MusteriListesi)
+                        {
+                            <option value="@m.MusteriId">@m.Ad @m.Soyad</option>
+                        }
+                    </select>
+                    <button type="button" class="btn btn-outline-primary"
+                            onclick="loadComponent('Personel_Musteriler')">
+                        Yeni Müşteri Oluştur
+                    </button>
+                </div>
+            </div>
+            <!-- Tarife -->
             <div class="mb-2">
                 <label class="form-label">Tarife</label>
                 <select name="TarifeId" class="form-control" required>
@@ -38,21 +104,18 @@
                     }
                 </select>
             </div>
-
-            <!-- 3) Tarihler & kişi sayıları -->
+            <!-- Kişiler -->
             <div class="mb-2">
-                <label class="form-label">Başlangıç Tarihi</label>
-                <input type="date" name="BaslangicTarihi" class="form-control" required />
+                <input type="number" name="YetiskinSayisi" class="form-control" placeholder="Yetişkin" required />
             </div>
             <div class="mb-2">
-                <label class="form-label">Bitiş Tarihi</label>
-                <input type="date" name="BitisTarihi" class="form-control" required />
+                <input type="number" name="CocukSayisi" class="form-control" placeholder="Çocuk" required />
             </div>
-
             <button type="submit" class="btn btn-success mt-2">Kaydet</button>
         </form>
     </div>
 
+    <!-- SAĞ: Rezervasyon Listesi -->
     <div class="col-md-6">
         <h4 class="text-primary">Rezervasyonlar</h4>
         <table class="table table-bordered">
@@ -63,22 +126,34 @@
                     <th>Müşteri</th>
                     <th>Başlangıç</th>
                     <th>Bitiş</th>
+                    <th>Durum</th>
+                    <th>İptal Nedeni</th>
                     <th>İşlem</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var r in Model.RezervasyonListesi)
                 {
-                    <tr>
+                    var oda = Model.OdaListesi.First(o => o.OdaId == r.OdaId);
+                    var musteri = Model.MusteriListesi.First(m => m.MusteriId == r.MusteriId);
+                    var isIptal = r.Durum == RezervasyonDurum.İptalEdildi;
+                    <tr class="@(isIptal ? "table-danger" : "")">
                         <td>@r.RezervasyonId</td>
-                        <td>Oda @r.OdaId</td>
-                        <td>@r.Musteri.Ad @r.Musteri.Soyad</td>
+                        <td>Oda @oda.OdaNumarasi</td>
+                        <td>@musteri.Ad @musteri.Soyad</td>
                         <td>@r.BaslangicTarihi.ToShortDateString()</td>
                         <td>@r.BitisTarihi.ToShortDateString()</td>
+                        <td>@r.Durum.GetDisplayName()</td>
+                        <td><span class="text-danger">@r.IptalNedeni</span></td>
                         <td>
-                            <button class="btn btn-sm btn-danger rez-iptal" data-id="@r.RezervasyonId">
-                                İptal
-                            </button>
+                            @* İptal edilmişse butonu gösterme *@
+                            @if (!isIptal)
+                            {
+                                <button class="btn btn-sm btn-danger rez-iptal"
+                                        data-id="@r.RezervasyonId">
+                                    İptal
+                                </button>
+                            }
                         </td>
                     </tr>
                 }
@@ -86,6 +161,3 @@
         </table>
     </div>
 </div>
-
-
-

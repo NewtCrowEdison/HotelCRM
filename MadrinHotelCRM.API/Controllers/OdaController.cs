@@ -3,7 +3,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MadrinHotelCRM.DTO.DTOModels;
+using MadrinHotelCRM.Entities.Enums;
 using MadrinHotelCRM.Services.Interfaces;
+using MadrinHotelCRM.Services.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
@@ -14,12 +16,14 @@ namespace MadrinHotelCRM.API.Controllers
     public class OdaController : ControllerBase
     {
         private readonly IOdaService _odaService;
+        private readonly IRezervasyonService _rezervasyonService;
         private readonly string _uploadDir;
         private readonly string _baseUrl;
 
-        public OdaController(IOdaService odaService, IConfiguration config)
+        public OdaController(IOdaService odaService, IRezervasyonService rezervasyonService, IConfiguration config)
         {
             _odaService = odaService;
+            _rezervasyonService = rezervasyonService;
 
             // "wwwroot/uploads" dizinini hazırla
             _uploadDir = Path.Combine(
@@ -198,6 +202,60 @@ namespace MadrinHotelCRM.API.Controllers
             var odalar = await _odaService.FindAsync(o => o.OdaTipiId == odaTipiId);
             return Ok(odalar);
         }
+
+        [HttpGet("{odaId}/reservations")]
+        public async Task<IActionResult> GetReservationsByOda(int odaId)
+        {
+           
+            var rezList = await _rezervasyonService.GetByOdaIdAsync(odaId);
+            return Ok(rezList);
+        }
+
+        /// <summary>
+        /// Odanın durumunu (Boş, Dolu vs.) günceller.
+        /// Kullanımı: PUT api/oda/durum-guncelle/5?yeniDurum=Dolu
+        /// </summary>
+        [HttpPut("durum-guncelle/{odaId}")]
+        public async Task<IActionResult> UpdateRoomStatus(int odaId, [FromQuery] string yeniDurum)
+        {
+            var ok = await _odaService.UpdateRoomStatusAsync(odaId, yeniDurum);
+            if (!ok)
+                return NotFound($"Oda bulunamadı veya '{yeniDurum}' geçerli bir durum değil.");
+            return Ok($"Oda #{odaId} durumu '{yeniDurum}' olarak güncellendi.");
+        }
+
+        /// <summary>
+        /// Odaya yeni tarife atar veya mevcut tarife bilgisini günceller.
+        /// Kullanımı: PUT api/oda/tarife-guncelle/5/3
+        /// </summary>
+        
+        [HttpPut("tarife-guncelle/{odaId}/{tarifeId}")]
+        public async Task<IActionResult> UpdateTariff(int odaId, int tarifeId)
+        {
+            var ok = await _odaService.UpdateTariffAsync(odaId, tarifeId);
+            if (!ok)
+                return NotFound($"Oda #{odaId} veya Tarife #{tarifeId} bulunamadı.");
+            return Ok($"Oda #{odaId} için tarife #{tarifeId} başarıyla güncellendi.");
+        }
+
+
+        [HttpGet("bos")]
+        public async Task<IActionResult> GetBosOdalar()
+        {
+            var tumRez = await _rezervasyonService.GetAllAsync();
+            var doluIds = tumRez
+                .Where(r => r.Durum != RezervasyonDurum.İptalEdildi)
+                .Select(r => r.OdaId)
+                .Distinct();
+
+            var tumOdalar = await _odaService.GetAllAsync();
+            var bosOdalar = tumOdalar
+                .Where(o => !doluIds.Contains(o.OdaId))
+                .ToList();
+
+            return Ok(bosOdalar);
+        }
+
     }
 }
 

@@ -41,6 +41,7 @@ namespace MadrinHotelCRM.Entities.Models
         public OdaTipi OdaTipi { get; set; }
 
         public ICollection<OdaTarife> OdaTarifeleri { get; set; }
+        public ICollection<Rezervasyon> Rezervasyonlar { get; set; }  
 
         public string? GorselUrl { get; set; }
 
