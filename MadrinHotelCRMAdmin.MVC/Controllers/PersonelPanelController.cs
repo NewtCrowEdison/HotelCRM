@@ -19,7 +19,11 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
 
         // Ana sayfa
         [HttpGet]
-        public IActionResult Index() => View();
+        public IActionResult Index()
+        {
+            ViewBag.ApiBase = _api.BaseAddress.ToString().TrimEnd('/');
+            return View();
+        }
 
         //Oda Durumları ViewComponent çağrısı
         [HttpGet]
@@ -98,18 +102,33 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
             else
                 res = await _api.PutAsJsonAsync($"api/rezervasyon/{dto.RezervasyonId}", dto);
 
-            return res.IsSuccessStatusCode
-                ? Ok(dto.RezervasyonId == 0 ? "Eklendi" : "Güncellendi")
-                : BadRequest(dto.RezervasyonId == 0 ? "Ekleme başarısız" : "Güncelleme başarısız");
+            if (!res.IsSuccessStatusCode)
+            {
+                // API tarafındaki gerçek hata
+                var apiError = await res.Content.ReadAsStringAsync();
+                return BadRequest(apiError);
+            }
+
+            return Ok(dto.RezervasyonId == 0 ? "Eklendi" : "Güncellendi");
         }
 
+
         [HttpPut]
-        public async Task<IActionResult> RezervasyonIptal(int id)
+        public async Task<IActionResult> RezervasyonIptal(int id, [FromBody] string reason)
         {
-            var res = await _api.PutAsync($"api/rezervasyon/iptal-et/{id}", null);
-            return res.IsSuccessStatusCode
-                ? Ok("İptal edildi")
-                : BadRequest("İptal başarısız");
+            if (string.IsNullOrWhiteSpace(reason))
+                return BadRequest("İptal nedeni gerekli.");
+
+            // Query string ile reason gönderiyoruz
+            var response = await _api.PutAsync(
+                $"api/rezervasyon/iptal-et/{id}?reason={System.Net.WebUtility.UrlEncode(reason)}",
+                null
+            );
+
+            if (!response.IsSuccessStatusCode)
+                return BadRequest(await response.Content.ReadAsStringAsync());
+
+            return Ok();
         }
 
 
@@ -142,24 +161,33 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> OdaRezervasyonForm(int odaId)
+        public async Task<IActionResult> OdaRezervasyonForm()
         {
             var tarifeler = await _api.GetFromJsonAsync<List<TarifeDTO>>("api/tarife");
             var musteriler = await _api.GetFromJsonAsync<List<MusteriDTO>>("api/musteri");
             var rezervasyonlar = await _api.GetFromJsonAsync<List<RezervasyonDTO>>("api/rezervasyon");
-            var odalar = await _api.GetFromJsonAsync<List<OdaDTO>>("api/oda");
-            var secilenOda = odalar.FirstOrDefault(o => o.OdaId == odaId);
+            // İşte burası değişti:
+            var bosOdalar = await _api.GetFromJsonAsync<List<OdaDTO>>("api/oda/bos");
 
             var vm = new RezervasyonEkleViewModel
             {
-                YeniRezervasyon = new RezervasyonDTO { OdaId = odaId },
+                YeniRezervasyon = new RezervasyonDTO(),   // henüz OdaId atama yok
                 TarifeListesi = tarifeler,
                 MusteriListesi = musteriler,
                 RezervasyonListesi = rezervasyonlar,
-                OdaListesi = new List<OdaDTO> { secilenOda }
+                OdaListesi = bosOdalar             // boş odalar dropdown’da
             };
 
             return PartialView("PersonelRezervasyon", vm);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> PersonelOdaDurumlari()
+        {
+            // Tüm odaları çek
+            var odalar = await _api.GetFromJsonAsync<List<OdaDTO>>("api/oda");
+            return PartialView("_PersonelOdaDurumlari", odalar);
+        }
+
     }
 }

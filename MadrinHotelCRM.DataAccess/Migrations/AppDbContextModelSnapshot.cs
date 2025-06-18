@@ -471,21 +471,21 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                         new
                         {
                             OdaId = 2,
-                            Durum = 2,
+                            Durum = 1,
                             OdaNumarasi = "102",
                             OdaTipiId = 2
                         },
                         new
                         {
                             OdaId = 3,
-                            Durum = 4,
+                            Durum = 1,
                             OdaNumarasi = "201",
                             OdaTipiId = 3
                         },
                         new
                         {
                             OdaId = 4,
-                            Durum = 5,
+                            Durum = 1,
                             OdaNumarasi = "301",
                             OdaTipiId = 4
                         },
@@ -715,6 +715,9 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                     b.Property<DateTime>("BitisTarihi")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("CocukSayisi")
+                        .HasColumnType("int");
+
                     b.Property<int>("Durum")
                         .HasColumnType("int");
 
@@ -727,7 +730,7 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                     b.Property<int>("MusteriId")
                         .HasColumnType("int");
 
-                    b.Property<int>("OdaTipiId")
+                    b.Property<int>("OdaId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("OlusturmaTarihi")
@@ -736,11 +739,14 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                     b.Property<int>("TarifeId")
                         .HasColumnType("int");
 
+                    b.Property<int>("YetiskinSayisi")
+                        .HasColumnType("int");
+
                     b.HasKey("RezervasyonId");
 
                     b.HasIndex("MusteriId");
 
-                    b.HasIndex("OdaTipiId");
+                    b.HasIndex("OdaId");
 
                     b.HasIndex("TarifeId");
 
@@ -1211,9 +1217,9 @@ namespace MadrinHotelCRM.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MadrinHotelCRM.Entities.Models.OdaTipi", "OdaTipi")
-                        .WithMany()
-                        .HasForeignKey("OdaTipiId")
+                    b.HasOne("MadrinHotelCRM.Entities.Models.Oda", "Oda")
+                        .WithMany("Rezervasyonlar")
+                        .HasForeignKey("OdaId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -1225,7 +1231,7 @@ namespace MadrinHotelCRM.DataAccess.Migrations
 
                     b.Navigation("Musteri");
 
-                    b.Navigation("OdaTipi");
+                    b.Navigation("Oda");
 
                     b.Navigation("Tarife");
                 });
@@ -1334,6 +1340,8 @@ namespace MadrinHotelCRM.DataAccess.Migrations
             modelBuilder.Entity("MadrinHotelCRM.Entities.Models.Oda", b =>
                 {
                     b.Navigation("OdaTarifeleri");
+
+                    b.Navigation("Rezervasyonlar");
                 });
 
             modelBuilder.Entity("MadrinHotelCRM.Entities.Models.OdaTipi", b =>

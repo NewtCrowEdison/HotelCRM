@@ -1,5 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using MadrinHotelCRM.Entities.Enums;
 
 namespace MadrinHotelCRM.DTO.DTOModels
@@ -18,13 +19,15 @@ namespace MadrinHotelCRM.DTO.DTOModels
         public int TarifeId { get; set; }
 
         public DateTime OlusturmaTarihi { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public RezervasyonDurum Durum { get; set; }
 
         public DateTime? IptalTarihi { get; set; }
-        public string IptalNedeni { get; set; }
+        public string? IptalNedeni { get; set; }
 
         // Navigation
-        public MusteriDTO Musteri { get; set; }
+        public MusteriDTO? Musteri { get; set; }
 
         public int YetiskinSayisi { get; set; }
         public int CocukSayisi { get; set; }

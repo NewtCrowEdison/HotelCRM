@@ -14,5 +14,9 @@ namespace MadrinHotelCRM.DTO.DTOModels
         public List<TarifeDTO> TarifeListesi { get; set; }
         public List<MusteriDTO> MusteriListesi { get; set; }
         public int? GuncellenecekRezervasyonId { get; set; }
+
+        // Tarihler:
+        public DateTime? FiltreBaslangic { get; set; }
+        public DateTime? FiltreBitis { get; set; }
     }
 }
