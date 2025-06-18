@@ -73,6 +73,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         const apiBaseUrl = 'https://localhost:7225'; // API'nin base adresi
+
         // Menü aç/kapa
         $('#menuToggle').click(() => $('#solMenu').toggleClass('gizle'));
 
@@ -82,10 +83,10 @@
                 type: 'GET',
                 success: html => {
                     $('#panelContent').html(html);
-                    if (componentName === 'Personel') setTimeout(bindPersonelEvents, 100);
-                    else if (componentName === 'Odalar') setTimeout(bindOdaEvents, 100);
-                    else if (componentName === 'EkPaketler') setTimeout(bindEkPaketEvents, 100);
-                    else if (componentName === 'OdaTipleri') setTimeout(bindOdaTipiEvents, 100);
+                    if (componentName === 'Personel')       setTimeout(bindPersonelEvents, 100);
+                    else if (componentName === 'Odalar')    setTimeout(bindOdaEvents, 100);
+                    else if (componentName === 'EkPaketler')setTimeout(bindEkPaketEvents, 100);
+                    else if (componentName === 'OdaTipleri')setTimeout(bindOdaTipiEvents, 100);
                 },
                 error: () => $('#panelContent').html("<div class='alert alert-danger'>İçerik yüklenirken hata oluştu.</div>")
             });
@@ -98,8 +99,10 @@
             $('#kayitForm').off('submit').on('submit', function(e) {
                 e.preventDefault();
                 const form = new FormData(this);
-                const id = form.get('PersonelId');
-                const url = id && id !== '0' ? '/AdminPanel/PersonelGuncelle' : '/AdminPanel/PersonelKayit';
+                const id   = form.get('PersonelId');
+                const url  = id && id !== '0'
+                             ? '/AdminPanel/PersonelGuncelle'
+                             : '/AdminPanel/PersonelKayit';
                 $.ajax({
                     url, type: 'POST',
                     headers: { 'RequestVerificationToken': token },
@@ -130,103 +133,97 @@
         }
 
         function bindOdaEvents() {
-                  const token = $('input[name="__RequestVerificationToken"]').val();
+            const token = $('input[name="__RequestVerificationToken"]').val();
 
-                  // Helper: File → Base64 DataURL
-                  const toBase64 = file => new Promise((res, rej) => {
-                    const reader = new FileReader();
-                    reader.onload  = () => res(reader.result);
-                    reader.onerror = () => rej(reader.error);
-                    reader.readAsDataURL(file);
-                  });
+            // Helper: File → Base64 DataURL
+            const toBase64 = file => new Promise((res, rej) => {
+                const reader = new FileReader();
+                reader.onload  = () => res(reader.result);
+                reader.onerror = () => rej(reader.error);
+                reader.readAsDataURL(file);
+            });
 
-                  // Form submit: ekle / güncelle
-                  $('#odaForm').off('submit').on('submit', async function(e) {
-                    e.preventDefault();
-                    const f = this;
+            $('#odaForm').off('submit').on('submit', async function(e) {
+                e.preventDefault();
+                const f = this;
 
-                    // DTO inşa
-                    const dto = {
-                      OdaId:        parseInt(f.OdaId.value)         || 0,
-                      OdaNumarasi:  f.OdaNumarasi.value,
-                      OdaAdi:       f.OdaAdi.value     || null,
-                      OdaTipiId:    parseInt(f.OdaTipiId.value),
-                      Durum:        f.Durum.value,    // enum name (örn. "Bos","Dolu")
-                      OdaBoyutu:    f.OdaBoyutu.value  ? parseInt(f.OdaBoyutu.value)   : null,
-                      YatakSayisi:  f.YatakSayisi.value? parseInt(f.YatakSayisi.value) : null,
-                      Ozellikler:   f.Ozellikler.value || null,
-                      GorselBase64: null,
-                      FotografGaleriBase64: []
-                    };
+                // DTO inşa
+                const dto = {
+                    OdaId:                  parseInt(f.OdaId.value) || 0,
+                    OdaNumarasi:            f.OdaNumarasi.value,
+                    OdaAdi:                 f.OdaAdi.value || null,
+                    OdaTipiId:              parseInt(f.OdaTipiId.value),
+                    Durum:                  f.Durum.value,
+                    OdaBoyutu:              f.OdaBoyutu.value ? parseInt(f.OdaBoyutu.value) : null,
+                    YatakSayisi:            f.YatakSayisi.value ? parseInt(f.YatakSayisi.value) : null,
+                    Ozellikler:             f.Ozellikler.value || null,
+                    GorselBase64:           null,
+                    FotografGaleriBase64:   []
+                };
 
-                    // Kapak görseli Base64’e çevir
-                    if (f.Gorsel.files.length > 0) {
-                      dto.GorselBase64 = await toBase64(f.Gorsel.files[0]);
-                    }
+                // Kapak görseli Base64’e çevir
+                if (f.Gorsel.files.length > 0) {
+                    dto.GorselBase64 = await toBase64(f.Gorsel.files[0]);
+                }
 
-                    // (opsiyonel) Galeri input’unuz varsa:
-                    if (f.FotografDosyalari && f.FotografDosyalari.files.length > 0) {
-                      for (const file of f.FotografDosyalari.files) {
+                // Galeri Base64 listesi
+                if (f.FotografDosyalari && f.FotografDosyalari.files.length > 0) {
+                    for (const file of f.FotografDosyalari.files) {
                         dto.FotografGaleriBase64.push(await toBase64(file));
-                      }
                     }
+                }
 
-                    // 4️⃣ Doğrudan Web API’ye JSON olarak POST/PUT
-                    const isEdit = dto.OdaId !== 0;
-                    $.ajax({
-                      url:    isEdit
-                             ? `${apiBaseUrl}/api/Oda/${dto.OdaId}`
-                             : `${apiBaseUrl}/api/Oda`,
-                      type:   isEdit ? 'PUT' : 'POST',
-                      headers: { 'RequestVerificationToken': token },
-                      contentType: 'application/json',
-                      data: JSON.stringify(dto)
-                    })
-                    .done(() => loadComponent('Odalar'))
-                    .fail(xhr => alert('Oda kaydetme hatası: ' + xhr.responseText));
-                  });
+                // POST veya PUT
+                const isEdit = dto.OdaId !== 0;
+                $.ajax({
+                    url:    isEdit
+                          ? `${apiBaseUrl}/api/Oda/${dto.OdaId}`
+                          : `${apiBaseUrl}/api/Oda`,
+                    type:   isEdit ? 'PUT' : 'POST',
+                    headers: { 'RequestVerificationToken': token },
+                    contentType: 'application/json',
+                    data: JSON.stringify(dto)
+                })
+                .done(() => loadComponent('Odalar'))
+                .fail(xhr => alert('Oda kaydetme hatası: ' + xhr.responseText));
+            });
 
-                  // Silme
-                  $('.oda-sil').off('click').on('click', function() {
-                    if (!confirm('Odayı silmek istiyor musunuz?')) return;
-                    const id = +$(this).data('id');
-                    $.ajax({
-                      url: `${apiBaseUrl}/api/Oda/${id}`,
-                      type: 'DELETE'
-                    })
-                    .done(() => loadComponent('Odalar'))
-                    .fail(() => alert('Silme hatası'));
-                  });
+            $('.oda-sil').off('click').on('click', function() {
+                if (!confirm('Odayı silmek istiyor musunuz?')) return;
+                const id = +$(this).data('id');
+                $.ajax({
+                    url: `${apiBaseUrl}/api/Oda/${id}`,
+                    type: 'DELETE'
+                })
+                .done(() => loadComponent('Odalar'))
+                .fail(() => alert('Silme hatası'));
+            });
 
-                  // Düzenle – formu önceden doldur
-                  $('.oda-duzenle').off('click').on('click', function() {
-                    const o = odalar.find(x => x.OdaId === +$(this).data('id'));
-                    if (!o) return alert('Kayıt bulunamadı!');
-
-                    const f = document.getElementById('odaForm');
-                    f.OdaId.value        = o.OdaId;
-                    f.OdaNumarasi.value  = o.OdaNumarasi;
-                    f.OdaAdi.value       = o.OdaAdi     || '';
-                    f.OdaTipiId.value    = o.OdaTipiId;
-                    f.Durum.value        = o.Durum;
-                    f.OdaBoyutu.value    = o.OdaBoyutu  || '';
-                    f.YatakSayisi.value  = o.YatakSayisi|| '';
-                    f.Ozellikler.value   = o.Ozellikler || '';
-                    $('#odaKaydetBtn').text('Güncelle');
-
-                    // Önceki görseli göster
-                    $('#Gorsel').val('');
-                    $('#gorselPreview').remove();
-                    if (o.GorselUrl) {
-                      $('#Gorsel').after(
+            $('.oda-duzenle').off('click').on('click', function() {
+                const o = odalar.find(x => x.OdaId === +$(this).data('id'));
+                if (!o) return alert('Kayıt bulunamadı!');
+                const f = document.getElementById('odaForm');
+                f.OdaId.value       = o.OdaId;
+                f.OdaNumarasi.value = o.OdaNumarasi;
+                f.OdaAdi.value      = o.OdaAdi || '';
+                f.OdaTipiId.value   = o.OdaTipiId;
+                f.Durum.value       = o.Durum;
+                f.OdaBoyutu.value   = o.OdaBoyutu || '';
+                f.YatakSayisi.value = o.YatakSayisi|| '';
+                f.Ozellikler.value  = o.Ozellikler || '';
+                $('#odaKaydetBtn').text('Güncelle');
+                $('#Gorsel').val('');
+                $('#gorselPreview').remove();
+                if (o.GorselUrl) {
+                    $('#Gorsel').after(
                         `<img id="gorselPreview"
                               src="${o.GorselUrl}"
                               class="img-thumbnail mt-2"
                               style="max-height:120px;" />`
-                      );
-                    }
-                  });
+                    );
                 }
+            });
+        }
 
         function bindEkPaketEvents() {
             try { window.ekPaketler = ekPaketler; } catch {}
@@ -235,10 +232,10 @@
             $('#ekPaketForm').off('submit').on('submit', function(e) {
                 e.preventDefault();
                 const form = new FormData(this);
-                const id = form.get('EkPaketId');
-                const url = id && id !== '0'
-                    ? '/AdminPanel/EkPaketGuncelle'
-                    : '/AdminPanel/EkPaketOlustur';
+                const id   = form.get('EkPaketId');
+                const url  = id && id !== '0'
+                             ? '/AdminPanel/EkPaketGuncelle'
+                             : '/AdminPanel/EkPaketOlustur';
                 $.ajax({
                     url, type: 'POST',
                     headers: { 'RequestVerificationToken': token },
@@ -260,9 +257,8 @@
             $('.paket-duzenle').off('click').on('click', function() {
                 const p = ekPaketler.find(x => x.EkPaketId === +$(this).data('id'));
                 if (!p) return alert('Kayıt bulunamadı!');
-                ['EkPaketId','PaketAdi','PaketAciklama','Fiyat'].forEach(k => {
-                    $(`input[name='${k}']`).val(p[k] || '');
-                });
+                ['EkPaketId','PaketAdi','PaketAciklama','Fiyat']
+                    .forEach(k => $(`input[name='${k}']`).val(p[k] || ''));
                 $('#paketKaydetBtn').text('Güncelle');
             });
         }
@@ -276,8 +272,8 @@
                 const form = new FormData(this);
                 const id  = form.get('OdaTipiId');
                 const url = id && id !== '0'
-                    ? '/AdminPanel/OdaTipiGuncelle'
-                    : '/AdminPanel/OdaTipiOlustur';
+                            ? '/AdminPanel/OdaTipiGuncelle'
+                            : '/AdminPanel/OdaTipiOlustur';
                 $.ajax({
                     url, type: 'POST',
                     headers: { 'RequestVerificationToken': token },
@@ -299,9 +295,8 @@
             $('.tip-duzenle').off('click').on('click', function() {
                 const tip = odaTipileri.find(t => t.OdaTipiId === +$(this).data('id'));
                 if (!tip) return alert('Tip bulunamadı!');
-                ['OdaTipiId','OdaTurAd','Kapasite','Fiyat','OdaAciklama'].forEach(k => {
-                    $(`input[name='${k}']`).val(tip[k] || '');
-                });
+                ['OdaTipiId','OdaTurAd','Kapasite','Fiyat','OdaAciklama']
+                    .forEach(k => $(`input[name='${k}']`).val(tip[k] || ''));
                 $('#odaTipiKaydetBtn').text('Güncelle');
             });
         }
