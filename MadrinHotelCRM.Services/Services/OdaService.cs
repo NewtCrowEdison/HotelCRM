@@ -111,6 +111,7 @@ namespace MadrinHotelCRM.Services.Services
             return await GetByIdAsync(dto.OdaId);
         }
 
+  
         public async Task<bool> DeleteAsync(int id)
         {
             var entity = await _uow.Read<Oda>().GetByIdAsync(id);

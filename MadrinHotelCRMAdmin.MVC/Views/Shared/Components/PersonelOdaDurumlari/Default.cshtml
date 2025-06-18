@@ -14,42 +14,49 @@
         _ => "text-muted"
     };
 }
-
-<h4 class="mb-3">Oda Durumları</h4>
-
-<div class="mb-4">
-    <label for="durumFilter" class="form-label">Durum Filtrele:</label>
-    <select id="durumFilter" class="form-select w-auto d-inline-block">
-        <option value="">— Hepsi —</option>
-        @foreach (OdaDurum d in Enum.GetValues(typeof(OdaDurum)))
-        {
-            <option value="@( (int)d )">@d.GetDisplayName()</option>
-        }
-    </select>
-</div>
-
 <div class="row" id="odaList">
     @foreach (var oda in Model)
     {
-        var renk = renkGetir(oda.Durum);
-        <div class="col-md-4 oda-card mb-3" data-durum="@((int)oda.Durum)" data-odaid="@oda.OdaId">
+        <div class="col-md-4 oda-card mb-3" data-odaid="@oda.OdaId" data-durum="@((int)oda.Durum)">
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">Oda @oda.OdaNumarasi</h5>
                     <p class="card-text">Tip: @oda.OdaTipiAdi</p>
                     <p class="card-text">
-                        Durum: <span class="@renk">@oda.Durum.GetDisplayName()</span>
+                        Durum: <span class="@renkGetir(oda.Durum)">@oda.Durum.GetDisplayName()</span>
                     </p>
-
-                    @* Eğer oda boşsa rezervasyon butonu göster *@
-                    @if (oda.Durum == OdaDurum.Bos)
-                    {
-                        <button class="btn btn-sm btn-success rezervasyon-btn">
-                            Rezervasyon Oluştur
-                        </button>
-                    }
+                    <button class="btn btn-sm btn-outline-primary btn-detay" data-id="@oda.OdaId">
+                        Detay
+                    </button>
                 </div>
             </div>
         </div>
     }
 </div>
+
+<!-- Rezervasyon Modal'ı -->
+<div class="modal fade" id="rezModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Rezervasyon Detayları</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Müşteri</th>
+                            <th>Başlangıç</th>
+                            <th>Bitiş</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rezList"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -22,9 +22,9 @@ namespace MadrinHotelCRM.Services.Interfaces
         Task<RezervasyonDTO> CreateAsync(RezervasyonDTO dto);
         Task<RezervasyonDTO> UpdateAsync(RezervasyonDTO dto);
         Task<bool> DeleteAsync(int id);
-
+        Task<IEnumerable<RezervasyonDTO>> GetByOdaIdAsync(int odaId);
         Task<RezervasyonDTO> UpdateStatusAsync(int rezervasyonId, RezervasyonDurum yeniDurum);
-        Task<bool> CancelReservationAsync(int rezervasyonId);
+        Task<bool> CancelReservationAsync(int rezervasyonId, string iptalNedeni);
         Task<bool> AddPackageAsync(int rezervasyonId, int paketId);
         Task<bool> RemovePackageAsync(int rezervasyonId, int paketId);
         Task<IEnumerable<RezervasyonPaketDTO>> GetPackagesAsync(int rezervasyonId);

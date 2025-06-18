@@ -262,10 +262,10 @@ namespace MadrinHotelCRM.DataAccess.Context
                  .OnDelete(DeleteBehavior.Restrict);
 
 
-                entity.HasOne(r => r.OdaTipi)
-                 .WithMany()
-                 .HasForeignKey(r => r.OdaTipiId)
-                 .OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(r => r.Oda)
+                  .WithMany(o => o.Rezervasyonlar)
+                  .HasForeignKey(r => r.OdaId)
+                  .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(r => r.Tarife)
                 .WithMany()
@@ -512,21 +512,21 @@ namespace MadrinHotelCRM.DataAccess.Context
                      OdaId = 2,
                      OdaNumarasi = "102",
                      OdaTipiId = 2, // Standart Çift Kişilik
-                     Durum = (OdaDurum)2 // Dolu
+                     Durum = (OdaDurum)1 // Dolu
                  },
               new Oda
               {
                   OdaId = 3,
                   OdaNumarasi = "201",
                   OdaTipiId = 3, // Deluxe Oda
-                  Durum = (OdaDurum)4 // Temizlikte
+                  Durum = (OdaDurum)1 // Temizlikte
               },
               new Oda
               {
                   OdaId = 4,
                   OdaNumarasi = "301",
                   OdaTipiId = 4, // Aile Odası
-                  Durum = (OdaDurum)5 // Rezervasyonlu
+                  Durum = (OdaDurum)1 // Rezervasyonlu
               },
              new Oda
              {
