@@ -1,34 +1,3 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
-//using MadrinHotelCRM.Entities.Enums;
-
-//namespace MadrinHotelCRM.DTO.DTOModels
-//{
-//    public class RezervasyonDTO
-//    {
-//        public int RezervasyonId { get; set; }
-//        public DateTime BaslangicTarihi { get; set; }
-//        public DateTime BitisTarihi { get; set; }
-//        public int MusteriId { get; set; }
-//        public int OdaTipiId { get; set; }
-//        public int TarifeId { get; set; }
-//        public DateTime OlusturmaTarihi { get; set; }
-//        public RezervasyonDurum Durum { get; set; }
-//        //public DateTime OtelGiris { get; set; }
-//        //public DateTime OtelCikis { get; set; }
-//        public DateTime? IptalTarihi { get; set; }
-//        public string IptalNedeni { get; set; }
-//        public MusteriDTO Musteri { get; set; }
-//        public int YetiskinSayisi { get; set; }
-//        public int CocukSayisi { get; set; }
-
-
-//    }
-//}
-
 using System;
 using System.Collections.Generic;
 using MadrinHotelCRM.Entities.Enums;

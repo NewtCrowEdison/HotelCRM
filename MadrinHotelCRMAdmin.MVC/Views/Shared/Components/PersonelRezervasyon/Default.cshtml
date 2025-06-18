@@ -2,7 +2,6 @@
 @model RezervasyonEkleViewModel
 
 <div class="row">
-    <!-- SOL: Rezervasyon Formu -->
     <div class="col-md-6">
         <h4 class="text-success">Yeni Rezervasyon</h4>
         <form id="rezervasyonForm" class="p-3 border rounded bg-white">
@@ -27,11 +26,6 @@
                     }
                 </select>
             </div>
-            <p class="text-center text-muted">— veya yeni müşteri —</p>
-            <div class="mb-2"><input type="text" name="Ad" class="form-control" placeholder="Ad" /></div>
-            <div class="mb-2"><input type="text" name="Soyad" class="form-control" placeholder="Soyad" /></div>
-            <div class="mb-2"><input type="email" name="Email" class="form-control" placeholder="Email" /></div>
-            <div class="mb-2"><input type="tel" name="TelNo" class="form-control" placeholder="Telefon" /></div>
 
             <!-- 2) Tarife seçimi -->
             <div class="mb-2">
@@ -54,14 +48,11 @@
                 <label class="form-label">Bitiş Tarihi</label>
                 <input type="date" name="BitisTarihi" class="form-control" required />
             </div>
-            <div class="mb-2"><input type="number" name="YetiskinSayisi" class="form-control" placeholder="Yetişkin" required /></div>
-            <div class="mb-2"><input type="number" name="CocukSayisi" class="form-control" placeholder="Çocuk" required /></div>
 
             <button type="submit" class="btn btn-success mt-2">Kaydet</button>
         </form>
     </div>
 
-    <!-- SAĞ: Mevcut Rezervasyonlar -->
     <div class="col-md-6">
         <h4 class="text-primary">Rezervasyonlar</h4>
         <table class="table table-bordered">
@@ -96,67 +87,5 @@
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        $(function(){
-         
-          $('#rezervasyonForm').submit(async function(e){
-            e.preventDefault();
-            var f = $(this);
 
-            // Eğer var olan müşteri seçilmemişse "yeni müşteri" DTO
-            var musteriId = f.find('[name=MusteriId]').val();
-            if (!musteriId) {
-              var musteriDto = {
-                Ad:    f.find('[name=Ad]').val(),
-                Soyad: f.find('[name=Soyad]').val(),
-                Email: f.find('[name=Email]').val(),
-                TelNo: f.find('[name=TelNo]').val()
-              };
-              let res1 = await fetch('/PersonelPanel/MusteriKaydet', {
-                method:'POST',
-                headers:{ 'Content-Type':'application/json' },
-                body: JSON.stringify(musteriDto)
-              });
-              if (!res1.ok) {
-                return alert('Müşteri kaydı başarısız: '+await res1.text());
-              }
-              var created = await res1.json();
-              musteriId = created.MusteriId;
-            }
-
-            // rezervasyon DTO
-            var rezDto = {
-              OdaId:           parseInt(f.find('[name=OdaId]').val()),
-              MusteriId:       parseInt(musteriId),
-              TarifeId:        parseInt(f.find('[name=TarifeId]').val()),
-              BaslangicTarihi: f.find('[name=BaslangicTarihi]').val(),
-              BitisTarihi:     f.find('[name=BitisTarihi]').val(),
-              YetiskinSayisi:  parseInt(f.find('[name=YetiskinSayisi]').val()),
-              CocukSayisi:     parseInt(f.find('[name=CocukSayisi]').val())
-            };
-
-            let res2 = await fetch('/PersonelPanel/RezervasyonKaydet', {
-              method:'POST',
-              headers:{ 'Content-Type':'application/json' },
-              body: JSON.stringify(rezDto)
-            });
-            if (!res2.ok) {
-              return alert('Rezervasyon başarısız: '+await res2.text());
-            }
-
-            alert('Rezervasyon başarıyla oluşturuldu!');
-            location.reload();
-          });
-
-          // Rezervasyon iptal
-          $(document).on('click','.rez-iptal', function(){
-            if(!confirm('Bu rezervasyonu iptal etmek istediğine emin misin?'))
-              return;
-            fetch(`/PersonelPanel/RezervasyonIptal/${$(this).data('id')}`,{ method:'PUT' })
-              .then(r=> r.ok ? location.reload() : r.text().then(t=>alert(t)));
-          });
-        });
-    </script>
-}
 
