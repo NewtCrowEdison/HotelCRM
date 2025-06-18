@@ -59,7 +59,6 @@ namespace MadrinHotelCRMAdmin.MVC.ViewComponents
             var musteriler = await _api.GetFromJsonAsync<List<MusteriDTO>>("api/musteri");
             var rezervasyonlar = await _api.GetFromJsonAsync<List<RezervasyonDTO>>("api/rezervasyon");
 
-            // 2) ViewModel'i oluşturalım, özellikle YeniRezervasyon örneğini mutlaka new'leyelim
             var vm = new RezervasyonEkleViewModel
             {
                 YeniRezervasyon = new RezervasyonDTO(),    // <<< null referansı böyle engellemiş olacağız
@@ -69,7 +68,6 @@ namespace MadrinHotelCRMAdmin.MVC.ViewComponents
                 RezervasyonListesi = rezervasyonlar
             };
 
-            // 3) Default.cshtml render et
             return View("Default", vm);
         }
     }

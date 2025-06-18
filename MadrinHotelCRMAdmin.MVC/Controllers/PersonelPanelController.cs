@@ -89,7 +89,6 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
                 ? Ok("Rezervasyon eklendi.")
                 : BadRequest($"Ekleme başarısız: {await response.Content.ReadAsStringAsync()}");
         }
-
         [HttpPost]
         public async Task<IActionResult> RezervasyonKaydet([FromBody] RezervasyonDTO dto)
         {
@@ -142,7 +141,6 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
         }
 
 
-        // GET /PersonelPanel/OdaRezervasyonForm?odaId=123
         [HttpGet]
         public async Task<IActionResult> OdaRezervasyonForm(int odaId)
         {

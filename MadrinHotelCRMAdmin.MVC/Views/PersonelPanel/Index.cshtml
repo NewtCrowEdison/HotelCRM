@@ -60,63 +60,32 @@
         <!-- SAĞ PANEL -->
         <div class="col-md-9 p-4" id="panelContent">
             <h5 class="text-muted">Hoş geldin @kullaniciAd 👋</h5>
-            <p><strong>Kullanıcı ID:</strong> @kullaniciId</p>
             <p>Sol menüden bir işlem seçerek yönetim ekranını kullanabilirsin.</p>
         </div>
-
-        <!-- CLAIM BİLGİLERİ -->
-        <div class="mt-3">
-            <h6 class="text-secondary">Claim Bilgileri</h6>
-            <ul class="text-muted">
-                @foreach (var c in User.Claims)
-                {
-                    <li>@c.Type → <strong>@c.Value</strong></li>
-                }
-            </ul>
         </div>
     </div>
-</div>
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(function(){
-            // Menü aç/kapa
             $('#menuToggle').click(() => $('#solMenu').toggleClass('gizle'));
-
-            // Boş oda kartındaki Rezervasyon Oluştur butonu
-            $(document).on('click', '.rezervasyon-btn', function(){
-                const odaId = $(this).closest('.oda-card').data('odaid');
-                loadComponentUrl(`/PersonelPanel/OdaRezervasyonForm?odaId=${odaId}`);
             });
-        });
 
         // Genel component yükleyici
         function loadComponent(name) {
             const url = name === 'Personel_OdaDurumlari'
                 ? '/PersonelPanel/OdaDurumlari'
                 : '/ViewComponent/' + name;
-            $.get(url, html => {
-                $('#panelContent').html(html);
 
                 if (name === 'Personel_OdaDurumlari') {
-                    // Durum filtresini sıfırla ve çalıştır
                     $('#durumFilter').val('').trigger('change');
                 }
                 if (name === 'Personel_Musteriler') {
                     bindMusteriEvents();
-                    // Form butonunu varsayılan halline getir
                     $('#kayitForm button[type=submit]').text('Kaydet');
                 }
-            }).fail(() => {
-                $('#panelContent').html('<div class="alert alert-danger">Yüklenirken hata oluştu.</div>');
             });
-        }
-
-        // URL’den partial view yükleme (rezervasyon formu vb.)
-        function loadComponentUrl(url) {
-            $.get(url, html => $('#panelContent').html(html))
-             .fail(() => $('#panelContent').html('<div class="alert alert-danger">Yüklenirken hata oluştu.</div>'));
         }
 
         // Oda Durumları filtresi
@@ -191,7 +160,6 @@
             const id = $(this).data('id');
             const m  = window.musteriler.find(x => x.MusteriId === id);
             if (!m) return;
-
             // Formu doldur
             $('input[name=MusteriId]').val(m.MusteriId);
             $('input[name=Ad]').val(m.Ad);
