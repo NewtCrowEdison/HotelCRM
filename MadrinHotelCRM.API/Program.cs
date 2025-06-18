@@ -37,6 +37,7 @@ namespace MadrinHotelCRM.API
 
             builder.Services
                .AddJwtExtension(jwtSecret)
+               .AddAuthorization()           // ? burayý ekle
                .AddDbContextExtension(builder.Configuration)
                .AddIdentityExtension()
                .AddAutoMapperExtension()
@@ -60,12 +61,12 @@ namespace MadrinHotelCRM.API
                 app.UseSwaggerUI();
             }
 
-            // 6) Statik dosyalarý (wwwroot) servis et
+            // 6) Statik dosyalarý (wwwroot) servis etmek için 
             app.UseStaticFiles();
 
             app.UseHttpsRedirection();
 
-            // 7) CORS
+            // 7) CORS :  Apý adresi ile mvc adresi farklý olduðunda eriþim için izin vermemi saðladý 
             app.UseCors("AllowAdminPanel");
 
             // 8) Güvenlik
