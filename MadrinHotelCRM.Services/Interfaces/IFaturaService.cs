@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using MadrinHotelCRM.DTO.DTOModels;
+using MadrinHotelCRM.Entities.Enums;
 using MadrinHotelCRM.Entities.Models;
 
 namespace MadrinHotelCRM.Services.Interfaces
@@ -19,6 +20,8 @@ namespace MadrinHotelCRM.Services.Interfaces
         Task<IEnumerable<FaturaDTO>> GetAllAsync();
         Task<IEnumerable<FaturaDTO>> FindAsync(Expression<Func<Fatura, bool>> predicate);
         Task<FaturaDTO> CreateAsync(FaturaDTO dto);
+        Task<FaturaDTO> UpdateStatusAsync(int faturaId, FaturaDurum yeniDurum);
+        Task<FaturaDTO> CreateFromRezervasyonAsync(int rezervasyonId);
         Task<FaturaDTO> UpdateAsync(FaturaDTO dto);
         Task<bool> DeleteAsync(int id);
     }

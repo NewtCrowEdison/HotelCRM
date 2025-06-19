@@ -1,25 +1,57 @@
-﻿@using MadrinHotelCRM.DTO.DTOModels
-@model List<FaturaDTO>
+﻿    @model List<MadrinHotelCRM.DTO.DTOModels.FaturaDTO>
+    @using MadrinHotelCRM.Entities.Enums
 
-<h4>Fatura Listesi</h4>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Fatura ID</th>
-            <th>Toplam Tutar</th>
-            <th>Durum</th>
-            <th>Oluşturulma Tarihi</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var fatura in Model)
-        {
+    <h4>Fatura Listesi</h4>
+    <div class="mb-3">
+        <label class="form-label me-2">Filtre:</label>
+        <select id="faturaFilter" class="form-select d-inline-block" style="width: 200px;">
+            <option value="">Tümü</option>
+            <option value="Odenen">Ödenen</option>
+            <option value="Odenmedi">Ödenmeyen</option>
+        </select>
+    </div>
+
+    <table class="table table-bordered" id="faturaTable">
+        <thead class="table-light">
             <tr>
-                <td>@fatura.FaturaId</td>
-                <td>@fatura.ToplamTutar ₺</td>
-                <td>@fatura.Durum</td>
-                <td>@fatura.FaturaOlusturmaTarihi.ToShortDateString()</td>
+                <th>Fatura ID</th>
+                <th>Rezervasyon ID</th>
+                <th>Toplam Tutar</th>
+                <th>Durum</th>
+                <th>Oluşturulma Tarihi</th>
+                <th>İşlem</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var fatura in Model)
+            {
+                var cssClass = fatura.Durum == FaturaDurum.Odenmedi
+                ? "table-danger"
+                : "table-success";
+
+                <tr class="fatura-row @cssClass" data-durum="@fatura.Durum">
+                    <td>@fatura.FaturaId</td>
+                    <td>@fatura.RezervasyonId</td>
+                    <td>@string.Format("{0:N2}", fatura.ToplamTutar) ₺</td>
+                    <td>@fatura.Durum</td>
+                    <td>@fatura.FaturaOlusturmaTarihi.ToShortDateString()</td>
+                    <td>
+                        @* Ödendi butonu zaten varsa *@
+                        @if (fatura.Durum == FaturaDurum.Odenmedi)
+                        {
+                            <button class="btn btn-sm btn-primary btn-odendi me-1"
+                                    data-id="@fatura.FaturaId">
+                                Ödendi
+                            </button>
+                        }
+                        @* Her durumda gösterebileceğin Sil butonu *@
+                        <button class="btn btn-sm btn-danger btn-fatura-sil"
+                                data-id="@fatura.FaturaId">
+                            Sil
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+

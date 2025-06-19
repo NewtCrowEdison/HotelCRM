@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Admin Panel - Yönetim Ekranı";
+    var apiBase = ViewBag.ApiBase as string ?? "";
 }
 
 <style>
@@ -70,9 +71,12 @@
 </div>
 
 @section Scripts {
+    <script>
+        window.apiBaseUrl = '@apiBase';
+    </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        const apiBaseUrl = 'https://localhost:7225'; // API'nin base adresi
+        // const apiBaseUrl = 'https://localhost:7225'; // API'nin base adresi
 
         // Menü aç/kapa
         $('#menuToggle').click(() => $('#solMenu').toggleClass('gizle'));
@@ -299,6 +303,7 @@
                     .forEach(k => $(`input[name='${k}']`).val(tip[k] || ''));
                 $('#odaTipiKaydetBtn').text('Güncelle');
             });
+
         }
     </script>
 }

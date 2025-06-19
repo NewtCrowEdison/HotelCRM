@@ -31,5 +31,7 @@ namespace MadrinHotelCRM.DTO.DTOModels
 
         public int YetiskinSayisi { get; set; }
         public int CocukSayisi { get; set; }
+
+        public List<RezervasyonPaketDTO> Paketler { get; set; } = new();
     }
 }

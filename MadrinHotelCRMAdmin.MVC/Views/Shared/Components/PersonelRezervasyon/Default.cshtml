@@ -137,6 +137,9 @@
                     var oda = Model.OdaListesi.First(o => o.OdaId == r.OdaId);
                     var musteri = Model.MusteriListesi.First(m => m.MusteriId == r.MusteriId);
                     var isIptal = r.Durum == RezervasyonDurum.İptalEdildi;
+                    // Bu rezervasyonun faturası var mı?
+                    var hasFatura = Model.FaturaListesi.Any(f => f.RezervasyonId == r.RezervasyonId);
+
                     <tr class="@(isIptal ? "table-danger" : "")">
                         <td>@r.RezervasyonId</td>
                         <td>Oda @oda.OdaNumarasi</td>
@@ -152,6 +155,19 @@
                                         data-id="@r.RezervasyonId">
                                     İptal
                                 </button>
+
+                                @* Sadece faturası yoksa butonu göster *@
+                                @if (!hasFatura)
+                                {
+                                    <button class="btn btn-sm btn-outline-primary fatura-olustur ms-1"
+                                            data-id="@r.RezervasyonId">
+                                        Fatura Oluştur
+                                    </button>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success ms-1">Fatura Oluşturuldu</span>
+                                }
                             }
                         </td>
                     </tr>
