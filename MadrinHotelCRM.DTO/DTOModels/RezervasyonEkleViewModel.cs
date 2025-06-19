@@ -19,7 +19,7 @@ namespace MadrinHotelCRM.DTO.DTOModels
         public List<FaturaDTO> FaturaListesi { get; set; } = new();
 
         // Tarihler:
-        public DateTime? FiltreBaslangic { get; set; }
-        public DateTime? FiltreBitis { get; set; }
+        public DateTime? FiltreBaslangic { get; set; } = DateTime.Today;
+        public DateTime? FiltreBitis { get; set; } = DateTime.Today.AddDays(1);
     }
 }
