@@ -1,0 +1,84 @@
+﻿@model MadrinHotelCRM.DTO.DTOModels.MusteriDTO
+@{
+    ViewData["Title"] = "Müşteri Kaydı";
+}
+
+<h2>Müşteri Kaydı</h2>
+
+<form asp-action="MusteriKaydet" method="post" class="row g-3">
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="col-md-4">
+        <div class="form-check">
+            <input asp-for="YabanciUyrukluMu" class="form-check-input" />
+            <label asp-for="YabanciUyrukluMu" class="form-check-label">Yabancı Uyruklu Mu?</label>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="TcNo" class="form-label">T.C. Kimlik No</label>
+        <input asp-for="TcNo" class="form-control" maxlength="11" />
+        <span asp-validation-for="TcNo" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="PasaportNo" class="form-label">Pasaport No (varsa)</label>
+        <input asp-for="PasaportNo" class="form-control" maxlength="20" />
+        <span asp-validation-for="PasaportNo" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Ad" class="form-label">Ad</label>
+        <input asp-for="Ad" class="form-control" maxlength="50" />
+        <span asp-validation-for="Ad" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Soyad" class="form-label">Soyad</label>
+        <input asp-for="Soyad" class="form-control" maxlength="50" />
+        <span asp-validation-for="Soyad" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="TelNo" class="form-label">Telefon</label>
+        <input asp-for="TelNo" class="form-control" maxlength="20" />
+        <span asp-validation-for="TelNo" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="DogumTarihi" class="form-label">Doğum Tarihi</label>
+        <input asp-for="DogumTarihi" type="date" class="form-control" />
+        <span asp-validation-for="DogumTarihi" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="Email" class="form-label">Email</label>
+        <input asp-for="Email" type="email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="Cinsiyet" class="form-label">Cinsiyet</label>
+        <select asp-for="Cinsiyet" class="form-select"
+                asp-items="Html.GetEnumSelectList<MadrinHotelCRM.Entities.Enums.Cinsiyet>()">
+            <option value="">-- Seçin --</option>
+        </select>
+        <span asp-validation-for="Cinsiyet" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-8">
+        <label asp-for="Adres" class="form-label">Adres</label>
+        <textarea asp-for="Adres" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="Adres" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Kaydı Tamamla</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

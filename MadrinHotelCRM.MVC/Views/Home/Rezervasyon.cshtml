@@ -1,0 +1,117 @@
+﻿@model MadrinHotelCRM.DTO.DTOModels.RezervasyonDTO
+@using MadrinHotelCRM.DTO.DTOModels
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using System.Text.Json
+@using MadrinHotelCRM.Entities.Enums
+
+@{
+    ViewData["Title"] = "Rezervasyon Yap";
+
+    // Controller'da ViewBag ile setlediğiniz odalar ve tarifeler
+    var odalar = ViewBag.Odalar as List<OdaDTO> ?? new List<OdaDTO>();
+    var tarifeler = ViewBag.Tarifeler as List<TarifeDTO> ?? new List<TarifeDTO>();
+
+    // Mevcut rezervasyonlar filtresi için JS'e aktarılacak
+    var rezervasyonListesiJson = JsonSerializer.Serialize(ViewBag.RezervasyonListesi as List<RezervasyonDTO> ?? new List<RezervasyonDTO>());
+}
+
+<h2>Rezervasyon Yap</h2>
+
+<form asp-action="RezervasyonKaydet" method="post" class="row g-3" id="rezervasyonForm">
+    <input asp-for="MusteriId" type="hidden" />
+
+    <!-- Filtre Tarihleri -->
+    <div class="col-md-4">
+        <label class="form-label">Başlangıç Tarihi</label>
+        <input type="date" name="filtreBaslangic" id="filtreBaslangic" class="form-control" />
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Bitiş Tarihi</label>
+        <input type="date" name="filtreBitis" id="filtreBitis" class="form-control" />
+    </div>
+
+    <!-- Oda Seçimi -->
+    <div class="col-md-4">
+        <label asp-for="OdaId" class="form-label">Oda Seçin</label>
+        <select asp-for="OdaId" id="odaSelect" class="form-select" required>
+            <option value="">-- Oda seçin --</option>
+        </select>
+        <span asp-validation-for="OdaId" class="text-danger"></span>
+    </div>
+
+    <!-- Diğer Alanlar -->
+    <div class="col-md-4">
+        <label asp-for="TarifeId" class="form-label">Tarife</label>
+        <select asp-for="TarifeId" class="form-select" required>
+            <option value="">-- Tarifeyi seçin --</option>
+            @foreach (var t in tarifeler)
+            {
+                <option value="@t.TarifeId">@t.TarifeAdi — @t.Fiyat ₺</option>
+            }
+        </select>
+        <span asp-validation-for="TarifeId" class="text-danger"></span>
+    </div>
+    <div class="col-md-2">
+        <label asp-for="YetiskinSayisi" class="form-label">Yetişkin</label>
+        <input asp-for="YetiskinSayisi" type="number" min="1" class="form-control" required />
+        <span asp-validation-for="YetiskinSayisi" class="text-danger"></span>
+    </div>
+    <div class="col-md-2">
+        <label asp-for="CocukSayisi" class="form-label">Çocuk</label>
+        <input asp-for="CocukSayisi" type="number" min="0" class="form-control" required />
+        <span asp-validation-for="CocukSayisi" class="text-danger"></span>
+    </div>
+
+    <div class="col-12">
+        <button type="submit" class="btn btn-success">Rezervasyonu Onayla</button>
+    </div>
+</form>
+
+@section Scripts {
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const odalar = @Html.Raw(JsonSerializer.Serialize(odalar));
+        const rezervasyonListesi = @Html.Raw(rezervasyonListesiJson);
+
+        function tarihCakisiyor(b1, e1, b2, e2) {
+          return b1 <= e2 && b2 <= e1;
+        }
+
+        function filtreOdaListesi() {
+          const bas = new Date($('#filtreBaslangic').val());
+          const bit = new Date($('#filtreBitis').val());
+          const $sel = $('#odaSelect').empty();
+          $sel.append('<option value="">— Bir Oda Seçin —</option>');
+
+          if (isNaN(bas) || isNaN(bit) || bas > bit) {
+            odalar.forEach(o => {
+              $sel.append(`<option value="${o.OdaId}">Oda ${o.OdaNumarasi}</option>`);
+            });
+            return;
+          }
+
+          odalar.forEach(o => {
+            const conflict = rezervasyonListesi.some(r =>
+              r.OdaId === o.OdaId &&
+              r.IptalTarihi == null &&
+              tarihCakisiyor(
+                new Date(r.BaslangicTarihi),
+                new Date(r.BitisTarihi),
+                bas, bit
+              )
+            );
+            if (!conflict) {
+              $sel.append(`<option value="${o.OdaId}">Oda ${o.OdaNumarasi}</option>`);
+            }
+          });
+        }
+
+        $(function() {
+          $('#filtreBaslangic, #filtreBitis').on('change', filtreOdaListesi);
+          filtreOdaListesi();
+        });
+    </script>
+}
