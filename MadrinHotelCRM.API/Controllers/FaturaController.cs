@@ -1,4 +1,5 @@
 ﻿using MadrinHotelCRM.DTO.DTOModels;
+using MadrinHotelCRM.Entities.Enums;
 using MadrinHotelCRM.Services.Interfaces;
 using MadrinHotelCRM.Services.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -44,12 +45,24 @@ namespace MadrinHotelCRM.API.Controllers
                                    created);
         }
 
-      
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] FaturaDTO dto)
+        // POST api/fatura/olustur/{rezervasyonId}
+        [HttpPost("olustur/{rezervasyonId}")]
+        public async Task<IActionResult> CreateFromRezervasyon(int rezervasyonId)
         {
-            if (id != dto.FaturaId) return BadRequest("ID uyuşmuyor!");
-            var updated = await _faturaService.UpdateAsync(dto);
+            var dto = await _faturaService.CreateFromRezervasyonAsync(rezervasyonId);
+            if (dto == null)
+                return NotFound($"Rezervasyon {rezervasyonId} bulunamadı.");
+
+            return Ok(dto);
+        }
+
+        [HttpPost("durum-guncelle/{id}")]
+        public async Task<IActionResult> UpdateStatusViaPost(
+               int id,
+               [FromQuery] FaturaDurum yeniDurum)
+        {
+            var updated = await _faturaService.UpdateStatusAsync(id, yeniDurum);
+            if (updated == null) return NotFound();
             return Ok(updated);
         }
 

@@ -8,6 +8,7 @@
     var kullaniciAd = User.Identity?.Name ?? "Personel";
     var kullaniciId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "Bilinmiyor";
     var apiBase = ViewBag.ApiBase as string ?? "";
+  
 }
 
 <style>
@@ -63,6 +64,7 @@
                 <li class="list-group-item" onclick="loadComponent('Personel_Bilgilerim')">
                     🙋‍♂️ Bilgilerim
                 </li>
+                <li class="list-group-item list-group-item-action" onclick="loadComponent('Faturalar')">🧾 Faturalar</li>
             </ul>
             <form asp-controller="Auth" asp-action="Cikis" method="post" class="mt-4 text-center">
                 @Html.AntiForgeryToken()
@@ -139,6 +141,7 @@
               bindMusteriEvents();
               $('#kayitForm button[type=submit]').text('Kaydet');
             }
+            if(name==='Faturalar')     bindFaturaEvents();
           });
         }
         // Oda Durumları filtresi
@@ -279,8 +282,83 @@
             loadComponent('Personel_Rezervasyon');
           }
         });
+        // Fatura Oluştur
+        $(document).off('click', '.fatura-olustur')
+                   .on('click', '.fatura-olustur', async function() {
+          const btn = $(this),
+                id  = btn.data('id');
+          if (!confirm('Bu rezervasyon için fatura oluşturulsun mu?')) return;
 
-            // ───────────── Detay Butonu ─────────────
+          btn.prop('disabled', true).text('Yükleniyor…');
+
+          const res = await fetch(`/PersonelPanel/FaturaOlustur/${id}`, {
+            method: 'POST'
+          });
+
+          if (!res.ok) {
+            const msg = await res.text();
+            alert('Fatura oluşturulamadı: ' + msg);
+            btn.prop('disabled', false).text('Fatura Oluştur');
+            return;
+          }
+
+         
+            btn.fadeOut(200);
+            alert('Fatura başarıyla oluşturuldu!');
+            });
+
+          function bindFaturaEvents() {
+          
+          // Filtreleme
+          $('#faturaFilter').off('change').on('change', function(){
+            var filter = $(this).val();
+            $('#faturaTable tbody tr').each(function(){
+              var $tr = $(this),
+                  paid = $tr.hasClass('table-success');
+              if(!filter)          $tr.show();
+              else if(filter==='Odenen')   $tr.toggle(paid);
+              else                         $tr.toggle(!paid);
+            });
+          }).trigger('change');
+
+
+        // “Ödendi” butonu 
+        $(document).off('click', '.btn-odendi')
+                   .on('click', '.btn-odendi', async function(){
+          const btn = $(this),
+                tr  = btn.closest('tr'),
+                id  = btn.data('id'),
+                url = `${window.apiBaseUrl}/api/fatura/durum-guncelle/${id}?yeniDurum=Odendi`;
+          const res = await fetch(url, { method: 'POST' });
+          if (res.ok) {
+            tr.removeClass('table-danger').addClass('table-success');
+            tr.find('td:eq(3)').text('Odendi');
+            btn.remove();
+          } else {
+            alert('Durum güncellenemedi: ' + await res.text());
+          }
+         });
+          
+        // Sil butonu
+          $(document).off('click', '.btn-fatura-sil').on('click', '.btn-fatura-sil', async function(){
+          if (!confirm('Bu faturayı silmek istediğinize emin misiniz?')) return;
+
+          const btn = $(this),
+                tr  = btn.closest('tr'),
+                id  = btn.data('id'),
+                url = '/PersonelPanel/FaturaSil/' + id;
+
+          const res = await fetch(url, { method: 'POST' });
+          if (res.ok) {
+            tr.fadeOut(200, ()=> tr.remove());
+          } else {
+            const txt = await res.text();
+            alert('Silme başarısız: ' + txt);
+          }
+        });
+        }
+
+        // ───────────── Detay Butonu ─────────────
         // Delegated binding ile dinleme
         $(document).on('click', '.btn-detay', function() {
           const odaId = $(this).data('id');
@@ -317,5 +395,6 @@
               alert('Rezervasyonlar yüklenemedi. Konsolu kontrol et!');
             });
         });
+
     </script>
 }

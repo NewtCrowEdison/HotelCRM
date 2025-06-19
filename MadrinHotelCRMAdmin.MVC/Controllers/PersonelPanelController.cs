@@ -168,17 +168,20 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
             var rezervasyonlar = await _api.GetFromJsonAsync<List<RezervasyonDTO>>("api/rezervasyon");
             // İşte burası değişti:
             var bosOdalar = await _api.GetFromJsonAsync<List<OdaDTO>>("api/oda/bos");
+            var faturalar = await _api.GetFromJsonAsync<List<FaturaDTO>>("api/fatura");
+
 
             var vm = new RezervasyonEkleViewModel
             {
-                YeniRezervasyon = new RezervasyonDTO(),   // henüz OdaId atama yok
+                YeniRezervasyon = new RezervasyonDTO(),  
                 TarifeListesi = tarifeler,
                 MusteriListesi = musteriler,
                 RezervasyonListesi = rezervasyonlar,
-                OdaListesi = bosOdalar             // boş odalar dropdown’da
+                OdaListesi = bosOdalar,
+                FaturaListesi = faturalar
             };
 
-            return PartialView("PersonelRezervasyon", vm);
+            return ViewComponent("PersonelRezervasyon", vm);
         }
 
         [HttpGet]
@@ -186,7 +189,49 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
         {
             // Tüm odaları çek
             var odalar = await _api.GetFromJsonAsync<List<OdaDTO>>("api/oda");
-            return PartialView("_PersonelOdaDurumlari", odalar);
+            return ViewComponent("PersonelOdaDurumlari", odalar);
+        }
+
+
+        [IgnoreAntiforgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> FaturaOlustur(int id)
+        {
+            var response = await _api.PostAsync($"api/fatura/olustur/{id}", null);
+            if (!response.IsSuccessStatusCode)
+            {
+                var err = await response.Content.ReadAsStringAsync();
+                return BadRequest($"Fatura oluşturulamadı: {err}");
+            }
+            return Ok("Fatura başarıyla oluşturuldu!");
+        }
+
+        [IgnoreAntiforgeryToken]
+        [HttpPost]  
+        public async Task<IActionResult> FaturaSil(int id)
+        {
+            // API DELETE isteği
+            var response = await _api.DeleteAsync($"api/fatura/{id}");
+            if (!response.IsSuccessStatusCode)
+            {
+                var err = await response.Content.ReadAsStringAsync();
+                return BadRequest($"Silme başarısız: {err}");
+            }
+            return Ok();
+        }
+
+        [IgnoreAntiforgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> FaturaDurumGuncelle(int id)
+        {
+            var response = await _api.PostAsync(
+                $"api/fatura/durum-guncelle/{id}?yeniDurum=Odenen",
+                null
+            );
+            if (!response.IsSuccessStatusCode)
+                return BadRequest(await response.Content.ReadAsStringAsync());
+
+            return Ok();
         }
 
     }

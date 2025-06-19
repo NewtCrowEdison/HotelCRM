@@ -20,6 +20,7 @@ namespace MadrinHotelCRMAdmin.MVC.ViewComponents
             var tarifeler = await _api.GetFromJsonAsync<List<TarifeDTO>>("api/tarife");
             var musteriler = await _api.GetFromJsonAsync<List<MusteriDTO>>("api/musteri");
             var rezervasyonlar = await _api.GetFromJsonAsync<List<RezervasyonDTO>>("api/rezervasyon");
+            var faturalar = await _api.GetFromJsonAsync<List<FaturaDTO>>("api/fatura");
 
             var vm = new RezervasyonEkleViewModel
             {
@@ -29,7 +30,8 @@ namespace MadrinHotelCRMAdmin.MVC.ViewComponents
                 MusteriListesi = musteriler,
                 RezervasyonListesi = rezervasyonlar,
                 FiltreBaslangic = null,
-                FiltreBitis = null
+                FiltreBitis = null,
+                FaturaListesi = faturalar
             };
 
             return View("Default", vm);
