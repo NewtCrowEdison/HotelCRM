@@ -30,7 +30,7 @@ namespace MadrinHotelCRM.MVC.Controllers
             => View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 
    
-        //  MÜÞTERÝ KAYDETME AKSÝYONU
+        //  Mï¿½ï¿½TERï¿½ KAYDETME AKSï¿½YONU
   
         [HttpGet]
         public IActionResult MusteriKaydet()
@@ -41,7 +41,7 @@ namespace MadrinHotelCRM.MVC.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // Hatalarý View’a göndersin isterseniz:
+                // Hatalarï¿½ Viewï¿½a gï¿½ndersin isterseniz:
                 return View("Index", model);
             }
 
@@ -49,74 +49,74 @@ namespace MadrinHotelCRM.MVC.Controllers
             if (response.IsSuccessStatusCode)
             {
                 var created = await response.Content.ReadFromJsonAsync<MusteriDTO>();
-                // Müþteri oluþturulduktan sonra örneðin Rezervasyon sayfasýna yönlendirebilirsiniz:
+                // Mï¿½ï¿½teri oluï¿½turulduktan sonra ï¿½rneï¿½in Rezervasyon sayfasï¿½na yï¿½nlendirebilirsiniz:
                 return RedirectToAction("Rezervasyon", new { musteriId = created.MusteriId });
             }
 
-            // API hatasýný kullanýcýya göster
+            // API hatasï¿½nï¿½ kullanï¿½cï¿½ya gï¿½ster
             var error = await response.Content.ReadAsStringAsync();
-            ModelState.AddModelError("", $"API Hatasý: {error}");
+            ModelState.AddModelError("", $"API Hatasï¿½: {error}");
             return View("Index", model);
         }
 
-        //  REZERVASYON KAYDETME AKSÝYONU
+        //  REZERVASYON KAYDETME AKSï¿½YONU
         [HttpPost]
         public async Task<IActionResult> RezervasyonKaydet(RezervasyonDTO model)
         {
             if (!ModelState.IsValid)
             {
-                // Rezervasyon formunuz varsa ona dönün:
+                // Rezervasyon formunuz varsa ona dï¿½nï¿½n:
                 return RedirectToAction("Rezervasyon");
             }
 
-            // Eðer RezervasyonId = 0 ise yeni, deðilse güncelle
+            // Eï¿½er RezervasyonId = 0 ise yeni, deï¿½ilse gï¿½ncelle
             HttpResponseMessage resp = model.RezervasyonId == 0
                 ? await _api.PostAsJsonAsync("api/rezervasyon", model)
                 : await _api.PutAsJsonAsync($"api/rezervasyon/{model.RezervasyonId}", model);
 
             if (resp.IsSuccessStatusCode)
             {
-                // Baþarýyla kaydedildi
+                // Baï¿½arï¿½yla kaydedildi
                 return RedirectToAction("RezervasyonSonuc");
             }
 
             // Hata varsa
             var apiErr = await resp.Content.ReadAsStringAsync();
-            ModelState.AddModelError("", $"Rezervasyon baþarýsýz: {apiErr}");
+            ModelState.AddModelError("", $"Rezervasyon baï¿½arï¿½sï¿½z: {apiErr}");
             return RedirectToAction("Rezervasyon");
         }
 
       
-        //  REZERVASYON FORMU GÖSTERME
+        //  REZERVASYON FORMU Gï¿½STERME
         [HttpGet]
         public async Task<IActionResult> Rezervasyon(int? musteriId)
         {
-            //  Tüm odalarý çek (api/oda)
+            //  Tï¿½m odalarï¿½ ï¿½ek (api/oda)
             var odalar = await _api.GetFromJsonAsync<List<OdaDTO>>("api/oda")
                          ?? new List<OdaDTO>();
 
-            // Tarifeleri çek (api/tarife)
+            // Tarifeleri ï¿½ek (api/tarife)
             var tarifeler = await _api.GetFromJsonAsync<List<TarifeDTO>>("api/tarife")
                             ?? new List<TarifeDTO>();
 
-            // Tüm rezervasyonlarý çek (api/rezervasyon) ve iptal edilmemiþleri filtrele
+            // Tï¿½m rezervasyonlarï¿½ ï¿½ek (api/rezervasyon) ve iptal edilmemiï¿½leri filtrele
             var tumRezervasyonlar = await _api.GetFromJsonAsync<List<RezervasyonDTO>>("api/rezervasyon")
                                       ?? new List<RezervasyonDTO>();
             var aktifRezervasyonlar = tumRezervasyonlar
                 .Where(r => r.IptalTarihi == null)
                 .ToList();
 
-            // Müþterileri çek (api/musteri)
+            // Mï¿½ï¿½terileri ï¿½ek (api/musteri)
             var musteriler = await _api.GetFromJsonAsync<List<MusteriDTO>>("api/musteri")
                             ?? new List<MusteriDTO>();
 
-            // ViewBag’e doldur
+            // ViewBagï¿½e doldur
             ViewBag.Odalar = odalar;
             ViewBag.Tarifeler = tarifeler;
             ViewBag.RezervasyonListesi = aktifRezervasyonlar;
             ViewBag.MusteriListesi = musteriler;
 
-            // View’a gönderilecek model (opsiyonel default deðerler)
+            // Viewï¿½a gï¿½nderilecek model (opsiyonel default deï¿½erler)
             var model = new RezervasyonDTO
             {
                 MusteriId = musteriId ?? 0,
@@ -127,11 +127,12 @@ namespace MadrinHotelCRM.MVC.Controllers
             return View(model);
         }
 
-        //  REZERVASYON SONUÇ SAYFASI
+        //  REZERVASYON SONUï¿½ SAYFASI
   
         public IActionResult RezervasyonSonuc()
         {
             return View();
         }
+
     }
 }
