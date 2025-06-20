@@ -14,7 +14,7 @@ Madrin Hotel CRM, otel işletmelerinin misafir yönetimi, rezervasyon, oda durum
 - 1.0 – 05.05.2025
 - 2.0 – 20.06.2025
 
-=================================================================================================
+===========================================================================
 
 ## 📖 İçindekiler
 
@@ -28,13 +28,13 @@ Madrin Hotel CRM, otel işletmelerinin misafir yönetimi, rezervasyon, oda durum
 - [Kurulum ve Çalıştırma](#kurulum-ve-çalıştırma)
 - [Lisans](#lisans)
 
-=================================================================================================
+===========================================================================
 
 ## Genel Bakış
 
 Madrin Hotel CRM, otel işletmeleri için özelleştirilmiş, güvenli ve kullanıcı dostu bir çözüm sunar. Admin ve resepsiyonist rollerine sahip kullanıcılar; misafir bilgileri, oda durumu, rezervasyonlar ve fatura işlemlerini kolaylıkla yönetebilir.
 
-=================================================================================================
+===========================================================================
 
 ## Kullanılan Teknolojiler
 
@@ -48,7 +48,7 @@ Madrin Hotel CRM, otel işletmeleri için özelleştirilmiş, güvenli ve kullan
 - **Serilog (Logging)**
 - **JWT Authentication**
 
-=================================================================================================
+===========================================================================
 
 ## Mimari Yapı
 
@@ -65,7 +65,7 @@ Proje, toplam **10 katmandan** oluşan modüler ve sürdürülebilir bir katmanl
 9. **MVC** – Kullanıcı arayüzü (Resepsiyonist)
 10. **MVCAdmin** – Yönetici paneli
 
-=================================================================================================
+===========================================================================
 
 ## Temel Modüller
 
@@ -76,7 +76,7 @@ Proje, toplam **10 katmandan** oluşan modüler ve sürdürülebilir bir katmanl
 - **Faturalandırma**: Manuel fatura oluşturma
 - **Kullanıcı Yetkilendirme**: Rol bazlı erişim kontrolü (Admin / Resepsiyonist)
 
-=================================================================================================
+===========================================================================
 
 ## Geliştirme Süreci
 
@@ -96,7 +96,7 @@ Proje, toplam **10 katmandan** oluşan modüler ve sürdürülebilir bir katmanl
 - AJAX ile dinamik işlemler entegre edildi
 - Serilog loglama altyapısı kuruldu
 
-=================================================================================================
+===========================================================================
 
 ## Kazançlar
 
@@ -106,7 +106,7 @@ Proje, toplam **10 katmandan** oluşan modüler ve sürdürülebilir bir katmanl
 - Web API ile servis entegrasyonlarına açık yapı
 - Gerçek dünya projeleri için uygulanabilir tasarım desenleri
 
-=================================================================================================
+===========================================================================
 
 ## Gelecekteki Geliştirmeler
 
@@ -118,7 +118,7 @@ Proje, toplam **10 katmandan** oluşan modüler ve sürdürülebilir bir katmanl
 - **👤 Gelişmiş Misafir Profilleri**
 - **🛡 Yeni Rol Tipleri (Temizlik, Finans, vb.)**
 
-=================================================================================================
+===========================================================================
 
 ## ⚙Kurulum ve Çalıştırma
 
