@@ -13,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Net.Http;
 using System.Net.Http.Headers;
 
 namespace MadrinHotelCRMAdmin.MVC
@@ -27,29 +26,65 @@ namespace MadrinHotelCRMAdmin.MVC
             // 1) MVC
             builder.Services.AddControllersWithViews();
 
-            // 2) Cache (Session'in bellek tabanlı store'u için)
+            // 2) Cache (Session store)
             builder.Services.AddDistributedMemoryCache();
 
             // 3) Session
-            builder.Services.AddSession(options =>
+            builder.Services.AddSession(opts =>
             {
-                options.Cookie.Name = "MadrinHotelSession";
-                options.IdleTimeout = TimeSpan.FromMinutes(30);
-                options.Cookie.HttpOnly = true;
+                opts.Cookie.Name = "MadrinHotelSession";
+                opts.IdleTimeout = TimeSpan.FromMinutes(30);
+                opts.Cookie.HttpOnly = true;
             });
 
-            // 4) Authentication + Authorization
+            // 4) EF Core DbContext
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            builder.Services.AddDbContext<AppDbContext>(opts =>
+                opts.UseSqlServer(connectionString, sql => sql.EnableRetryOnFailure()));
+
+            // 5) Identity Core (UserManager, RoleManager, SignInManager)
             builder.Services
-                .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddIdentityCore<AppUser>(options =>
+                {
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequiredLength = 6;
+
+                    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                    options.Lockout.MaxFailedAccessAttempts = 5;
+                    options.Lockout.AllowedForNewUsers = true;
+
+                    options.User.RequireUniqueEmail = true;
+                })
+                .AddRoles<IdentityRole>()
+                .AddSignInManager()               // <-- SignInManager’ı ekliyoruz
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
+
+            // 6) Authentication + Authorization (Custom Cookie)
+            builder.Services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                })
                 .AddCookie(options =>
                 {
                     options.LoginPath = "/Auth/Giris";
+                    options.AccessDeniedPath = "/Auth/AccessDenied";
                     options.Cookie.Name = "HotelCRMAuth";
                     options.ExpireTimeSpan = TimeSpan.FromDays(1);
                 });
-            builder.Services.AddAuthorization(); // [Authorize] kullanacaksan eklemekte fayda var
 
-            // 5) HttpClient
+            builder.Services.AddAuthorization(opts =>
+            {
+                opts.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+                //opts.AddPolicy("PersonelOnly", policy => policy.RequireRole("Personel"));
+            });
+
+            // 7) HttpClient
             builder.Services
                 .AddHttpClient("ApiClient", client =>
                 {
@@ -57,51 +92,33 @@ namespace MadrinHotelCRMAdmin.MVC
                     client.DefaultRequestHeaders.Accept.Add(
                         new MediaTypeWithQualityHeaderValue("application/json"));
                 })
-            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false });
+                .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { UseCookies = false });
 
-            // builder.Services.AddHttpClientExtension(builder.Configuration);
-
-            // 6) AutoMapper ve DI’lar
+            // 8) AutoMapper & DI
             builder.Services.AddAutoMapper(typeof(MapProfiles));
             builder.Services.AddScoped<IEkPaketService, EkPaketService>();
             builder.Services.AddServiceCollectionExtension();
-        
-
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            // Giriş yapan kullanıcının ad ve soyad bilgilerini gösterebilmek için 
-            builder.Services.AddIdentity<AppUser, IdentityRole>()
-              .AddEntityFrameworkStores<AppDbContext>()
-              .AddDefaultTokenProviders();
-
-            //builder.Services.AddDbContext<AppDbContext>(options =>
-            //    options.UseSqlServer("Server=.;Database=MadrinHotelCRMDb;Trusted_Connection=True;"));
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-            builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(connectionString, opt =>
-                {
-                    opt.EnableRetryOnFailure();
-                }));
 
             var app = builder.Build();
 
-            // Ortam ayarları
+            // 9) Environment
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
 
-            // Middleware sırası çok önemli!
+            // 10) Middleware sırası
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
 
-            app.UseSession();          // <-- önce Session
-            app.UseAuthentication();   // <-- sonra AuthN
-            app.UseAuthorization();    // <-- en son AuthZ
+            app.UseSession();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
-            // Route’lar
+            // 11) Default route
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Auth}/{action=Giris}/{id?}");

@@ -131,12 +131,12 @@
 		<form asp-action="RezervasyonKaydet" method="post" class="row g-3" id="rezervasyonForm">
 			<input asp-for="MusteriId" type="hidden" />
 			<div class="col-md-4">
-				<label class="form-label">Başlangıç Tarihi</label>
-				<input type="date" name="filtreBaslangic" id="filtreBaslangic" class="form-control" />
+				<label asp-for="BaslangicTarihi" class="form-label">Başlangıç Tarihi</label>
+				<input asp-for="BaslangicTarihi" type="date" class="form-control" />
 			</div>
 			<div class="col-md-4">
-				<label class="form-label">Bitiş Tarihi</label>
-				<input type="date" name="filtreBitis" id="filtreBitis" class="form-control" />
+				<label asp-for="BitisTarihi" class="form-label">Bitiş Tarihi</label>
+				<input asp-for="BitisTarihi" type="date" class="form-control" />
 			</div>
 			<div class="col-md-4">
 				<label asp-for="OdaId" class="form-label">Oda Seçin</label>
@@ -224,9 +224,10 @@
 				return b1 <= e2 && b2 <= e1;
 			}
 
+			
 			function filtreOdaListesi() {
-				const bas = new Date($('#filtreBaslangic').val());
-				const bit = new Date($('#filtreBitis').val());
+				const bas = new Date($('#BaslangicTarihi').val());
+				const bit = new Date($('#BitisTarihi').val());
 				const $sel = $('#odaSelect').empty();
 				$sel.append('<option value="">— Bir Oda Seçin —</option>');
 
@@ -254,8 +255,8 @@
 			}
 
 			$(function () {
-				$('#filtreBaslangic, #filtreBitis').on('change', filtreOdaListesi);
-				filtreOdaListesi();
+			$('#BaslangicTarihi, #BitisTarihi').on('change', filtreOdaListesi);
+						filtreOdaListesi();
 
 				$('#odaSelect').on('change', function () {
 					const odaId = $(this).val();

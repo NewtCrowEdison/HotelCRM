@@ -4,11 +4,13 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using MadrinHotelCRM.DTO.DTOModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MadrinHotelCRMAdmin.MVC.Controllers
 {
     [Route("[controller]/[action]")]
+    [Authorize(Roles = "Admin")]
     public class AdminPanelController : Controller
     {
         private readonly HttpClient _api;
