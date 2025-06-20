@@ -15,7 +15,7 @@ namespace MadrinHotelCRM.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // 1) CORS – sadece AdminPanel MVC’den gelen istekler
+            //1) CORS – sadece AdminPanel MVC’den gelen istekler
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAdminPanel", policy =>
