@@ -4,10 +4,10 @@ Madrin Hotel CRM, otel işletmelerinin misafir yönetimi, rezervasyon, oda durum
 
 ## Geliştirici Ekip
 
-- **Rojbin Vefa Can Ağtaş**
-- **Yasemin Özhan**
-- **Zafercan Demir**
-- **Zeynep Kaska**
+- [Rojbin Vefa Can Ağtaş](https://www.linkedin.com/in/rojbin-agtas/)
+- [Yasemin Özhan](https://www.linkedin.com/in/yasemin-ozhan/)
+- [Zafercan Demir](https://www.linkedin.com/in/zafercan-demir/)
+- [Zeynep Kaska](https://www.linkedin.com/in/zeynep-kaska/)
 
 ## Proje Versiyonu
 
