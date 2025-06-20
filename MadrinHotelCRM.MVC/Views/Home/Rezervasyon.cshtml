@@ -295,5 +295,39 @@
 				});
 			});
 		</script>
+		<script>
+			$(function () {
+				$('#rezervasyonForm').on('submit', function (e) {
+					const today = new Date();
+					today.setHours(0, 0, 0, 0);
+
+					const bas = new Date($('#BaslangicTarihi').val());
+					const bit = new Date($('#BitisTarihi').val());
+
+					if (bas < today || bit < today) {
+						alert("Geçmiş tarihli rezervasyon yapılamaz.");
+						e.preventDefault();
+						return;
+					}
+
+					if (bit < bas) {
+						alert("Bitiş tarihi, başlangıç tarihinden önce olamaz.");
+						e.preventDefault();
+						return;
+					}
+				});
+			});
+		</script>
+		<script>
+			$(function () {
+				// Sayı inputlarina negatif deger girilmesini engelle
+				$('#YetiskinSayisi, #CocukSayisi').on('input', function () {
+					const val = parseInt($(this).val());
+					if (val < 0) {
+						$(this).val(0);
+					}
+				});
+			});
+		</script>
 </body>
 </html>

@@ -105,11 +105,14 @@
                 </select>
             </div>
             <!-- Kişiler -->
+            <!-- Yetişkin Sayısı -->
             <div class="mb-2">
-                <input type="number" name="YetiskinSayisi" class="form-control" placeholder="Yetişkin" required />
+                <input type="number" name="YetiskinSayisi" class="form-control" placeholder="Yetişkin" required min="1" />
             </div>
+
+            <!-- Çocuk Sayısı -->
             <div class="mb-2">
-                <input type="number" name="CocukSayisi" class="form-control" placeholder="Çocuk" required />
+                <input type="number" name="CocukSayisi" class="form-control" placeholder="Çocuk" required min="0" />
             </div>
             <button type="submit" class="btn btn-success mt-2">Kaydet</button>
         </form>
@@ -175,4 +178,55 @@
             </tbody>
         </table>
     </div>
+    <script>
+        $(function () {
+            const $bas = $('[name=BaslangicTarihi]');
+            const $bit = $('[name=BitisTarihi]');
+            const $yetiskin = $('[name=YetiskinSayisi]');
+            const $cocuk = $('[name=CocukSayisi]');
+
+            function tarihVeKisiKontrol() {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const basTarih = new Date($bas.val());
+                const bitTarih = new Date($bit.val());
+
+                if (basTarih < today || bitTarih < today) {
+                    alert("Geçmiş tarihli rezervasyon yapılamaz.");
+                    return false;
+                }
+
+                if (bitTarih < basTarih) {
+                    alert("Bitiş tarihi, başlangıç tarihinden önce olamaz.");
+                    return false;
+                }
+
+                const yetiskin = parseInt($yetiskin.val(), 10);
+                const cocuk = parseInt($cocuk.val(), 10);
+
+                if (isNaN(yetiskin) || yetiskin < 1) {
+                    alert("Yetişkin sayısı en az 1 olmalıdır.");
+                    return false;
+                }
+
+                if (isNaN(cocuk) || cocuk < 0) {
+                    alert("Çocuk sayısı negatif olamaz.");
+                    return false;
+                }
+
+                return true;
+            }
+
+            $('#rezervasyonForm').on('submit', function (e) {
+                if (!tarihVeKisiKontrol()) {
+                    e.preventDefault();
+                }
+            });
+
+            const bugunStr = new Date().toISOString().split('T')[0];
+            $bas.attr('min', bugunStr);
+            $bit.attr('min', bugunStr);
+        });
+    </script>
 </div>

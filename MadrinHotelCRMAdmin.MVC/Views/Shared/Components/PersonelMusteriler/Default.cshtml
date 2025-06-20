@@ -81,3 +81,30 @@
         </table>
     </div>
 </div>
+@section Scripts {
+    <script>
+        const musteriListesi = JSON.parse(document.getElementById("musteri-data").value);
+
+        document.getElementById("kayitForm").addEventListener("submit", function (e) {
+            const form = e.target;
+            const tcNo = form.TcNo.value.trim();
+            const email = form.Email.value.trim().toLowerCase();
+
+            // Eğer girilen TCNo veya Email zaten varsa engelle
+            const ayniTc = tcNo && musteriListesi.some(m => m.tcNo === tcNo);
+            const ayniEmail = musteriListesi.some(m => m.email.toLowerCase() === email);
+
+            if (ayniTc) {
+                alert("Bu TC Kimlik Numarası ile kayıtlı bir müşteri zaten var.");
+                e.preventDefault();
+                return;
+            }
+
+            if (ayniEmail) {
+                alert("Bu Email adresi ile kayıtlı bir müşteri zaten var.");
+                e.preventDefault();
+                return;
+            }
+        });
+    </script>
+}

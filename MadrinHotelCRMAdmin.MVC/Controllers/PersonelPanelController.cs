@@ -45,7 +45,22 @@ namespace MadrinHotelCRMAdmin.MVC.Controllers
                 return BadRequest($"Hatalar: {string.Join(" | ", errors)}");
             }
 
-            // doğrudan api/musteri endpoint’ine POST
+            // Var olan müşteri listesini API'den çek
+            var musteriler = await _api.GetFromJsonAsync<List<MusteriDTO>>("api/musteri");
+
+            bool ayniTcVar = !string.IsNullOrWhiteSpace(dto.TcNo) &&
+                             musteriler.Any(m => m.TcNo == dto.TcNo);
+
+            bool ayniEmailVar = !string.IsNullOrWhiteSpace(dto.Email) &&
+                                musteriler.Any(m => m.Email.ToLower() == dto.Email.ToLower());
+
+            if (ayniTcVar)
+                return BadRequest("Bu TC Kimlik numarası ile kayıtlı bir müşteri zaten var.");
+
+            if (ayniEmailVar)
+                return BadRequest("Bu Email adresi ile kayıtlı bir müşteri zaten var.");
+
+            // POST api/musteri
             var response = await _api.PostAsJsonAsync("api/musteri", dto);
             if (response.IsSuccessStatusCode)
             {

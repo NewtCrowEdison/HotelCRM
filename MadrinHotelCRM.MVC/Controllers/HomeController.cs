@@ -59,34 +59,43 @@ namespace MadrinHotelCRM.MVC.Controllers
             return View("Index", model);
         }
 
-        //  REZERVASYON KAYDETME AKS�YONU
+        // REZERVASYON KAYDETME AKSIYONU
         [HttpPost]
         public async Task<IActionResult> RezervasyonKaydet(RezervasyonDTO model)
         {
             if (!ModelState.IsValid)
+                return RedirectToAction("Rezervasyon");
+
+            // Geçmiş tarih kontrolü
+            var today = DateTime.Today;
+
+            if (model.BaslangicTarihi.Date < today || model.BitisTarihi.Date < today)
             {
-                // Rezervasyon formunuz varsa ona d�n�n:
+                TempData["Hata"] = "Geçmiş tarihli rezervasyon yapılamaz.";
                 return RedirectToAction("Rezervasyon");
             }
 
-            // E�er RezervasyonId = 0 ise yeni, de�ilse g�ncelle
+            if (model.BitisTarihi < model.BaslangicTarihi)
+            {
+                TempData["Hata"] = "Bitiş tarihi, başlangıç tarihinden önce olamaz.";
+                return RedirectToAction("Rezervasyon");
+            }
+
             HttpResponseMessage resp = model.RezervasyonId == 0
                 ? await _api.PostAsJsonAsync("api/rezervasyon", model)
                 : await _api.PutAsJsonAsync($"api/rezervasyon/{model.RezervasyonId}", model);
 
             if (resp.IsSuccessStatusCode)
-            {
-                // Ba�ar�yla kaydedildi
                 return RedirectToAction("RezervasyonSonuc");
-            }
 
-            // Hata varsa
+            // Hata durumunda detaylı mesaj göster
             var apiErr = await resp.Content.ReadAsStringAsync();
-            ModelState.AddModelError("", $"Rezervasyon ba�ar�s�z: {apiErr}");
+            TempData["Hata"] = $"Rezervasyon başarısız: {apiErr}";
             return RedirectToAction("Rezervasyon");
         }
 
-      
+
+
         //  REZERVASYON FORMU G�STERME
         [HttpGet]
         public async Task<IActionResult> Rezervasyon(int? musteriId)
