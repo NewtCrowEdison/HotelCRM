@@ -3,115 +3,296 @@
 @using Microsoft.AspNetCore.Mvc.Rendering
 @using System.Text.Json
 @using MadrinHotelCRM.Entities.Enums
-
 @{
-    ViewData["Title"] = "Rezervasyon Yap";
-
-    // Controller'da ViewBag ile setlediğiniz odalar ve tarifeler
-    var odalar = ViewBag.Odalar as List<OdaDTO> ?? new List<OdaDTO>();
-    var tarifeler = ViewBag.Tarifeler as List<TarifeDTO> ?? new List<TarifeDTO>();
-
-    // Mevcut rezervasyonlar filtresi için JS'e aktarılacak
-    var rezervasyonListesiJson = JsonSerializer.Serialize(ViewBag.RezervasyonListesi as List<RezervasyonDTO> ?? new List<RezervasyonDTO>());
+	Layout = null;
+	ViewData["Title"] = "Rezervasyon Yap";
+	var odalar = ViewBag.Odalar as List<OdaDTO> ?? new List<OdaDTO>();
+	var tarifeler = ViewBag.Tarifeler as List<TarifeDTO> ?? new List<TarifeDTO>();
+	var rezervasyonListesiJson = JsonSerializer.Serialize(ViewBag.RezervasyonListesi as List<RezervasyonDTO> ?? new List<RezervasyonDTO>());
 }
 
-<h2>Rezervasyon Yap</h2>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Rezervasyon Yap - Madrin Hotel</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+	<style>
+		body {
+			font-family: 'Segoe UI', sans-serif;
+			background-color: #f4f6f5;
+			display: flex;
+			flex-direction: column;
+			min-height: 100vh;
+		}
 
-<form asp-action="RezervasyonKaydet" method="post" class="row g-3" id="rezervasyonForm">
-    <input asp-for="MusteriId" type="hidden" />
+		.navbar-custom {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100vw;
+			z-index: 20;
+			background: rgba(0, 0, 0, 0.3);
+			backdrop-filter: blur(6px);
+		}
 
-    <!-- Filtre Tarihleri -->
-    <div class="col-md-4">
-        <label class="form-label">Başlangıç Tarihi</label>
-        <input type="date" name="filtreBaslangic" id="filtreBaslangic" class="form-control" />
-    </div>
-    <div class="col-md-4">
-        <label class="form-label">Bitiş Tarihi</label>
-        <input type="date" name="filtreBitis" id="filtreBitis" class="form-control" />
-    </div>
+		main {
+			flex: 1;
+			padding-top: 100px;
+		}
 
-    <!-- Oda Seçimi -->
-    <div class="col-md-4">
-        <label asp-for="OdaId" class="form-label">Oda Seçin</label>
-        <select asp-for="OdaId" id="odaSelect" class="form-select" required>
-            <option value="">-- Oda seçin --</option>
-        </select>
-        <span asp-validation-for="OdaId" class="text-danger"></span>
-    </div>
+		.form-section {
+			background: white;
+			padding: 30px;
+			border-radius: 12px;
+			box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+		}
 
-    <!-- Diğer Alanlar -->
-    <div class="col-md-4">
-        <label asp-for="TarifeId" class="form-label">Tarife</label>
-        <select asp-for="TarifeId" class="form-select" required>
-            <option value="">-- Tarifeyi seçin --</option>
-            @foreach (var t in tarifeler)
-            {
-                <option value="@t.TarifeId">@t.TarifeAdi — @t.Fiyat ₺</option>
-            }
-        </select>
-        <span asp-validation-for="TarifeId" class="text-danger"></span>
-    </div>
-    <div class="col-md-2">
-        <label asp-for="YetiskinSayisi" class="form-label">Yetişkin</label>
-        <input asp-for="YetiskinSayisi" type="number" min="1" class="form-control" required />
-        <span asp-validation-for="YetiskinSayisi" class="text-danger"></span>
-    </div>
-    <div class="col-md-2">
-        <label asp-for="CocukSayisi" class="form-label">Çocuk</label>
-        <input asp-for="CocukSayisi" type="number" min="0" class="form-control" required />
-        <span asp-validation-for="CocukSayisi" class="text-danger"></span>
-    </div>
+		footer {
+			background-color: #2c2c2c;
+			margin-top: auto;
+		}
 
-    <div class="col-12">
-        <button type="submit" class="btn btn-success">Rezervasyonu Onayla</button>
-    </div>
-</form>
+			footer a {
+				color: #fff;
+				text-decoration: none;
+			}
 
-@section Scripts {
-    
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <partial name="_ValidationScriptsPartial" />
+				footer a:hover {
+					text-decoration: underline;
+				}
 
-    <script>
-        const odalar = @Html.Raw(JsonSerializer.Serialize(odalar));
-        const rezervasyonListesi = @Html.Raw(rezervasyonListesiJson);
+		.offcanvas-custom-bg {
+			background-color: #e7e9e2 !important;
+			color: #000;
+		}
 
-        function tarihCakisiyor(b1, e1, b2, e2) {
-          return b1 <= e2 && b2 <= e1;
-        }
+			.offcanvas-custom-bg a.nav-link {
+				color: #2c2c2c;
+				font-weight: 500;
+			}
+	</style>
+</head>
+<body>
+	<!-- NAVBAR -->
+	<nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top px-4">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="#" data-bs-toggle="offcanvas" data-bs-target="#solMenu">☰ MENÜ</a>
+			<div class="mx-auto text-white fw-bold fs-4">Madrin Hotel</div>
+			<div>
+				<button class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#iletisimModal">BİZE ULAŞIN</button>
+				<a href="/Home/MusteriKaydet" class="btn btn-light">REZERVASYON</a>
+			</div>
+		</div>
+	</nav>
 
-        function filtreOdaListesi() {
-          const bas = new Date($('#filtreBaslangic').val());
-          const bit = new Date($('#filtreBitis').val());
-          const $sel = $('#odaSelect').empty();
-          $sel.append('<option value="">— Bir Oda Seçin —</option>');
+	<!-- İLETİŞİM MODAL -->
+	<div class="modal fade" id="iletisimModal" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content px-4 py-4 rounded-3">
+				<div class="modal-header border-0 position-relative">
+					<h5 class="modal-title text-center w-100 fst-italic" style="color:#000;">Bize Ulaşın</h5>
+					<button type="button" class="btn-close position-absolute top-0 end-0 mt-2 me-2" data-bs-dismiss="modal" aria-label="Kapat"></button>
+				</div>
+				<div class="modal-body text-center">
+					<div class="mb-4">
+						<div class="fw-bold text-secondary">MADRIN HOTEL:</div>
+						<a href="tel:+902120000000" class="d-block mb-1">444 62 99</a>
+						<a href="mailto:book@madrinhotel.com" class="d-block">book@madrinhotel.com</a>
+					</div>
+					<hr />
+					<div class="text-uppercase small text-muted mb-3 mt-3">Diğer Sorularınız:</div>
+					<button class="btn btn-outline-dark px-4" onclick="window.location.href='/Iletisim/Index'">İLETİŞİM →</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
-          if (isNaN(bas) || isNaN(bit) || bas > bit) {
-            odalar.forEach(o => {
-              $sel.append(`<option value="${o.OdaId}">Oda ${o.OdaNumarasi}</option>`);
-            });
-            return;
-          }
+	<!-- YAN MENÜ -->
+	<div class="offcanvas offcanvas-start offcanvas-custom-bg" tabindex="-1" id="solMenu">
+		<div class="offcanvas-header justify-content-end">
+			<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+		</div>
+		<div class="offcanvas-body">
+			<ul class="list-unstyled">
+				<li><a href="/" class="nav-link">Anasayfa</a></li>
+				<li><a href="/Home/Hakkimizda" class="nav-link">Hakkımızda</a></li>
+				<li><a href="/Odalar" class="nav-link">Odalar</a></li>
+				<li><a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#iletisimModal">İletişim</a></li>
+			</ul>
+		</div>
+	</div>
 
-          odalar.forEach(o => {
-            const conflict = rezervasyonListesi.some(r =>
-              r.OdaId === o.OdaId &&
-              r.IptalTarihi == null &&
-              tarihCakisiyor(
-                new Date(r.BaslangicTarihi),
-                new Date(r.BitisTarihi),
-                bas, bit
-              )
-            );
-            if (!conflict) {
-              $sel.append(`<option value="${o.OdaId}">Oda ${o.OdaNumarasi}</option>`);
-            }
-          });
-        }
+	<!-- FORM ALANI -->
+	<div class="container form-section mt-5">
+		<h2 class="text-center mb-4">Rezervasyon Yap</h2>
+		<form asp-action="RezervasyonKaydet" method="post" class="row g-3" id="rezervasyonForm">
+			<input asp-for="MusteriId" type="hidden" />
+			<div class="col-md-4">
+				<label class="form-label">Başlangıç Tarihi</label>
+				<input type="date" name="filtreBaslangic" id="filtreBaslangic" class="form-control" />
+			</div>
+			<div class="col-md-4">
+				<label class="form-label">Bitiş Tarihi</label>
+				<input type="date" name="filtreBitis" id="filtreBitis" class="form-control" />
+			</div>
+			<div class="col-md-4">
+				<label asp-for="OdaId" class="form-label">Oda Seçin</label>
+				<select asp-for="OdaId" id="odaSelect" class="form-select" required>
+					<option value="">-- Oda seçin --</option>
+				</select>
+				<span asp-validation-for="OdaId" class="text-danger"></span>
+			</div>
+			<div class="col-md-4">
+				<label asp-for="TarifeId" class="form-label">Tarife</label>
+				<select asp-for="TarifeId" class="form-select" required>
+					<option value="">-- Tarifeyi seçin --</option>
+					@foreach (var t in tarifeler)
+					{
+						<option value="@t.TarifeId">@t.TarifeAdi — @t.Fiyat ₺</option>
+					}
+				</select>
+				<span asp-validation-for="TarifeId" class="text-danger"></span>
+			</div>
+			<div class="col-md-2">
+				<label asp-for="YetiskinSayisi" class="form-label">Yetişkin</label>
+				<input asp-for="YetiskinSayisi" type="number" min="1" class="form-control" required />
+				<span asp-validation-for="YetiskinSayisi" class="text-danger"></span>
+			</div>
+			<div class="col-md-2">
+				<label asp-for="CocukSayisi" class="form-label">Çocuk</label>
+				<input asp-for="CocukSayisi" type="number" min="0" class="form-control" required />
+				<span asp-validation-for="CocukSayisi" class="text-danger"></span>
+			</div>
+			<div class="col-12">
+				<button type="submit" class="btn btn-success">Rezervasyonu Onayla</button>
+			</div>
+		</form>
+		<div id="odaDetayAlani" class="mt-5"></div>
+	</div>
 
-        $(function() {
-          $('#filtreBaslangic, #filtreBitis').on('change', filtreOdaListesi);
-          filtreOdaListesi();
-        });
-    </script>
-}
+	<!-- FOOTER -->
+	<footer class="text-white pt-5 pb-3" style="background-color: #2c2c2c;">
+		<div class="container">
+			<div class="row">
+				<!-- Logo / Otel adı -->
+				<div class="col-md-4 mb-4">
+					<h4 class="fw-bold">Madrin Hotel</h4>
+					<p class="small">Lüksü, konforu ve huzuru bir araya getiriyoruz. Tatilinizi unutulmaz kılmak için buradayız.</p>
+				</div>
+
+				<!-- Menü -->
+				<div class="col-md-4 mb-4">
+					<h5 class="fw-semibold">Hızlı Erişim</h5>
+					<ul class="list-unstyled">
+						<li><a href="/Home/Hakkimizda" class="text-white text-decoration-none">Hakkımızda</a></li>
+						<li><a href="/Odalar" class="text-white text-decoration-none">Odalar</a></li>
+						<li><a href="/Home/MusteriKaydet" class="text-white text-decoration-none">Rezervasyon</a></li>
+						<li><a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#iletisimModal">İletişim</a></li>
+					</ul>
+				</div>
+
+				<!-- İletişim -->
+				<div class="col-md-4 mb-4">
+					<h5 class="fw-semibold">İletişim</h5>
+					<p class="mb-1"><i class="bi bi-telephone-fill me-2"></i> +90 212 000 00 00</p>
+					<p class="mb-1"><i class="bi bi-envelope-fill me-2"></i> info@madrinhotel.com</p>
+					<p><i class="bi bi-geo-alt-fill me-2"></i> Bodrum, Muğla / Türkiye</p>
+
+					<!-- Sosyal ikonlar -->
+					<div class="d-flex gap-3 mt-2">
+						<a href="https://www.facebook.com/" target="_blank" class="text-white fs-5"><i class="bi bi-facebook"></i></a>
+						<a href="https://www.instagram.com/" target="_blank" class="text-white fs-5"><i class="bi bi-instagram"></i></a>
+					</div>
+				</div>
+			</div>
+
+			<hr class="border-light opacity-25">
+			<div class="text-center small">© 2025 Madrin Hotel. Tüm hakları saklıdır.</div>
+		</div>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<partial name="_ValidationScriptsPartial" />
+		<script>
+			const odalar = @Html.Raw(JsonSerializer.Serialize(odalar));
+			const rezervasyonListesi = @Html.Raw(rezervasyonListesiJson);
+
+			function tarihCakisiyor(b1, e1, b2, e2) {
+				return b1 <= e2 && b2 <= e1;
+			}
+
+			function filtreOdaListesi() {
+				const bas = new Date($('#filtreBaslangic').val());
+				const bit = new Date($('#filtreBitis').val());
+				const $sel = $('#odaSelect').empty();
+				$sel.append('<option value="">— Bir Oda Seçin —</option>');
+
+				if (isNaN(bas) || isNaN(bit) || bas > bit) {
+					odalar.forEach(o => {
+						$sel.append(`<option value="${o.OdaId}">Oda ${o.OdaNumarasi}</option>`);
+					});
+					return;
+				}
+
+				odalar.forEach(o => {
+					const conflict = rezervasyonListesi.some(r =>
+						r.OdaId === o.OdaId &&
+						r.IptalTarihi == null &&
+						tarihCakisiyor(
+							new Date(r.BaslangicTarihi),
+							new Date(r.BitisTarihi),
+							bas, bit
+						)
+					);
+					if (!conflict) {
+						$sel.append(`<option value="${o.OdaId}">Oda ${o.OdaNumarasi}</option>`);
+					}
+				});
+			}
+
+			$(function () {
+				$('#filtreBaslangic, #filtreBitis').on('change', filtreOdaListesi);
+				filtreOdaListesi();
+
+				$('#odaSelect').on('change', function () {
+					const odaId = $(this).val();
+					if (odaId) {
+						$.ajax({
+							url: `/api/oda/${odaId}`,
+							method: 'GET',
+							success: function (data) {
+								const detay = `
+									<div class="card shadow-sm mt-4">
+										<div class="row g-0">
+											<div class="col-md-4">
+													<img src="${data.gorselUrl ?? '/images/placeholder.jpg'}" class="img-fluid rounded-start" alt="Kapak">
+											</div>
+											<div class="col-md-8">
+												<div class="card-body">
+												<h5 class="card-title">
+													Oda ${data.odaNumarasi} ${data.odaTipiAdi ? `- ${data.odaTipiAdi}` : ''}
+														</h5>
+													<p class="card-text mb-1"><strong>Boyut:</strong> ${data.odaBoyutu ?? 'Belirtilmemiş'} m²</p>
+													<p class="card-text mb-1"><strong>Yatak Sayısı:</strong> ${data.yatakSayisi ?? 'Belirtilmemiş'}</p>
+													<p class="card-text"><strong>Özellikler:</strong> ${data.ozellikler ?? 'Yok'}</p>
+												</div>
+											</div>
+										</div>
+									</div>`;
+								$('#odaDetayAlani').html(detay);
+							},
+							error: function () {
+								$('#odaDetayAlani').html('<div class="alert alert-warning mt-3">Oda bilgileri alınamadı.</div>');
+							}
+						});
+					} else {
+						$('#odaDetayAlani').empty();
+					}
+				});
+			});
+		</script>
+</body>
+</html>
