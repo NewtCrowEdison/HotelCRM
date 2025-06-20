@@ -19,7 +19,7 @@
             <input name="TelNo" class="form-control" placeholder="Telefon" required />
             <input name="TcNo" class="form-control" placeholder="TC Kimlik" />
           @*   <input name="PasaportNo" class="form-control" placeholder="Pasaport No" /> *@
-            <input name="DogumTarihi" type="date" class="form-control" />
+            <input name="DogumTarihi" type="date" class="form-control" min="1925-01-01" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
 
             <select name="Cinsiyet" class="form-control" required>
                 <option value="">— Cinsiyet Seç —</option>

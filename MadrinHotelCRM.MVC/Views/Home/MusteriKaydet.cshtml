@@ -163,7 +163,7 @@
 
 			<div class="col-md-4">
 				<label asp-for="DogumTarihi" class="form-label">Doğum Tarihi</label>
-				<input asp-for="DogumTarihi" type="date" class="form-control" />
+				<input asp-for="DogumTarihi" type="date" class="form-control" min="1925-01-01" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
 				<span asp-validation-for="DogumTarihi" class="text-danger"></span>
 			</div>
 
