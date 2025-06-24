@@ -138,6 +138,7 @@ dotnet ef database update
 
 # 6. Projeyi çalıştırın (F5 veya dotnet run)
 </details>
+```
 
 <details open>
 <summary><strong>🇬🇧 English</strong></summary>
@@ -279,4 +280,5 @@ dotnet ef database update
 
 # 6. Run the project
 dotnet run
-</details> ```
+</details>
+```
